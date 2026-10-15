@@ -1,0 +1,6 @@
+- id: agent-assisted-development
+  name: Agent 辅助开发实践
+  description: 记录如何通过清晰的任务边界、仓库上下文和验证标准，让 AI Agent 协助完成真实开发工作。
+  icon: 🤖
+  category: 项目笔记
+  order: 1

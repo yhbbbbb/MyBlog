@@ -44,7 +44,10 @@
 
 #### Mermaid 示例模板
 
-```mermaid
+Hexo 的 NexT 主题使用标签插件渲染 Mermaid。不要使用语言标记为 `mermaid` 的三反引号代码围栏，否则图表会显示为普通代码块。当前站点已在 `_config.next.yml` 启用 Mermaid；每篇图表使用以下标签包裹：
+
+````text
+{% mermaid %}
 graph LR
     A["🔵 输入层\n用户请求"]
     B["🟣 处理层\n模型推理"]
@@ -58,7 +61,8 @@ graph LR
     style B fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
     style C fill:#B5EAD7,stroke:#80CBC4,stroke-width:2px,color:#333
     style D fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
-```
+{% endmermaid %}
+````
 
 - 节点要有 emoji 辅助理解
 - 箭头标签要简洁（2-4字）
@@ -220,7 +224,8 @@ description: [≤100字摘要，无双引号]
 ## 七、常用 Mermaid 模板片段
 
 ### 架构图（系统分层）
-```mermaid
+````text
+{% mermaid %}
 graph TB
     subgraph "用户层"
         U["👤 用户"]
@@ -242,10 +247,12 @@ graph TB
     style B fill:#FFDAB9,stroke:#FFAB76,color:#333
     style C fill:#B5EAD7,stroke:#80CBC4,color:#333
     style D fill:#FFB3C6,stroke:#F48FB1,color:#333
-```
+{% endmermaid %}
+````
 
 ### 决策流程图
-```mermaid
+````text
+{% mermaid %}
 flowchart TD
     START(["🚀 开始"]) --> Q1{"条件判断"}
     Q1 -->|"是"| ACTION1["✅ 执行A"]
@@ -258,10 +265,12 @@ flowchart TD
     style ACTION1 fill:#B5EAD7,stroke:#80CBC4,color:#333
     style ACTION2 fill:#FFDAB9,stroke:#FFAB76,color:#333
     style END fill:#E8D5F5,stroke:#CE93D8,color:#333
-```
+{% endmermaid %}
+````
 
 ### 时序图
-```mermaid
+````text
+{% mermaid %}
 sequenceDiagram
     actor User as 👤 用户
     participant App as 📱 应用
@@ -273,7 +282,8 @@ sequenceDiagram
     AI-->>App: 返回结果
     App->>DB: 存储记录
     App-->>User: 响应结果
-```
+{% endmermaid %}
+````
 
 ---
 
@@ -322,22 +332,20 @@ sequenceDiagram
    ---
    ```
 
-### 5.4 系列页面的工作机制
+### 5.4 当前系列功能状态
 
-- `/series/` 总览页：由 `scripts/series-generator.js` + `themes/next/layout/series-index.njk` 生成
-- `/series/<id>/` 详情页：同上
-- 文章页底部"系列"链接：由 `scripts/series-inject.js` 注入 `series_name/series_icon/series_url` 变量，`themes/next/layout/_partials/post/post-meta.njk` 渲染
-
-**修改这三个文件时请同时检查 scripts/series-*.js 和 themes/next/layout/ 下的模板是否需要同步。**
+- `source/_data/series.yml` 只保存系列元数据，供写作时核对系列 ID、名称和分类。
+- Hexo 不会原生解析文章 Front Matter 的 `series` 字段；当前仓库没有系列总览页、系列详情页或文章页系列链接的生成逻辑。
+- 填写 `series` 字段目前是内容元数据约定，不会自动生成可见页面或链接。需要系列页面时，必须另行实现并验证生成器、注入脚本和主题模板，再更新本节说明。
 
 ---
 
-*最后更新：2026-06-18 | 维护者：Xu Qi*
+*最后更新：2026-10-15 | 维护者：yhbbbbb*
 
 
 ---
 
 ## 修复日志
 
-- **2026-06-18T19:20:50**: 治本修复 `themes/next/source/` 目录缺失导致 CSS/JS/图片 404（之前 fork next 主题漏了 `source/` 目录，hexo generate 没复制资源到 `public/`）
-- **2026-06-18T19:20:50**: 修复 zh-CN.yml 缺 `series: 系列` 翻译
+- **2026-10-15**：将 Mermaid 示例改为 NexT 标签插件语法 `{% mermaid %}...{% endmermaid %}`；标记为 `mermaid` 的三反引号围栏在当前站点只显示代码，不会绘图。
+- **2026-10-15**：修正系列功能说明。`source/_data/series.yml` 目前仅登记系列元数据，系列页面生成器、文章页注入器和对应模板尚未实现。

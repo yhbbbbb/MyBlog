@@ -22,6 +22,13 @@ social:
   GitHub: https://github.com/yhbbbbb || fab fa-github
 site_state: true
 
+# Mermaid 流程图与架构图
+mermaid:
+  enable: true
+  theme:
+    light: default
+    dark: dark
+
 # 文章目录
 toc:
   enable: true
