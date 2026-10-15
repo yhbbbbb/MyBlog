@@ -1,6 +1,6 @@
-# NexT 主题独立配置，避免主题升级覆盖个人设置
+# NexT 主题站点级覆盖配置，避免直接修改主题子模块配置
 scheme: Gemini
-darkmode: false
+darkmode: true
 
 # 顶部导航栏
 menu:
@@ -70,3 +70,12 @@ footer:
     animated: false
     color: '#ff0000'
   copyright: yhbbbbb
+
+# 开启 light-dark() 配色变量，供手动明暗切换控制 color-scheme
+lightdark:
+  enable: true
+  check_supports: true
+
+# 在页面 body 结束前载入站点自定义切换按钮
+custom_file_path:
+  bodyEnd: source/_data/body-end.njk
