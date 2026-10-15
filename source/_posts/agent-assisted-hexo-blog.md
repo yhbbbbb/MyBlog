@@ -134,6 +134,39 @@ flowchart LR
 
 Actions 创建并发布了 `gh-pages` 后，站点一开始仍返回 GitHub Pages 404。问题不在 Hexo 构建，而是仓库 Pages 发布源尚未选择。设置为 `gh-pages` 分支和根目录后，项目地址才返回 HTTP 200，页面的 CSS、头像和文章路径也正确使用 `/MyBlog/`。
 
+### 分类和标签页为什么单独 404
+
+上线后还发现导航里的 `/categories/` 和 `/tags/` 返回 404，但具体分类 `/categories/项目笔记/` 和标签 `/tags/Agent/` 都能打开。检查 `public/` 后，原因很明确：Hexo 的分类生成器默认只生成每个分类的明细页；标签生成器默认也不生成标签总览页。导航链接指向的索引页根本没有对应的 `index.html`。
+
+NexT 的通用页面布局会根据 Front Matter 的 `type` 显示分类列表或标签云。因此，在 `source/categories/index.md` 和 `source/tags/index.md` 分别创建索引页，并设置正确的 `type` 与 `layout`：
+
+```yaml
+---
+title: 分类
+type: categories
+layout: page
+---
+```
+
+```yaml
+---
+title: 标签
+type: tags
+layout: page
+---
+```
+
+清理并构建后检查入口文件是否存在：
+
+```powershell
+npm.cmd run clean
+npm.cmd run build
+Test-Path public\categories\index.html
+Test-Path public\tags\index.html
+```
+
+两个 `Test-Path` 都应返回 `True`。这和单个分类、标签的明细页是两层路由：前者展示目录，后者展示对应文章列表。
+
 ### 其他检查结果
 
 - 本地执行 `npm.cmd run clean` 和 `npm.cmd run build`，Hexo 成功生成首页、文章、分类、标签、归档、关于页和 Atom 订阅。
