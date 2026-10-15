@@ -32,12 +32,12 @@ npm.cmd run server
 ### 一键新建文章
 
 ```powershell
-npm.cmd run new -- "Python 自动化实践"
+npm.cmd run new -- "python-automation-notes"
 ```
 
-文章会创建在 `source/_posts/`。图片建议放进同名资源目录（`post_asset_folder: true`），然后在文章中使用 `![说明](图片文件名.png)`。
+文章会创建在 `source/_posts/`，文件名自动使用 `YYYY-MM-DD-python-automation-notes.md` 格式。将 Front Matter 的 `title` 改成中文展示标题。内容有实质更新时同步填写 `updated: YYYY-MM-DD HH:mm:ss`。图片建议放进同名资源目录（`post_asset_folder: true`），然后在文章中使用 `![说明](图片文件名.png)`。
 
-确认：新 Markdown 文件出现在 `source/_posts/`，文件名与文章标题相符。
+确认：新 Markdown 文件出现在 `source/_posts/`，文件名包含创建日期和英文项目 slug。
 
 ### 构建、清理与检查
 

@@ -185,12 +185,27 @@ Front Matter:
 
 ---
 
-## 四、Front Matter 规范
+## 四、文件命名与 Front Matter 规范
+
+### 4.1 文件命名
+
+- 新文章文件统一使用 `YYYY-MM-DD-project-slug.md`，例如 `2026-10-16-agent-assisted-hexo-blog.md`。
+- slug 使用小写英文、数字和连字符，表达项目或主题；不要直接把中文展示标题当作文件名。
+- 使用 `npm.cmd run new -- "agent-assisted-hexo-blog"` 创建文章。Hexo 按创建日期和 `_config.yml` 的 `new_post_name` 自动加日期前缀。
+- 创建后把 Front Matter 的 `title` 改成面向读者的中文标题。不要为了符合新命名规则批量重命名旧文章，以免改变文章 slug 和既有链接。
+
+### 4.2 Front Matter
+
+`updated` 是可选字段。实质性修改文章时，将它更新为本次修改时间；普通重新构建或只改格式时不要改。站点设置 `updated_option: date`，避免 CI 文件检出时间被当成更新时间。
+
+NexT 已启用更新时间：发布日期和 `updated` 日期不同时，页面会显示“更新于”日期；同一天修改时，修改时间会放在发布日期的悬停说明里。
 
 ```yaml
 ---
 title: [文章标题，中文，不超过25字]
 date: [YYYY-MM-DD HH:MM:SS]
+# 内容实质性更新时填写；首次发布时可省略
+updated: [YYYY-MM-DD HH:MM:SS]
 categories:
 - [一级分类]  # 技术分析 / 技术报告 / 技术科普 / 行业观察
   # 注：必须与 series.yml 中该系列的 category 字段保持一致
@@ -340,7 +355,7 @@ sequenceDiagram
 
 ---
 
-*最后更新：2026-10-15 | 维护者：yhbbbbb*
+*最后更新：2026-10-16 | 维护者：yhbbbbb*
 
 
 ---
@@ -349,3 +364,5 @@ sequenceDiagram
 
 - **2026-10-15**：将 Mermaid 示例改为 NexT 标签插件语法 `{% mermaid %}...{% endmermaid %}`；标记为 `mermaid` 的三反引号围栏在当前站点只显示代码，不会绘图。
 - **2026-10-15**：修正系列功能说明。`source/_data/series.yml` 目前仅登记系列元数据，系列页面生成器、文章页注入器和对应模板尚未实现。
+- **2026-10-16**：新增文章文件命名规则 `YYYY-MM-DD-project-slug.md`，并同步配置 Hexo 新文章文件名。
+- **2026-10-16**：将 Hexo `updated_option` 设为 `date`，要求实质性更新显式填写 `updated`，避免 GitHub Actions 检出时间造成虚假的更新时间。

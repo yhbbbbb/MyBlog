@@ -1,6 +1,7 @@
 ---
-title: 让 Agent 帮我搭建 Hexo 技术博客
+title: 让 Agent 辅助我搭建 Hexo 技术博客
 date: 2026-10-15 16:00:00
+author: yhbbbbb
 categories:
   - 项目笔记
 tags:
@@ -14,7 +15,7 @@ description: 复盘如何用清晰的任务边界和验收标准，让 Agent 从
 
 > 搭出一个博客并不难，难的是让它从本地预览一路稳定地走到 GitHub Pages。
 
-这次我用 Agent 从一个空的本地目录搭建技术博客，记录 Python、AHK、n8n、SQL、前端和项目实践。最后跑通了本地构建、GitHub Actions 和 GitHub Pages。回头看，真正决定效率的不是提示词写得多长，而是有没有把**目标、仓库现状、操作边界和验收方式**一次说明白。
+这次我用 Agent 从一个空的本地目录搭建技术博客，用于记录自己的技术学习和项目实践。最后跑通了本地构建、GitHub Actions 和 GitHub Pages。回头看，真正决定效率的不是提示词写得多长，而是有没有把**目标、仓库现状、操作边界和验收方式**一次说明白。
 
 ## 先把任务说清楚
 
