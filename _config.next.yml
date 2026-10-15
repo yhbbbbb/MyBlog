@@ -1,0 +1,65 @@
+# NexT 主题独立配置，避免主题升级覆盖个人设置
+scheme: Gemini
+darkmode: false
+
+# 顶部导航栏
+menu:
+  首页: / || fa fa-home
+  归档: /archives/ || fa fa-archive
+  分类: /categories/ || fa fa-th
+  标签: /tags/ || fa fa-tags
+  关于: /about/ || fa fa-user
+menu_settings:
+  badges: false
+  tags: true
+
+# 侧栏与社交链接
+avatar:
+  url:
+  rounded: true
+  opacity: 1
+social:
+  GitHub: https://github.com/yhbbbbb || fab fa-github
+site_state: true
+
+# 文章目录
+toc:
+  enable: true
+  number: true
+  wrap: false
+  expand_all: false
+  max_depth: 3
+
+# 代码块样式与复制按钮
+codeblock:
+  theme:
+    light: github
+    dark: github-dark
+  copy_button:
+    enable: true
+    show_result: true
+  fold:
+    enable: false
+
+# 数学公式按需启用 KaTeX
+math:
+  mathjax:
+    enable: false
+  katex:
+    enable: false
+
+# 阅读进度和回到顶部
+reading_progress:
+  enable: true
+back2top:
+  enable: true
+  sidebar: false
+
+# 页脚信息
+footer:
+  since: 2026
+  icon:
+    name: fa fa-heart
+    animated: false
+    color: '#ff0000'
+  copyright: yhbbbbb

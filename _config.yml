@@ -1,0 +1,55 @@
+# Hexo 站点配置：用于 yhbbbbb/MyBlog GitHub Pages 项目站点
+title: MyBlog
+subtitle: Python、自动化与工程实践
+description: 记录 Python、AHK、n8n、SQL、前端和项目实践，作为持续更新的技术作品集。
+keywords:
+author: yhbbbbb
+language: zh-CN
+timezone: Asia/Shanghai
+
+# 项目仓库页面必须保留仓库名路径；自定义域名时改为 '/'
+url: https://yhbbbbb.github.io/MyBlog
+root: /MyBlog/
+permalink: :year/:month/:day/:title/
+permalink_defaults:
+pretty_urls:
+  trailing_index: true
+  trailing_html: true
+
+theme: next
+new_post_name: :title.md
+default_layout: post
+filename_case: 0
+render_drafts: false
+post_asset_folder: true
+relative_link: false
+future: true
+highlight:
+  enable: true
+  line_number: true
+  auto_detect: false
+  tab_replace: ''
+prismjs:
+  enable: false
+  preprocess: true
+  line_number: true
+  tab_replace: ''
+marked:
+  gfm: true
+  breaks: false
+  pedantic: false
+  smartLists: true
+  smartypants: false
+
+# RSS 订阅配置（由 hexo-generator-feed 读取）
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+  content_limit: 140
+  order_by: -date
+  autodiscovery: true
+
+# 本地预览及构建配置
+deploy:
+  type: ''
