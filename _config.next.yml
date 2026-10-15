@@ -79,3 +79,20 @@ lightdark:
 # 在页面 body 结束前载入站点自定义切换按钮
 custom_file_path:
   bodyEnd: source/_data/body-end.njk
+
+# 启用 NexT 内置的本地搜索弹窗
+local_search:
+  enable: true
+  top_n_per_article: 1
+  unescape: false
+  preload: false
+
+# 启用 Busuanzi 网站访问统计
+busuanzi_count:
+  enable: true
+  total_visitors: true # 网站访客数（UV）
+  total_visitors_icon: fa fa-user
+  total_views: true # 网站总浏览量（PV）
+  total_views_icon: fa fa-eye
+  post_views: true # 单篇文章阅读量（PV）
+  post_views_icon: far fa-eye
