@@ -9,8 +9,8 @@ layout: page
 你好，我是 yhbbbbb，27届计科生。这个博客主要用于记录我的学习笔记、技术分享与项目复盘。
 
 ## 联系方式
-- GitHub:
-- Email :
+- GitHub: https://github.com/yhbbbbb
+- Email : 971337546@qq.com
 
 ## 技术方向
 
@@ -21,4 +21,4 @@ layout: page
 
 ## 座右铭
 
->
+> DDL 就是第一生产力

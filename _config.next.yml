@@ -15,7 +15,7 @@ menu_settings:
 
 # 侧栏与社交链接
 avatar:
-  url:
+  url: 'https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4'
   rounded: true
   opacity: 1
 social:
