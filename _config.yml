@@ -44,15 +44,6 @@ marked:
   smartLists: true
   smartypants: false
 
-# RSS订阅（对应package.json里 hexo-generator-feed）
-feed:
-  type: atom
-  path: atom.xml
-  limit: 20 # 最多输出20篇最新文章
-  content_limit: 140 # 摘要长度
-  order_by: -date # 按日期倒序
-  autodiscovery: true # 浏览器自动识别rss
-
 # 本地预览及构建配置
 ## Github Actions CI 自动部署（推荐），**deploy 配置可以保持为空，不需要改动**
 deploy:

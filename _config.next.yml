@@ -80,13 +80,6 @@ lightdark:
 custom_file_path:
   bodyEnd: source/_data/body-end.njk
 
-# 启用 NexT 内置的本地搜索弹窗
-local_search:
-  enable: true
-  top_n_per_article: 1
-  unescape: false
-  preload: false
-
 # 启用 Busuanzi 网站访问统计
 busuanzi_count:
   enable: true

@@ -6,6 +6,9 @@
 
   if (!sidebar) return;
 
+  const toolbar = document.createElement('div');
+  toolbar.className = 'sidebar-toolbar animated fadeInUp';
+
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'theme-color-scheme-toggle';
@@ -40,7 +43,8 @@
       : '<i class="fa fa-moon" aria-hidden="true"></i>';
   };
 
-  sidebar.appendChild(button);
+  toolbar.appendChild(button);
+  sidebar.insertAdjacentElement('afterend', toolbar);
   applyScheme(preference || (media.matches ? 'dark' : 'light'));
 
   button.addEventListener('click', () => {

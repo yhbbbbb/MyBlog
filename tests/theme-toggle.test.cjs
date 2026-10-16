@@ -8,34 +8,44 @@ const scriptPath = path.join(__dirname, '..', 'source', 'js', 'theme-toggle.js')
 
 function loadToggle({ stored = null, systemDark = false } = {}) {
   const values = new Map(stored === null ? [] : [['next-color-scheme', stored]]);
-  const attributes = {};
-  const listeners = {};
-  const button = {
-    attributes,
-    className: '',
-    innerHTML: '',
-    type: '',
-    setAttribute(name, value) {
-      attributes[name] = value;
-    },
-    addEventListener(name, listener) {
-      listeners[name] = listener;
-    },
-    click() {
-      listeners.click();
-    }
+  const elements = [];
+  const createElement = tagName => {
+    const attributes = {};
+    const listeners = {};
+    const element = {
+      attributes,
+      children: [],
+      className: '',
+      innerHTML: '',
+      tagName,
+      type: '',
+      setAttribute(name, value) {
+        attributes[name] = value;
+      },
+      addEventListener(name, listener) {
+        listeners[name] = listener;
+      },
+      appendChild(child) {
+        this.children.push(child);
+      },
+      click() {
+        listeners.click();
+      }
+    };
+    elements.push(element);
+    return element;
   };
   const sidebar = {
-    appended: null,
-    appendChild(element) {
-      this.appended = element;
+    insertedAfter: null,
+    insertAdjacentElement(position, element) {
+      this.insertedAfter = { position, element };
     }
   };
   const mediaListeners = {};
   const context = {
     document: {
       documentElement: { style: {}, dataset: {} },
-      createElement: () => button,
+      createElement,
       querySelector: selector => selector === '.sidebar-inner' ? sidebar : null
     },
     localStorage: {
@@ -53,13 +63,16 @@ function loadToggle({ stored = null, systemDark = false } = {}) {
   };
 
   vm.runInNewContext(fs.readFileSync(scriptPath, 'utf8'), context);
-  return { button, context, mediaListeners, sidebar, values };
+  return { context, elements, mediaListeners, sidebar, values };
 }
 
 test('restores the saved scheme and persists an accessible toggle choice', () => {
-  const { button, context, sidebar, values } = loadToggle({ stored: 'dark' });
-
-  assert.equal(sidebar.appended, button);
+  const { context, elements, sidebar, values } = loadToggle({ stored: 'dark' });
+  const toolbar = sidebar.insertedAfter.element;
+  const button = elements[1];
+  assert.equal(sidebar.insertedAfter.position, 'afterend');
+  assert.equal(toolbar.className, 'sidebar-toolbar animated fadeInUp');
+  assert.deepEqual(toolbar.children, [button]);
   assert.equal(context.document.documentElement.style.colorScheme, 'dark');
   assert.equal(button.attributes['aria-label'], '切换到浅色模式');
   assert.match(button.innerHTML, /fa-sun/);
@@ -73,7 +86,8 @@ test('restores the saved scheme and persists an accessible toggle choice', () =>
 });
 
 test('uses and tracks the system preference until the visitor chooses a scheme', () => {
-  const { button, context, mediaListeners } = loadToggle({ systemDark: true });
+  const { context, elements, mediaListeners } = loadToggle({ systemDark: true });
+  const button = elements[1];
 
   assert.equal(context.document.documentElement.style.colorScheme, 'dark');
   mediaListeners.change({ matches: false });
