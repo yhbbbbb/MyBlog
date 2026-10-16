@@ -4,3 +4,9 @@
   icon: 🤖
   category: 项目笔记
   order: 1
+- id: python-tutorial
+  name: Python 3.14 学习路线
+  description: 以 Python 官方教程为主线，用短小示例和练习逐步掌握语言基础、标准库与开发环境。
+  icon: 🐍
+  category: 技术科普
+  order: 2
