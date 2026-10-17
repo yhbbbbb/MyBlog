@@ -7,7 +7,7 @@ categories:
   - 项目笔记
 ---
 
-这是我的技术博客，用于记录 Python、AHK、n8n、SQL、前端和项目实践。
+这是我的技术博客，用于学习分享、经验交流和项目实践。
 
 ```python
 print('Hello, MyBlog!')
