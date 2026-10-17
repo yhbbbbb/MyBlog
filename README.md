@@ -1,5 +1,7 @@
 # MyBlog
 
+> 网站地址：https://yhbbbbb.github.io/MyBlog/
+
 基于 Hexo 8 与 NexT 的中文技术博客，源码维护在 `main`，GitHub Actions 将静态页面发布到 `gh-pages`。
 
 ## 需要我手动执行的命令
