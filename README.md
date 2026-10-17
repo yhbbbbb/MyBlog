@@ -4,7 +4,7 @@
 
 基于 Hexo 8 与 NexT 的中文技术博客，源码维护在 `main`，GitHub Actions 将静态页面发布到 `gh-pages`。
 
-## 需要我手动执行的命令
+## 需要手动执行的命令
 
 在 Windows PowerShell 中进入仓库目录。若 PowerShell 的执行策略拦截 `npm.ps1`，请使用 `npm.cmd`。
 
@@ -37,7 +37,9 @@ npm.cmd run server
 npm.cmd run new -- "python-automation-notes"
 ```
 
-文章会创建在 `source/_posts/`，文件名自动使用 `YYYY-MM-DD-python-automation-notes.md` 格式。将 Front Matter 的 `title` 改成中文展示标题。内容有实质更新时同步填写 `updated: YYYY-MM-DD HH:mm:ss`。图片建议放进同名资源目录（`post_asset_folder: true`），然后在文章中使用 `![说明](图片文件名.png)`。
+- 文章会创建在 `source/_posts/`，文件名自动使用 `YYYY-MM-DD-python-automation-notes.md` 格式。
+- 将 Front Matter 的 `title` 改成中文展示标题。内容有实质更新时同步填写 `updated: YYYY-MM-DD HH:mm:ss`。
+- 图片建议放进同名资源目录（`post_asset_folder: true`），然后在文章中使用 `![说明](图片文件名.png)`。
 
 确认：新 Markdown 文件出现在 `source/_posts/`，文件名包含创建日期和英文项目 slug。
 
@@ -85,7 +87,7 @@ git push -u origin main
 
 ### RSS
 
-已安装 `hexo-generator-feed`，主配置 `_config.yml` 中的 `feed` 项生成 Atom 订阅。RSS 地址为 `/MyBlog/atom.xml`。
+已安装 `hexo-generator-feed`，主配置 `_config.yml` 中的 `feed` 项生成 Atom 订阅。RSS 地址为 `/MyBlog/atom.xml`（这个太少人用了）。
 
 ### 自定义域名
 

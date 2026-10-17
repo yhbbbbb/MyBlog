@@ -1,7 +1,7 @@
 ---
 title: 让 Agent 辅助我搭建 Hexo 技术博客
 date: 2026-10-15 16:00:00
-author: yhbbbbb
+updated: 2026-10-16 16:00:00
 categories:
   - 项目笔记
 tags:
