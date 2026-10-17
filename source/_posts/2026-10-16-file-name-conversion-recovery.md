@@ -39,7 +39,24 @@ description: 记录 Marker 部门从手工处理唛架图纸到自动分拣工�
 
 这些需求共同指向一个原则：**正常流程要自动化，失败流程要可恢复**。如果程序只在网络正常、文件完整且没有重名时工作，它就还不能真正承担生产环境里的重复操作。
 
-> 【图片占位：唛架图纸源目录、网络共享目录与 K/W 目标目录示意截图】
+{% mermaid %}
+flowchart LR
+    Source["🔵 源电脑\n唛架图纸\ntxt / cut / nc"] --> Share["🟡 服务器共享文件夹\n网络文件夹"]
+    Share --> Rule{"🟣 按文件名前缀\n判断类别"}
+    Rule -->|K 类| KFolder["🟢 K 目标目录\n针织机床电脑"]
+    Rule -->|W 类| WFolder["🍑 W 目标目录\n梭织机床电脑"]
+    KFolder --> KMachine["⚙️ K 类机床\n读取拼音文件名"]
+    WFolder --> WMachine["⚙️ W 类机床\n读取拼音文件名"]
+    Rule -.->|无法匹配| Pending["🌸 保留源文件\n写入日志"]
+    style Source fill:#C7CEEA,stroke:#9FA8DA,stroke-width:2px,color:#333
+    style Share fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
+    style Rule fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
+    style KFolder fill:#B5EAD7,stroke:#80CBC4,stroke-width:2px,color:#333
+    style WFolder fill:#FFDAB9,stroke:#FFAB76,stroke-width:2px,color:#333
+    style KMachine fill:#B5EAD7,stroke:#80CBC4,stroke-width:2px,color:#333
+    style WMachine fill:#FFDAB9,stroke:#FFAB76,stroke-width:2px,color:#333
+    style Pending fill:#FFB3C6,stroke:#F48FB1,stroke-width:2px,color:#333
+{% endmermaid %}
 
 ## 二、先把人工经验变成规则
 
@@ -90,7 +107,7 @@ graph LR
 
 文件不会直接复制到最终路径。程序先生成临时副本，再核对文件大小和 SHA-256 摘要。校验通过后才替换目标文件，并清理源文件；任何一步失败，都保留源文件并写入失败日志。
 
-> 【图片占位：一次文件处理从“扫描”到“成功/失败”的界面状态截图】
+{% asset_img pic_log.png 日志文件 %}
 
 ## 四、网络文件场景必须有失败保护
 
@@ -129,7 +146,61 @@ graph LR
 
 程序使用 Python 3.12 和 Tkinter 构建 Windows 桌面界面，目录监控使用 `watchdog`，文件锁和系统信息使用 `filelock`、`psutil` 及 Windows 平台依赖，最终通过 PyInstaller 打包为 EXE。
 
-> 【图片占位：项目目录树与模块职责标注图】
+项目的核心结构如下，`build`、`dist`、`Logs` 和 `State` 是打包或运行时产物，这里不列入源码主干：
+
+```text
+rename-to-pinyin/
+├─ run.py                         # 本地直接启动入口
+├─ pyproject.toml                 # 项目元数据、依赖和命令入口
+├─ requirements.txt               # 运行依赖清单
+├─ config.json                    # 最近一次保存的运行配置
+├─ README.md                      # 安装、启动和业务规则说明
+├─ src/
+│  └─ rename_to_pinyin/
+│     ├─ __init__.py              # 包信息和版本
+│     ├─ __main__.py              # python -m 启动入口
+│     ├─ constants.py              # 默认路径、扩展名和处理参数
+│     ├─ runtime.py                # 程序目录和运行时路径
+│     ├─ logging_config.py         # 日志初始化和旧日志清理
+│     ├─ config.py                # config.json 读写
+│     ├─ filename_rules.py         # 拼音转换和 K/W 分类
+│     ├─ filesystem.py             # 路径检查、安全移动和完整性校验
+│     ├─ processor.py              # 批处理、备份、重试和状态记录
+│     ├─ monitor.py                # watchdog 目录监控和启动初扫
+│     └─ gui.py                    # Tkinter 界面和任务生命周期
+└─ tests/
+   ├─ test_config.py              # 配置读写测试
+   ├─ test_filename_rules.py      # 文件名和分类规则测试
+   ├─ test_filesystem.py          # 文件系统安全操作测试
+   ├─ test_logging.py             # 日志行为测试
+   └─ test_processor.py           # 批处理和失败保护测试
+```
+
+模块之间的职责关系可以概括为：界面负责接收配置和展示状态，处理器组织业务流程，规则模块决定文件名和目标目录，文件系统模块执行带校验的实际操作；监控模块把新文件交给同一套处理器，测试模块从外部验证这些边界。
+
+{% mermaid %}
+flowchart TB
+    GUI["🔵 gui.py\nTkinter 界面"] --> Processor["🟣 processor.py\n批处理、重试、状态"]
+    Monitor["🟡 monitor.py\n启动初扫与 watchdog"] --> Processor
+    Processor --> Rules["🍑 filename_rules.py\n拼音与 K/W 分类"]
+    Processor --> Filesystem["🟣 filesystem.py\n备份、复制、SHA-256 校验"]
+    Processor --> Config["🌸 config.py\n保存用户配置"]
+    Processor --> Logging["🟡 logging_config.py\n日志与清理"]
+    Runtime["⚪ runtime.py\n运行目录"] --> Config
+    Runtime --> Logging
+    Tests["🟢 tests/\n规则、文件系统、流程、日志"] -.-> Rules
+    Tests -.-> Filesystem
+    Tests -.-> Processor
+    style GUI fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style Processor fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style Monitor fill:#FFF9C4,stroke:#F9A825,color:#333
+    style Rules fill:#FFDAB9,stroke:#FFAB76,color:#333
+    style Filesystem fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style Config fill:#FFB3C6,stroke:#F48FB1,color:#333
+    style Logging fill:#FFF9C4,stroke:#F9A825,color:#333
+    style Runtime fill:#F5F5F5,stroke:#BDBDBD,color:#333
+    style Tests fill:#B5EAD7,stroke:#80CBC4,color:#333
+{% endmermaid %}
 
 ## 六、界面反馈也属于功能
 
@@ -185,7 +256,7 @@ graph LR
 
 这些日志不是单纯的调试输出，而是验证“失败时不丢源文件”和“监控启动初扫”两个关键业务要求的证据。正式发布前仍应结合实际服务器共享目录再做一次现场验证。
 
-> 【图片占位：测试命令输出、PyInstaller 打包结果或 EXE 启动界面】
+{% asset_img 界面截图.png 测试命令输出、PyInstaller 打包结果或 EXE 启动界面 %}
 
 这些检查分别覆盖代码正确性、交付完整性和实际启动能力。只看到“打包成功”并不能证明程序适合生产使用。
 
