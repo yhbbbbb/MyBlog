@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/MyBlog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/MyBlog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="认识 Python 交互解释器、脚本文件和命令行运行方式，建立可重复运行代码的习惯。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="01｜从交互解释器开始：运行你的第一段 Python">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/17/python-interpreter/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="认识 Python 交互解释器、脚本文件和命令行运行方式，建立可重复运行代码的习惯。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-17T01:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-17T01:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Python 教程">
+<meta property="article:tag" content="交互式编程">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/17/python-interpreter/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/17/python-interpreter/","path":"2026/10/17/python-interpreter/","title":"01｜从交互解释器开始：运行你的第一段 Python"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>01｜从交互解释器开始：运行你的第一段 Python | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F%EF%BC%8C%E8%A7%A3%E5%86%B3%E4%B8%A4%E7%B1%BB%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">两种运行方式，解决两类问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8-Windows-%E6%A3%80%E6%9F%A5%E5%92%8C%E5%90%AF%E5%8A%A8-Python"><span class="nav-number">2.</span> <span class="nav-text">在 Windows 检查和启动 Python</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A4%E4%BA%92%E7%8E%AF%E5%A2%83%E5%92%8C%E8%84%9A%E6%9C%AC%E7%9A%84%E5%88%86%E5%B7%A5"><span class="nav-number">3.</span> <span class="nav-text">交互环境和脚本的分工</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E6%AE%B5%E4%BB%A3%E7%A0%81%E5%A6%82%E4%BD%95%E8%B5%B0%E5%88%B0%E7%BB%93%E6%9E%9C"><span class="nav-number">4.</span> <span class="nav-text">一段代码如何走到结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E6%89%8B%E5%B8%B8%E8%A7%81%E7%9A%84%E4%B8%89%E4%B8%AA%E8%AF%AF%E5%8C%BA"><span class="nav-number">5.</span> <span class="nav-text">新手常见的三个误区</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%8A%E6%8F%90%E7%A4%BA%E7%AC%A6%E4%B9%9F%E5%A4%8D%E5%88%B6%E8%BF%9B%E4%BB%A3%E7%A0%81"><span class="nav-number">5.1.</span> <span class="nav-text">把提示符也复制进代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A5%E4%B8%BA%E6%AF%8F%E8%A1%8C%E4%BB%A3%E7%A0%81%E9%83%BD%E4%BC%9A%E8%87%AA%E5%8A%A8%E6%98%BE%E7%A4%BA%E7%BB%93%E6%9E%9C"><span class="nav-number">5.2.</span> <span class="nav-text">以为每行代码都会自动显示结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%8A%E9%94%99%E8%AF%AF%E5%BD%93%E6%88%90%E2%80%9C%E7%8E%AF%E5%A2%83%E5%9D%8F%E4%BA%86%E2%80%9D"><span class="nav-number">5.3.</span> <span class="nav-text">把错误当成“环境坏了”</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E8%AE%A1%E7%AE%97%E5%B9%B6%E5%B1%95%E7%A4%BA%E8%B4%AD%E7%89%A9%E5%B0%8F%E8%AE%A1"><span class="nav-number">6.</span> <span class="nav-text">练习：计算并展示购物小计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="nav-number">7.</span> <span class="nav-text">下一步</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/17/python-interpreter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="01｜从交互解释器开始：运行你的第一段 Python | WantBeing">
+      <meta itemprop="description" content="认识 Python 交互解释器、脚本文件和命令行运行方式，建立可重复运行代码的习惯。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          01｜从交互解释器开始：运行你的第一段 Python
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-17 09:00:00" itemprop="dateCreated datePublished" datetime="2026-10-17T09:00:00+08:00">2026-10-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">认识 Python 交互解释器、脚本文件和命令行运行方式，建立可重复运行代码的习惯。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>学 Python 的第一步，不是安装一堆工具，而是让一行代码运行起来，并知道它是在哪里运行的。</p>
+</blockquote>
+<h2 id="两种运行方式，解决两类问题"><a href="#两种运行方式，解决两类问题" class="headerlink" title="两种运行方式，解决两类问题"></a>两种运行方式，解决两类问题</h2><p>打开 Python 后输入 <code>2 + 2</code>，马上看到结果；把同样的表达式写进 <code>.py</code> 文件，再运行文件，也能得到结果。前者叫交互式解释器，适合探索和短实验；后者是脚本，适合保存、复用和分享。</p>
+<p>可以把交互解释器当作工作台，把脚本当作正式的操作说明。工作台适合试几种写法，操作说明则能反复执行，不必每次重新输入。</p>
+<h2 id="在-Windows-检查和启动-Python"><a href="#在-Windows-检查和启动-Python" class="headerlink" title="在 Windows 检查和启动 Python"></a>在 Windows 检查和启动 Python</h2><p>如果已从 python.org 安装 Python，并勾选 Python Launcher，可以在 PowerShell 中查看版本：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">py <span class="literal">-3</span>.<span class="number">14</span> <span class="literal">--version</span></span><br></pre></td></tr></table></figure>
+
+<p>如果尚未安装 3.14，也可以使用机器已有的 Python 3 版本，将下面命令中的 <code>3.14</code> 替换为实际版本。进入交互解释器：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">py <span class="literal">-3</span>.<span class="number">14</span></span><br></pre></td></tr></table></figure>
+
+<p>提示符 <code>&gt;&gt;&gt;</code> 表示解释器正在等待一条新语句。输入表达式后按回车，Python 会计算并显示结果：</p>
+<figure class="highlight pycon"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python"><span class="number">2</span> + <span class="number">2</span></span></span><br><span class="line">4</span><br><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python"><span class="number">7</span> * <span class="number">6</span></span></span><br><span class="line">42</span><br><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python"><span class="string">&#x27;Python&#x27;</span> + <span class="string">&#x27; 教程&#x27;</span></span></span><br><span class="line">&#x27;Python 教程&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>交互环境也会保留之前定义的名称：</p>
+<figure class="highlight pycon"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python">price = <span class="number">18</span></span></span><br><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python">quantity = <span class="number">3</span></span></span><br><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python">price * quantity</span></span><br><span class="line">54</span><br></pre></td></tr></table></figure>
+
+<p>这个状态只属于当前解释器进程。关闭后重新启动，之前定义的 <code>price</code> 和 <code>quantity</code> 就不在了。</p>
+<h2 id="交互环境和脚本的分工"><a href="#交互环境和脚本的分工" class="headerlink" title="交互环境和脚本的分工"></a>交互环境和脚本的分工</h2><p>交互环境适合验证一个小问题，例如检查切片结果或试用标准库函数。脚本则适合把经过验证的逻辑保存下来。</p>
+<p>创建 <code>hello.py</code>，写入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">name = <span class="built_in">input</span>(<span class="string">&quot;你的名字：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;你好，<span class="subst">&#123;name&#125;</span>！&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>在文件所在目录运行：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">py <span class="literal">-3</span>.<span class="number">14</span> .\hello.py</span><br></pre></td></tr></table></figure>
+
+<p>程序会等待输入，再输出问候语。每次执行都会重新从文件读取代码，因此脚本比交互会话更容易复现。</p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>适合做什么</th>
+<th>结果是否保存在文件中</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>交互解释器（REPL）</td>
+<td>试表达式、查看对象、验证小片段</td>
+<td>❌ 默认不保存</td>
+</tr>
+<tr>
+<td>Python 脚本</td>
+<td>执行一组步骤、重复运行、分享程序</td>
+<td>✅ 代码保存在 <code>.py</code> 文件</td>
+</tr>
+<tr>
+<td>编辑器或 IDE</td>
+<td>编写、导航、调试较大的项目</td>
+<td>✅ 通常直接编辑文件</td>
+</tr>
+</tbody></table>
+<p>REPL 是 Read-Eval-Print Loop 的缩写，即“读取输入、求值、打印结果、继续等待”的循环。它不是另一种 Python 语言，而是让你逐条提交代码的运行界面。</p>
+<h2 id="一段代码如何走到结果"><a href="#一段代码如何走到结果" class="headerlink" title="一段代码如何走到结果"></a>一段代码如何走到结果</h2><p>无论从解释器输入还是运行脚本，Python 都要读取源码、解析语法并执行语句。交互模式会在每次提交后显示表达式结果；脚本模式按文件内容执行，普通赋值不会自动显示。</p>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+    A[&quot;🔵 编写\n输入表达式或脚本&quot;] --&gt; B[&quot;🟡 读取\n检查语法&quot;]
+    B --&gt; C[&quot;🟣 执行\n计算语句&quot;]
+    C --&gt; D[&quot;🟢 查看\n输出或返回值&quot;]
+    D --&gt; E{&quot;🍑 继续探索？&quot;}
+    E --&gt;|是| A
+    E --&gt;|完成| F[&quot;🌸 保存脚本&quot;]
+    style A fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style B fill:#FFF9C4,stroke:#F9A825,color:#333
+    style C fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style D fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style E fill:#FFDAB9,stroke:#FFAB76,color:#333
+    style F fill:#FFB3C6,stroke:#F48FB1,color:#333
+</code>
+</pre>
+
+<h2 id="新手常见的三个误区"><a href="#新手常见的三个误区" class="headerlink" title="新手常见的三个误区"></a>新手常见的三个误区</h2><h3 id="把提示符也复制进代码"><a href="#把提示符也复制进代码" class="headerlink" title="把提示符也复制进代码"></a>把提示符也复制进代码</h3><p>文档中的 <code>&gt;&gt;&gt;</code> 和 <code>...</code> 是解释器提示符，不是 Python 语句。复制到 <code>.py</code> 文件会触发语法错误。写脚本时只复制提示符后面的代码。</p>
+<h3 id="以为每行代码都会自动显示结果"><a href="#以为每行代码都会自动显示结果" class="headerlink" title="以为每行代码都会自动显示结果"></a>以为每行代码都会自动显示结果</h3><p>在交互环境里单独输入 <code>2 + 2</code> 会显示 <code>4</code>。但脚本中的 <code>2 + 2</code> 只是计算后丢弃结果；需要显示时要写 <code>print(2 + 2)</code>。</p>
+<h3 id="把错误当成“环境坏了”"><a href="#把错误当成“环境坏了”" class="headerlink" title="把错误当成“环境坏了”"></a>把错误当成“环境坏了”</h3><p><code>SyntaxError</code> 通常表示当前代码不符合语法，解释器会指出大致位置。先从报错行附近检查引号、括号、冒号和缩进，不要马上重装 Python。</p>
+<h2 id="练习：计算并展示购物小计"><a href="#练习：计算并展示购物小计" class="headerlink" title="练习：计算并展示购物小计"></a>练习：计算并展示购物小计</h2><p>先在交互解释器中试下面的表达式，再放到脚本里运行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">item = <span class="string">&quot;笔记本&quot;</span></span><br><span class="line">price = <span class="number">12.5</span></span><br><span class="line">quantity = <span class="number">4</span></span><br><span class="line">total = price * quantity</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;item&#125;</span>：<span class="subst">&#123;quantity&#125;</span> 本，共 <span class="subst">&#123;total:<span class="number">.2</span>f&#125;</span> 元&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>运行后应看到 <code>笔记本：4 本，共 50.00 元</code>。试着修改数量，并观察输出如何变化。</p>
+<h2 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h2><p>把几行代码保存在 <code>.py</code> 文件中，是从“试着写”到“能重复运行”的转折点。下一篇会从 Python 速览出发，认识名称、数字、字符串和列表，开始处理真正的数据。</p>
+<p><strong>官方资料</strong>：<a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3.14/tutorial/appetite.html">课前甜点</a>、<a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3.14/tutorial/interpreter.html">使用 Python 解释器</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/Python-%E6%95%99%E7%A8%8B/" rel="tag"># Python 教程</a>
+              <a href="/MyBlog/tags/%E4%BA%A4%E4%BA%92%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag"># 交互式编程</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/16/python-tutorial-series-index/" rel="prev" title="Python 3.14 教程系列：从语法到工具">
+                  <i class="fa fa-angle-left"></i> Python 3.14 教程系列：从语法到工具
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/17/python-introduction/" rel="next" title="02｜Python 速览：变量、字符串与列表">
+                  02｜Python 速览：变量、字符串与列表 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

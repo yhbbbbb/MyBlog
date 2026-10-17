@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/MyBlog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/MyBlog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="以 Python 3.14 官方教程为主线规划 15 篇学习文章，覆盖语法、数据结构、模块、异常、类、标准库和虚拟环境。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 3.14 教程系列：从语法到工具">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/16/python-tutorial-series-index/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="以 Python 3.14 官方教程为主线规划 15 篇学习文章，覆盖语法、数据结构、模块、异常、类、标准库和虚拟环境。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-16T11:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-17T02:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Python 教程">
+<meta property="article:tag" content="学习路线">
+<meta property="article:tag" content="编程入门">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/16/python-tutorial-series-index/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/16/python-tutorial-series-index/","path":"2026/10/16/python-tutorial-series-index/","title":"Python 3.14 教程系列：从语法到工具"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Python 3.14 教程系列：从语法到工具 | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%99%E4%B8%AA%E7%B3%BB%E5%88%97%E5%86%99%E7%BB%99%E8%B0%81"><span class="nav-number">1.</span> <span class="nav-text">这个系列写给谁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF"><span class="nav-number">2.</span> <span class="nav-text">学习路线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E5%88%97%E7%9B%AE%E5%BD%95%EF%BC%8815-%E7%AF%87%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">系列目录（15 篇）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E8%AF%BB%E6%9B%B4%E5%90%88%E9%80%82"><span class="nav-number">4.</span> <span class="nav-text">怎么读更合适</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E8%B7%B5%E7%8E%AF%E5%A2%83"><span class="nav-number">5.</span> <span class="nav-text">实践环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C%E4%B8%8E%E8%B5%84%E6%96%99%E6%9D%A5%E6%BA%90"><span class="nav-number">6.</span> <span class="nav-text">阅读边界与资料来源</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/16/python-tutorial-series-index/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Python 3.14 教程系列：从语法到工具 | WantBeing">
+      <meta itemprop="description" content="以 Python 3.14 官方教程为主线规划 15 篇学习文章，覆盖语法、数据结构、模块、异常、类、标准库和虚拟环境。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Python 3.14 教程系列：从语法到工具
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-16 19:00:00" itemprop="dateCreated datePublished" datetime="2026-10-16T19:00:00+08:00">2026-10-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-10-17 10:00:00" itemprop="dateModified" datetime="2026-10-17T10:00:00+08:00">2026-10-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">以 Python 3.14 官方教程为主线规划 15 篇学习文章，覆盖语法、数据结构、模块、异常、类、标准库和虚拟环境。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>学 Python 不必先背完所有语法。更有效的路线，是先写出能运行的小程序，再逐步理解它使用的数据、模块和运行环境。</p>
+</blockquote>
+<h2 id="这个系列写给谁"><a href="#这个系列写给谁" class="headerlink" title="这个系列写给谁"></a>这个系列写给谁</h2><p>Python 官方教程适合已经接触过编程、准备学习 Python 的读者。它会介绍这门语言的语法和标准库，但不以从零教授编程概念为目标。</p>
+<p>因此，这个系列会沿着官方教程的顺序展开，并补上中文读者常需要的解释：代码运行后发生了什么、常见写法适合什么场景，以及如何把每章内容变成一个能运行的小练习。</p>
+<p>本系列以 <a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3.14/tutorial/index.html">Python 3.14 中文教程</a> 为学习主线。文章会使用自己的讲解和示例，不直接搬运教程段落；具体语法和行为以对应版本的官方文档为准。</p>
+<h2 id="学习路线"><a href="#学习路线" class="headerlink" title="学习路线"></a>学习路线</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">开始写代码</span><br><span class="line">    ↓</span><br><span class="line">表达式、条件与循环</span><br><span class="line">    ↓</span><br><span class="line">列表、字典等数据结构</span><br><span class="line">    ↓</span><br><span class="line">模块、文件和异常</span><br><span class="line">    ↓</span><br><span class="line">类与标准库</span><br><span class="line">    ↓</span><br><span class="line">虚拟环境、包和交互工具</span><br><span class="line">    ↓</span><br><span class="line">读懂浮点数等边界问题</span><br></pre></td></tr></table></figure>
+
+<p>下图将这些主题整理成学习顺序。它表达的是系列的内容关系，不代表必须一次读完；如果你正在解决文件处理或数据整理问题，可以先从数据结构、文件输入输出和异常处理几篇开始。</p>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+    A[&quot;🔵 开始\n交互解释器&quot;] --&gt; B[&quot;🟡 语法\n表达式与控制流&quot;]
+    B --&gt; C[&quot;🍑 数据\n列表、字典与集合&quot;]
+    C --&gt; D[&quot;🟣 组织代码\n模块、函数与类&quot;]
+    D --&gt; E[&quot;🟡 可靠运行\n文件与异常&quot;]
+    E --&gt; F[&quot;🟢 工具箱\n标准库与包&quot;]
+    F --&gt; G[&quot;🍓 深入理解\n交互环境与浮点数&quot;]
+    style A fill:#C7CEEA,stroke:#9FA8DA,stroke-width:2px,color:#333
+    style B fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
+    style C fill:#FFDAB9,stroke:#FFAB76,stroke-width:2px,color:#333
+    style D fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
+    style E fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
+    style F fill:#B5EAD7,stroke:#80CBC4,stroke-width:2px,color:#333
+    style G fill:#FFB3C6,stroke:#F48FB1,stroke-width:2px,color:#333
+</code>
+</pre>
+
+<h2 id="系列目录（15-篇）"><a href="#系列目录（15-篇）" class="headerlink" title="系列目录（15 篇）"></a>系列目录（15 篇）</h2><p>文章按官方教程章节编排。表中的“核心问题”用来说明每一篇要解决什么疑问；“练习目标”会尽量落到可运行的代码，而不只停留在概念介绍。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>文章</th>
+<th>对应官方教程</th>
+<th>核心问题与练习目标</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>01</td>
+<td><a href="/MyBlog/2026/10/17/python-interpreter/">01｜从交互解释器开始：运行你的第一段 Python</a></td>
+<td>课前甜点、使用 Python 解释器</td>
+<td>如何运行表达式和脚本？写出第一个可重复运行的小程序。</td>
+<td>已发布</td>
+</tr>
+<tr>
+<td>02</td>
+<td><a href="/MyBlog/2026/10/17/python-introduction/">02｜Python 速览：变量、字符串与列表</a></td>
+<td>第 3 章：Python 速览</td>
+<td>变量名指向什么？用字符串和列表完成一次简单的数据整理。</td>
+<td>已发布</td>
+</tr>
+<tr>
+<td>03</td>
+<td><a href="/MyBlog/2026/10/17/python-control-flow/">03｜条件、循环与函数：让代码按规则运行</a></td>
+<td>第 4 章：更多控制流工具</td>
+<td>怎样让程序按条件分支、重复执行，并把逻辑封装成函数？</td>
+<td>已发布</td>
+</tr>
+<tr>
+<td>04</td>
+<td><a href="/MyBlog/2026/10/17/python-data-structures/">04｜列表、元组、集合和字典怎么选</a></td>
+<td>第 5 章：数据结构</td>
+<td>不同容器适合保存什么数据？用字典统计一组记录。</td>
+<td>已发布</td>
+</tr>
+<tr>
+<td>05</td>
+<td><a href="/MyBlog/2026/10/17/python-modules/">05｜模块与包：把 Python 代码拆开复用</a></td>
+<td>第 6 章：模块</td>
+<td>如何把代码放进模块，并通过导入复用？</td>
+<td>已发布</td>
+</tr>
+<tr>
+<td>06</td>
+<td>文件读写与数据格式化</td>
+<td>第 7 章：输入与输出</td>
+<td>如何安全读写文本、格式化输出，并处理常见数据文件？</td>
+<td>规划中</td>
+</tr>
+<tr>
+<td>07</td>
+<td>异常处理：让失败有明确结果</td>
+<td>第 8 章：错误和异常</td>
+<td>如何区分语法错误与运行时异常，并在合适的位置恢复？</td>
+<td>规划中</td>
+</tr>
+<tr>
+<td>08</td>
+<td>Python 类：从对象到继承</td>
+<td>第 9 章：类</td>
+<td>类和实例分别是什么？何时使用继承、迭代器或生成器？</td>
+<td>规划中</td>
+</tr>
+<tr>
+<td>09</td>
+<td>标准库实用工具（一）</td>
+<td>第 10 章：标准库概览</td>
+<td>如何用标准库处理路径、命令行、正则表达式、日期和网络？</td>
+<td>规划中</td>
+</tr>
+<tr>
+<td>10</td>
+<td>标准库实用工具（二）</td>
+<td>第 11 章：标准库概览第二部分</td>
+<td>如何处理日志、模板、二进制数据、线程和精确十进制计算？</td>
+<td>规划中</td>
+</tr>
+<tr>
+<td>11</td>
+<td>虚拟环境与 pip</td>
+<td>第 12 章：虚拟环境和包</td>
+<td>如何隔离项目依赖，并安装、记录和管理第三方包？</td>
+<td>规划中</td>
+</tr>
+<tr>
+<td>12</td>
+<td>学完教程之后，下一步做什么</td>
+<td>第 13 章：接下来？</td>
+<td>如何从语法练习过渡到项目，并选择下一步学习方向？</td>
+<td>规划中</td>
+</tr>
+<tr>
+<td>13</td>
+<td>交互式编辑、历史记录与启动文件</td>
+<td>第 14 章和附录：交互模式</td>
+<td>如何利用交互解释器的补全、历史记录和启动配置？</td>
+<td>规划中</td>
+</tr>
+<tr>
+<td>14</td>
+<td>浮点数为什么会有误差</td>
+<td>第 15 章：浮点算术</td>
+<td>为什么 <code>0.1 + 0.2</code> 不一定精确等于 <code>0.3</code>？该如何比较结果？</td>
+<td>规划中</td>
+</tr>
+<tr>
+<td>15</td>
+<td>把知识串起来：从脚本到可维护项目</td>
+<td>教程回顾与实践整理</td>
+<td>如何组合函数、模块、文件、异常和虚拟环境，完成一个小项目？</td>
+<td>规划中</td>
+</tr>
+</tbody></table>
+<p>官方教程的附录交互模式内容已并入第 13 篇。第 15 篇是系列的综合练习，不是官方教程中的独立章节。</p>
+<h2 id="怎么读更合适"><a href="#怎么读更合适" class="headerlink" title="怎么读更合适"></a>怎么读更合适</h2><p>如果你已经会写其他语言，可以按目录顺序快速浏览，重点留意 Python 的容器、迭代、异常和模块机制。它们看起来熟悉，但细节和惯用方式可能不同。</p>
+<p>如果你主要想用 Python 自动化工作，可以先读第 3、4、6、7、9 和 11 篇，分别对应控制流、数据结构、文件操作、异常、标准库和依赖管理，再回头补齐其余内容。</p>
+<p>每篇文章包含三部分：先解释一个具体问题，再用短代码展示行为，最后留一个能独立运行的小练习。已发布文章按此结构编写；后续文章也会标出适用版本，并在涉及操作系统差异时注明 Windows 命令。</p>
+<h2 id="实践环境"><a href="#实践环境" class="headerlink" title="实践环境"></a>实践环境</h2><p>系列以 Python 3.14 为基准。开始前可以检查本机解释器：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">py <span class="literal">-3</span>.<span class="number">14</span> <span class="literal">--version</span></span><br></pre></td></tr></table></figure>
+
+<p>Windows 上可以为练习创建独立虚拟环境：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">py <span class="literal">-3</span>.<span class="number">14</span> <span class="literal">-m</span> venv .venv</span><br><span class="line">.\.venv\Scripts\Activate.ps1</span><br><span class="line">python <span class="literal">--version</span></span><br></pre></td></tr></table></figure>
+
+<p>如果电脑尚未安装 Python 3.14，可以先使用 Python 官网提供的安装程序；也可以阅读对应章节时使用较新的 Python 3 版本，并留意文中标注的版本差异。</p>
+<h2 id="阅读边界与资料来源"><a href="#阅读边界与资料来源" class="headerlink" title="阅读边界与资料来源"></a>阅读边界与资料来源</h2><p>Python 官方教程是本系列的知识主线和核对依据。本文中的章节摘要、练习和代码示例会重新组织表达，不代表 Python 软件基金会官方教程，也不替代语言参考手册。</p>
+<p>遇到版本差异、标准库细节或不确定行为时，请优先查阅 <a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3.14/">Python 3.14 官方文档</a>。系列目录会随着正文完成情况更新文章链接和状态。</p>
+<blockquote>
+<p>先运行一段代码，再追问它为什么这样工作。每完成一篇，就把练习改成一个贴近自己工作的小工具；这样，教程里的语法才会逐渐变成能用的 Python 技能。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/Python-%E6%95%99%E7%A8%8B/" rel="tag"># Python 教程</a>
+              <a href="/MyBlog/tags/%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/" rel="tag"># 编程入门</a>
+              <a href="/MyBlog/tags/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/" rel="tag"># 学习路线</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/16/file-name-conversion-recovery/" rel="prev" title="从痛点到工具：文件分拣程序的制作过程">
+                  <i class="fa fa-angle-left"></i> 从痛点到工具：文件分拣程序的制作过程
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/17/python-interpreter/" rel="next" title="01｜从交互解释器开始：运行你的第一段 Python">
+                  01｜从交互解释器开始：运行你的第一段 Python <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

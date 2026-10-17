@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/MyBlog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/MyBlog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="记录 Marker 部门从手工处理唛架图纸到自动分拣工具的改造过程，覆盖拼音改名、网络共享、失败重试和并发部署。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从痛点到工具：文件分拣程序的制作过程">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/16/file-name-conversion-recovery/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="记录 Marker 部门从手工处理唛架图纸到自动分拣工具的改造过程，覆盖拼音改名、网络共享、失败重试和并发部署。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yhbbbbb.github.io/MyBlog/2026/10/16/file-name-conversion-recovery/pic_log.png">
+<meta property="og:image" content="https://yhbbbbb.github.io/MyBlog/2026/10/16/file-name-conversion-recovery/%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE.png">
+<meta property="article:published_time" content="2026-10-16T10:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-16T10:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Tkinter">
+<meta property="article:tag" content="文件处理">
+<meta property="article:tag" content="自动化">
+<meta property="article:tag" content="项目实践">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yhbbbbb.github.io/MyBlog/2026/10/16/file-name-conversion-recovery/pic_log.png">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/16/file-name-conversion-recovery/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/16/file-name-conversion-recovery/","path":"2026/10/16/file-name-conversion-recovery/","title":"从痛点到工具：文件分拣程序的制作过程"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>从痛点到工具：文件分拣程序的制作过程 | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BB%8E%E5%B7%A5%E4%BD%9C%E7%97%9B%E7%82%B9%E5%BC%80%E5%A7%8B"><span class="nav-number">2.</span> <span class="nav-text">一、从工作痛点开始</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%85%88%E6%8A%8A%E4%BA%BA%E5%B7%A5%E7%BB%8F%E9%AA%8C%E5%8F%98%E6%88%90%E8%A7%84%E5%88%99"><span class="nav-number">3.</span> <span class="nav-text">二、先把人工经验变成规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%B8%80%E6%AC%A1%E5%A4%84%E7%90%86%E7%9A%84%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">三、一次处理的完整流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%BF%87%E6%BB%A4%E5%92%8C%E5%88%86%E7%B1%BB"><span class="nav-number">4.1.</span> <span class="nav-text">1. 过滤和分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%BD%AC%E6%8D%A2%E6%96%87%E4%BB%B6%E5%90%8D"><span class="nav-number">4.2.</span> <span class="nav-text">2. 转换文件名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%A1%AE%E8%AE%A4%E6%96%87%E4%BB%B6%E5%8F%AF%E4%BB%A5%E5%AE%89%E5%85%A8%E5%A4%84%E7%90%86"><span class="nav-number">4.3.</span> <span class="nav-text">3. 确认文件可以安全处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%A4%8D%E5%88%B6%E3%80%81%E6%A0%A1%E9%AA%8C%E3%80%81%E6%8F%90%E4%BA%A4"><span class="nav-number">4.4.</span> <span class="nav-text">4. 复制、校验、提交</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%9C%BA%E6%99%AF%E5%BF%85%E9%A1%BB%E6%9C%89%E5%A4%B1%E8%B4%A5%E4%BF%9D%E6%8A%A4"><span class="nav-number">5.</span> <span class="nav-text">四、网络文件场景必须有失败保护</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%BB%8E%E5%8D%95%E6%96%87%E4%BB%B6%E5%AE%9E%E7%8E%B0%E6%8B%86%E6%88%90%E6%A8%A1%E5%9D%97"><span class="nav-number">6.</span> <span class="nav-text">五、从单文件实现拆成模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E7%95%8C%E9%9D%A2%E5%8F%8D%E9%A6%88%E4%B9%9F%E5%B1%9E%E4%BA%8E%E5%8A%9F%E8%83%BD"><span class="nav-number">7.</span> <span class="nav-text">六、界面反馈也属于功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E4%BA%BA%E4%B8%8E-AI-%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%96%B9%E5%BC%8F"><span class="nav-number">8.</span> <span class="nav-text">七、人与 AI 的协作方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E6%B5%8B%E8%AF%95%E3%80%81%E6%89%93%E5%8C%85%E4%B8%8E%E5%8F%91%E5%B8%83"><span class="nav-number">9.</span> <span class="nav-text">八、测试、打包与发布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E9%83%A8%E7%BD%B2%E7%BB%93%E6%9E%9C%E4%B8%8E%E4%BB%8D%E9%9C%80%E5%85%B3%E6%B3%A8%E7%9A%84%E8%BE%B9%E7%95%8C"><span class="nav-number">10.</span> <span class="nav-text">九、部署结果与仍需关注的边界</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD%EF%BC%9A%E5%85%88%E8%A7%A3%E5%86%B3%E4%B8%80%E4%B8%AA%E9%87%8D%E5%A4%8D%E7%97%9B%E7%82%B9%EF%BC%8C%E5%86%8D%E6%8A%8A%E8%BE%B9%E7%95%8C%E8%A1%A5%E9%BD%90"><span class="nav-number">11.</span> <span class="nav-text">结语：先解决一个重复痛点，再把边界补齐</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/16/file-name-conversion-recovery/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="从痛点到工具：文件分拣程序的制作过程 | WantBeing">
+      <meta itemprop="description" content="记录 Marker 部门从手工处理唛架图纸到自动分拣工具的改造过程，覆盖拼音改名、网络共享、失败重试和并发部署。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从痛点到工具：文件分拣程序的制作过程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-16 18:00:00" itemprop="dateCreated datePublished" datetime="2026-10-16T18:00:00+08:00">2026-10-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E9%A1%B9%E7%9B%AE%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">项目笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">记录 Marker 部门从手工处理唛架图纸到自动分拣工具的改造过程，覆盖拼音改名、网络共享、失败重试和并发部署。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>真正难的不是把文件移动到另一个目录，而是让程序在文件没写完、网络断开或目标重名时，仍然不会把问题变成文件丢失。</p>
+</blockquote>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>这个项目来自 Marker 部门的实际工作：员工制作好唛架图纸后，会得到 <code>txt</code>、<code>cut</code>、<code>nc</code> 三种文件格式。这些文件要通过服务器共享文件夹（网络文件夹）交给目标电脑上的机床使用。由于机床不能识别中文文件名，文件必须改成拼音；同时，操作人员不一定看得懂英文，拼音又比纯英文名称更方便确认对应的纸样。</p>
+<p>原流程是：每制作好一张或一系列唛架图纸，就手动修改文件名，再根据类别复制到不同的目标文件夹。每天处理量在 200 份以上，每份文件人工处理约 1–3 分钟。网络波动、目标电脑关机、手工改名不一致，都会让复制失败或需要二次粘贴。</p>
+<p>工具部署在 Marker 部门，由 6–8 人使用。改造后每天可处理约 300 份文件，员工可以把节省下来的时间用于整理和完成更多业务。这个数字是当前业务观察结果，不代表所有场景都能达到相同吞吐量。</p>
+<h2 id="一、从工作痛点开始"><a href="#一、从工作痛点开始" class="headerlink" title="一、从工作痛点开始"></a>一、从工作痛点开始</h2><p>员工的操作看起来很简单：看文件名、判断类别、改名、选择目标目录、复制文件。但这些动作会被大量重复文件放大，而且每一步都可能遇到异常。</p>
+<table>
+<thead>
+<tr>
+<th>工作中的情况</th>
+<th>程序对应的设计</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>每份图纸都要手动改名</td>
+<td>按规则自动转换为拼音，兼顾机床识别和人员查找</td>
+</tr>
+<tr>
+<td><code>txt</code>、<code>cut</code>、<code>nc</code> 混在共享目录中</td>
+<td>只处理约定格式，跳过临时文件和不符合规则的文件</td>
+</tr>
+<tr>
+<td>文件要按类别放入不同目标电脑目录</td>
+<td>根据文件名前缀自动分流到 K&#x2F;W 目标目录</td>
+</tr>
+<tr>
+<td>目标电脑关机或网络波动</td>
+<td>失败时保留源文件，网络恢复后自动重试</td>
+</tr>
+<tr>
+<td>手工改名容易出现不一致</td>
+<td>统一命名规则，减少同一纸样出现多个名称</td>
+</tr>
+<tr>
+<td>复制中断可能留下半个文件</td>
+<td>先复制到临时文件，校验后再替换目标文件</td>
+</tr>
+<tr>
+<td>员工不知道程序是否卡住</td>
+<td>界面显示状态和统计，日志记录每个结果</td>
+</tr>
+</tbody></table>
+<p>这些需求共同指向一个原则：<strong>正常流程要自动化，失败流程要可恢复</strong>。如果程序只在网络正常、文件完整且没有重名时工作，它就还不能真正承担生产环境里的重复操作。</p>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+    Source[&quot;🔵 源电脑\n唛架图纸\ntxt &#x2F; cut &#x2F; nc&quot;] --&gt; Share[&quot;🟡 服务器共享文件夹\n网络文件夹&quot;]
+    Share --&gt; Rule{&quot;🟣 按文件名前缀\n判断类别&quot;}
+    Rule --&gt;|K 类| KFolder[&quot;🟢 K 目标目录\n针织机床电脑&quot;]
+    Rule --&gt;|W 类| WFolder[&quot;🍑 W 目标目录\n梭织机床电脑&quot;]
+    KFolder --&gt; KMachine[&quot;⚙️ K 类机床\n读取拼音文件名&quot;]
+    WFolder --&gt; WMachine[&quot;⚙️ W 类机床\n读取拼音文件名&quot;]
+    Rule -.-&gt;|无法匹配| Pending[&quot;🌸 保留源文件\n写入日志&quot;]
+    style Source fill:#C7CEEA,stroke:#9FA8DA,stroke-width:2px,color:#333
+    style Share fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
+    style Rule fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
+    style KFolder fill:#B5EAD7,stroke:#80CBC4,stroke-width:2px,color:#333
+    style WFolder fill:#FFDAB9,stroke:#FFAB76,stroke-width:2px,color:#333
+    style KMachine fill:#B5EAD7,stroke:#80CBC4,stroke-width:2px,color:#333
+    style WMachine fill:#FFDAB9,stroke:#FFAB76,stroke-width:2px,color:#333
+    style Pending fill:#FFB3C6,stroke:#F48FB1,stroke-width:2px,color:#333
+</code>
+</pre>
+
+<h2 id="二、先把人工经验变成规则"><a href="#二、先把人工经验变成规则" class="headerlink" title="二、先把人工经验变成规则"></a>二、先把人工经验变成规则</h2><p>程序首先需要回答两个问题：哪些文件应该处理，以及它们应该去哪里。</p>
+<p>项目把约定的文件名前缀写成分类规则。符合 K 类前缀的文件进入针织目录，符合 W 类前缀的文件进入梭织目录；<code>txt</code>、<code>cut</code>、<code>nc</code> 三种格式沿用同一套分类规则。无法匹配的文件不猜测归属，而是写入日志并跳过。</p>
+<p>这种“匹配失败就停在原地”的策略看似保守，实际上更适合文件处理工具。错误地把文件送到另一个生产目录，通常比暂时不处理更难排查。</p>
+<p>文件过滤也采用白名单思路：只处理约定扩展名，忽略临时文件和不符合命名规则的文件。文件名转换的目的有两层：让目标机床可以识别，同时让操作人员可以用拼音确认对应纸样。规则与业务约定分开后，后续调整前缀或扩展名时，不需要重写复制和监控逻辑。</p>
+<h2 id="三、一次处理的完整流程"><a href="#三、一次处理的完整流程" class="headerlink" title="三、一次处理的完整流程"></a>三、一次处理的完整流程</h2><p>单次批处理和目录监控最终都进入同一条处理链路。这样可以避免“手动扫描一套规则、监控事件又是另一套规则”。</p>
+<pre>
+<code class="mermaid">
+
+graph LR
+    A[&quot;🔵 源目录\n发现文件&quot;] --&gt; B[&quot;🟡 过滤\n扩展名与前缀&quot;]
+    B --&gt;|匹配成功| C[&quot;🟣 生成目标名\n中文转拼音&quot;]
+    B --&gt;|无法匹配| D[&quot;🍑 跳过并记录&quot;]
+    C --&gt; E[&quot;🟡 等待稳定\n检查占用&quot;]
+    E --&gt; F[&quot;🟣 临时复制\n完整性校验&quot;]
+    F --&gt;|校验通过| G[&quot;🟢 完成替换\n清理源文件&quot;]
+    F --&gt;|失败| H[&quot;🍓 保留源文件\n记录并重试&quot;]
+    style A fill:#C7CEEA,stroke:#9FA8DA,stroke-width:2px,color:#333
+    style B fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
+    style C fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
+    style D fill:#FFDAB9,stroke:#FFB07C,stroke-width:2px,color:#333
+    style E fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
+    style F fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
+    style G fill:#B5EAD7,stroke:#80CBC4,stroke-width:2px,color:#333
+    style H fill:#FFB3C6,stroke:#FF8FA3,stroke-width:2px,color:#333
+</code>
+</pre>
+
+<h3 id="1-过滤和分类"><a href="#1-过滤和分类" class="headerlink" title="1. 过滤和分类"></a>1. 过滤和分类</h3><p>程序先扫描源目录，只把符合约定的文件交给处理器。无法识别的文件会保留在原目录，并在日志中说明原因。这样既避免误处理，也给后续补充规则留下依据。</p>
+<h3 id="2-转换文件名"><a href="#2-转换文件名" class="headerlink" title="2. 转换文件名"></a>2. 转换文件名</h3><p>中文文件名通过 <code>pypinyin</code> 转换成拼音，同时清理 Windows 不允许的字符。这里不是把文件转成“英文名”，而是保留中文读音，方便操作人员根据纸样名称协作。遇到目标目录已有同名文件时，用户可以选择覆盖，或者让程序自动生成带序号的新名称。</p>
+<h3 id="3-确认文件可以安全处理"><a href="#3-确认文件可以安全处理" class="headerlink" title="3. 确认文件可以安全处理"></a>3. 确认文件可以安全处理</h3><p>刚生成的文件可能还在写入，网络共享中的文件也可能被其他程序占用。程序会等待文件大小稳定，再检查文件是否可访问。这个等待不是为了拖慢流程，而是避免把半个文件搬走。</p>
+<h3 id="4-复制、校验、提交"><a href="#4-复制、校验、提交" class="headerlink" title="4. 复制、校验、提交"></a>4. 复制、校验、提交</h3><p>文件不会直接复制到最终路径。程序先生成临时副本，再核对文件大小和 SHA-256 摘要。校验通过后才替换目标文件，并清理源文件；任何一步失败，都保留源文件并写入失败日志。</p>
+<img src="/MyBlog/2026/10/16/file-name-conversion-recovery/pic_log.png" class="" title="日志文件">
+
+<h2 id="四、网络文件场景必须有失败保护"><a href="#四、网络文件场景必须有失败保护" class="headerlink" title="四、网络文件场景必须有失败保护"></a>四、网络文件场景必须有失败保护</h2><p>源电脑与目标电脑之间通过服务器共享文件夹连接。原流程中，目标电脑关机时直接复制会报错，网络波动时也可能出现粘贴不完整；操作人员只能等目标电脑开机或网络恢复后再手工二次粘贴。网络共享目录里的复制失败，还可能伴随连接中断、目标不可达和多台电脑同时操作。</p>
+<p>因此，项目把“文件是否可以删除”放在流程最后。只有目标文件已经完整写入并通过校验，源文件才允许被清理。网络暂时不可用时，程序保留源文件，记录失败原因，并由后台任务在网络恢复后重新尝试。</p>
+<table>
+<thead>
+<tr>
+<th>风险</th>
+<th>保护措施</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文件仍在写入</td>
+<td>等待稳定、检查占用</td>
+<td>避免移动半成品</td>
+</tr>
+<tr>
+<td>网络目录不可达</td>
+<td>设置超时、保留源文件</td>
+<td>不因网络波动丢文件</td>
+</tr>
+<tr>
+<td>复制中途断开</td>
+<td>临时文件复制</td>
+<td>不把半个文件当成正式文件</td>
+</tr>
+<tr>
+<td>目标文件重名</td>
+<td>覆盖&#x2F;追加序号模式</td>
+<td>由用户明确选择结果</td>
+</tr>
+<tr>
+<td>处理失败后无人知晓</td>
+<td>日志、状态和统计</td>
+<td>可以回看并继续处理</td>
+</tr>
+</tbody></table>
+<p>实际部署时，多台电脑可以同时处理同一个共享文件夹，不需要引入复杂的并发协调。业务上的约束是把每台电脑的延时处理时间错开，避免同一批文件在同一时刻被重复抢占。为不同电脑部署程序时，只需要修改对应的延时配置即可。</p>
+<p>这个设计的核心不是“保证永远成功”，而是让失败变得可见、可解释、可重试。</p>
+<h2 id="五、从单文件实现拆成模块"><a href="#五、从单文件实现拆成模块" class="headerlink" title="五、从单文件实现拆成模块"></a>五、从单文件实现拆成模块</h2><p>功能增加后，所有代码放在一个文件里会让规则、界面和文件操作互相牵连。项目后来按职责拆分到 <code>rename-to-pinyin/src/rename_to_pinyin/</code>：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>负责内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>filename_rules.py</code></td>
+<td>拼音转换和 K&#x2F;W 分类规则</td>
+</tr>
+<tr>
+<td><code>filesystem.py</code></td>
+<td>路径校验、安全复制、校验与清理</td>
+</tr>
+<tr>
+<td><code>processor.py</code></td>
+<td>批量处理和状态记录</td>
+</tr>
+<tr>
+<td><code>monitor.py</code></td>
+<td><code>watchdog</code> 目录监控与待处理队列</td>
+</tr>
+<tr>
+<td><code>config.py</code>、<code>runtime.py</code>、<code>logging_config.py</code></td>
+<td>配置、运行目录和日志</td>
+</tr>
+<tr>
+<td><code>gui.py</code></td>
+<td>Tkinter 界面和用户操作</td>
+</tr>
+<tr>
+<td><code>run.py</code>、<code>__main__.py</code></td>
+<td>启动入口</td>
+</tr>
+<tr>
+<td><code>tests/</code></td>
+<td>规则、文件系统、流程、配置和日志测试</td>
+</tr>
+</tbody></table>
+<p>拆分的目的不是为了增加目录层级，而是让每个问题有明确的位置。例如，分类错误应该看规则模块，复制校验失败应该看文件系统模块，界面卡住则应该看后台任务和队列。</p>
+<p>程序使用 Python 3.12 和 Tkinter 构建 Windows 桌面界面，目录监控使用 <code>watchdog</code>，文件锁和系统信息使用 <code>filelock</code>、<code>psutil</code> 及 Windows 平台依赖，最终通过 PyInstaller 打包为 EXE。</p>
+<p>项目的核心结构如下，<code>build</code>、<code>dist</code>、<code>Logs</code> 和 <code>State</code> 是打包或运行时产物，这里不列入源码主干：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">rename-to-pinyin/</span><br><span class="line">├─ run.py                         # 本地直接启动入口</span><br><span class="line">├─ pyproject.toml                 # 项目元数据、依赖和命令入口</span><br><span class="line">├─ requirements.txt               # 运行依赖清单</span><br><span class="line">├─ config.json                    # 最近一次保存的运行配置</span><br><span class="line">├─ README.md                      # 安装、启动和业务规则说明</span><br><span class="line">├─ src/</span><br><span class="line">│  └─ rename_to_pinyin/</span><br><span class="line">│     ├─ __init__.py              # 包信息和版本</span><br><span class="line">│     ├─ __main__.py              # python -m 启动入口</span><br><span class="line">│     ├─ constants.py              # 默认路径、扩展名和处理参数</span><br><span class="line">│     ├─ runtime.py                # 程序目录和运行时路径</span><br><span class="line">│     ├─ logging_config.py         # 日志初始化和旧日志清理</span><br><span class="line">│     ├─ config.py                # config.json 读写</span><br><span class="line">│     ├─ filename_rules.py         # 拼音转换和 K/W 分类</span><br><span class="line">│     ├─ filesystem.py             # 路径检查、安全移动和完整性校验</span><br><span class="line">│     ├─ processor.py              # 批处理、备份、重试和状态记录</span><br><span class="line">│     ├─ monitor.py                # watchdog 目录监控和启动初扫</span><br><span class="line">│     └─ gui.py                    # Tkinter 界面和任务生命周期</span><br><span class="line">└─ tests/</span><br><span class="line">   ├─ test_config.py              # 配置读写测试</span><br><span class="line">   ├─ test_filename_rules.py      # 文件名和分类规则测试</span><br><span class="line">   ├─ test_filesystem.py          # 文件系统安全操作测试</span><br><span class="line">   ├─ test_logging.py             # 日志行为测试</span><br><span class="line">   └─ test_processor.py           # 批处理和失败保护测试</span><br></pre></td></tr></table></figure>
+
+<p>模块之间的职责关系可以概括为：界面负责接收配置和展示状态，处理器组织业务流程，规则模块决定文件名和目标目录，文件系统模块执行带校验的实际操作；监控模块把新文件交给同一套处理器，测试模块从外部验证这些边界。</p>
+<pre>
+<code class="mermaid">
+
+flowchart TB
+    GUI[&quot;🔵 gui.py\nTkinter 界面&quot;] --&gt; Processor[&quot;🟣 processor.py\n批处理、重试、状态&quot;]
+    Monitor[&quot;🟡 monitor.py\n启动初扫与 watchdog&quot;] --&gt; Processor
+    Processor --&gt; Rules[&quot;🍑 filename_rules.py\n拼音与 K&#x2F;W 分类&quot;]
+    Processor --&gt; Filesystem[&quot;🟣 filesystem.py\n备份、复制、SHA-256 校验&quot;]
+    Processor --&gt; Config[&quot;🌸 config.py\n保存用户配置&quot;]
+    Processor --&gt; Logging[&quot;🟡 logging_config.py\n日志与清理&quot;]
+    Runtime[&quot;⚪ runtime.py\n运行目录&quot;] --&gt; Config
+    Runtime --&gt; Logging
+    Tests[&quot;🟢 tests&#x2F;\n规则、文件系统、流程、日志&quot;] -.-&gt; Rules
+    Tests -.-&gt; Filesystem
+    Tests -.-&gt; Processor
+    style GUI fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style Processor fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style Monitor fill:#FFF9C4,stroke:#F9A825,color:#333
+    style Rules fill:#FFDAB9,stroke:#FFAB76,color:#333
+    style Filesystem fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style Config fill:#FFB3C6,stroke:#F48FB1,color:#333
+    style Logging fill:#FFF9C4,stroke:#F9A825,color:#333
+    style Runtime fill:#F5F5F5,stroke:#BDBDBD,color:#333
+    style Tests fill:#B5EAD7,stroke:#80CBC4,color:#333
+</code>
+</pre>
+
+<h2 id="六、界面反馈也属于功能"><a href="#六、界面反馈也属于功能" class="headerlink" title="六、界面反馈也属于功能"></a>六、界面反馈也属于功能</h2><p>文件处理不是点击按钮后马上结束的操作。网络目录、文件数量和等待时间都会让任务持续一段时间。如果界面没有反馈，员工很难判断程序是在工作、等待还是已经失败。</p>
+<p>因此界面提供了这些信息：</p>
+<ul>
+<li>源目录、K 目录和 W 目录的配置；</li>
+<li>路径可达性检查；</li>
+<li>文件处理延迟和覆盖模式；</li>
+<li>当前运行状态、扫描数、成功数、失败数和跳过数；</li>
+<li>取消任务和异常提示；</li>
+<li>监控模式的启动初扫。</li>
+</ul>
+<p>监控模式尤其需要启动初扫。否则程序只监听启动之后的新文件，重启期间已经存在的文件可能永远不会进入处理队列。初扫和实时事件使用同一套过滤规则，并通过集合去重，避免同一个文件被重复提交。</p>
+<p>对 Marker 部门来说，界面反馈还要回答一个很实际的问题：这批唛架图纸到底有没有送到对应目标电脑。程序显示扫描、成功、失败和跳过数量，操作人员不需要靠反复打开网络文件夹来猜测进度。</p>
+<h2 id="七、人与-AI-的协作方式"><a href="#七、人与-AI-的协作方式" class="headerlink" title="七、人与 AI 的协作方式"></a>七、人与 AI 的协作方式</h2><p>这个项目不是由 AI 一次生成后直接交付，而是围绕真实反馈逐步迭代。作者提供业务约束，例如 K&#x2F;W 分类规则、网络目录行为、文件生成延迟和员工使用反馈；AI 协助把这些约束拆成模块、代码和测试。</p>
+<p>协作通常从一个具体现象开始：</p>
+<ol>
+<li>先描述员工遇到的实际问题，例如网络中断时不能删除源文件。</li>
+<li>再明确程序必须遵守的边界，例如校验通过前不得清理源文件。</li>
+<li>确定实现位置和验证方式。</li>
+<li>运行测试、编译、打包或启动检查。</li>
+<li>根据结果继续修正，而不是把未验证的建议当成结论。</li>
+</ol>
+<p>这里的 AI 更像工程协作助手。它可以帮助整理规则、拆分模块和补充测试，但业务判断、生产约束和最终验收仍需要由使用者确认。</p>
+<h2 id="八、测试、打包与发布"><a href="#八、测试、打包与发布" class="headerlink" title="八、测试、打包与发布"></a>八、测试、打包与发布</h2><p>项目为规则、文件系统、处理流程、配置和日志建立了独立测试。随着网络重试、日志留存、配置保存和启动扫描等行为加入，测试数量在不同阶段逐步增加。历史记录里的数量对应不同代码阶段，不能直接当作当前固定测试总数；发布前应重新运行当前测试套件。</p>
+<p>除单元测试外，发布前还需要检查：</p>
+<ul>
+<li>Python 源码是否可以编译；</li>
+<li>依赖是否完整安装；</li>
+<li>PyInstaller 是否成功生成 EXE；</li>
+<li>EXE 文件哈希是否与发布记录一致；</li>
+<li>打包后的程序能否短时间启动并显示界面；</li>
+<li>网络失败时源文件是否仍然保留。</li>
+</ul>
+<p>项目的运行日志保存在 <code>D:\Company_Project\文件名转化\rename-to-pinyin\Logs</code>。例如 <code>file_processor_20261015.log</code> 记录了以下验证结果：</p>
+<ul>
+<li>监控启动扫描发现已有 3 个文件，并加入待处理列表；</li>
+<li>测试文件 <code>GS01K.txt</code> 在测试环境中成功移动到目标目录；</li>
+<li>目标网络路径 <code>\\offline-host\share\k</code> 和 <code>\\offline-host\share\w</code> 暂时不可达时，程序保留源文件并提示自动重试；</li>
+<li>目标文件夹不可达时，程序没有清理源文件；</li>
+<li>源文件夹不可达时，日志记录“自动重试已暂停”。</li>
+</ul>
+<p>这些日志不是单纯的调试输出，而是验证“失败时不丢源文件”和“监控启动初扫”两个关键业务要求的证据。正式发布前仍应结合实际服务器共享目录再做一次现场验证。</p>
+<img src="/MyBlog/2026/10/16/file-name-conversion-recovery/%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE.png" class="" title="测试命令输出、PyInstaller 打包结果或 EXE 启动界面">
+
+<p>这些检查分别覆盖代码正确性、交付完整性和实际启动能力。只看到“打包成功”并不能证明程序适合生产使用。</p>
+<h2 id="九、部署结果与仍需关注的边界"><a href="#九、部署结果与仍需关注的边界" class="headerlink" title="九、部署结果与仍需关注的边界"></a>九、部署结果与仍需关注的边界</h2><p>目前已经可以确认工具部署在 Marker 部门，由 6–8 人使用；人工处理量从每天 200 份以上提升到每天约 300 份，单份人工处理原来约需 1–3 分钟。这里的“提升”是业务处理能力的实际观察，不等同于严格的对照实验。后续如果要做更严谨的效果评估，建议继续记录：</p>
+<table>
+<thead>
+<tr>
+<th>需要补充的内容</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原来的人工操作步骤和点击次数</td>
+<td>描述流程改变前后的差异</td>
+</tr>
+<tr>
+<td>每天实际处理量和高峰时段</td>
+<td>判断 300 份左右的处理能力是否稳定</td>
+</tr>
+<tr>
+<td>使用前后的漏分、重复处理和二次粘贴记录</td>
+<td>形成可验证的错误改善对比</td>
+</tr>
+<tr>
+<td>正式 EXE 名称、版本和发布日期</td>
+<td>建立发布记录</td>
+</tr>
+<tr>
+<td>各电脑延时配置与共享目录运行记录</td>
+<td>验证错开延时后的并发行为</td>
+</tr>
+</tbody></table>
+<p>比较稳妥的结论是：工具把 Marker 部门原来每份 1–3 分钟的手工改名、分类和复制，变成统一规则下的自动处理；在实际使用中，日处理量由 200+ 提升到约 300+，并减少了目标电脑关机或网络波动导致的二次粘贴。具体错误率和节省工时仍应以持续日志和业务记录为准。</p>
+<h2 id="结语：先解决一个重复痛点，再把边界补齐"><a href="#结语：先解决一个重复痛点，再把边界补齐" class="headerlink" title="结语：先解决一个重复痛点，再把边界补齐"></a>结语：先解决一个重复痛点，再把边界补齐</h2><p>一个文件分拣工具的价值，不只在于它能自动移动文件，更在于它能把人工经验变成明确规则，把异常情况变成可观察状态，把失败结果变成可以恢复的任务。</p>
+<p>如果你也准备制作类似的内部效率工具，可以从三个问题开始：<strong>哪些判断每天重复发生？哪些失败会造成不可逆损失？哪些结果必须留下证据？</strong> 先回答这三个问题，再决定是否需要界面、监控、重试和打包。</p>
+<p>对这个项目来说，下一步不是继续堆功能，而是补齐真实使用数据、确认当前生产规则，并用实际日志验证工具是否真的减少了等待和重复操作。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/" rel="tag"># 自动化</a>
+              <a href="/MyBlog/tags/%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86/" rel="tag"># 文件处理</a>
+              <a href="/MyBlog/tags/Tkinter/" rel="tag"># Tkinter</a>
+              <a href="/MyBlog/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E8%B7%B5/" rel="tag"># 项目实践</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/15/agent-assisted-hexo-blog/" rel="prev" title="让 Agent 辅助我搭建 Hexo 技术博客">
+                  <i class="fa fa-angle-left"></i> 让 Agent 辅助我搭建 Hexo 技术博客
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/16/python-tutorial-series-index/" rel="next" title="Python 3.14 教程系列：从语法到工具">
+                  Python 3.14 教程系列：从语法到工具 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>
