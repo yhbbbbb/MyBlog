@@ -1,5 +1,5 @@
 ---
-title: Python 速览：变量、字符串与列表
+title: 02｜Python 速览：变量、字符串与列表
 date: 2026-10-17 09:10:00
 categories:
   - 技术科普

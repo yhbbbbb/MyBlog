@@ -1,5 +1,5 @@
 ---
-title: 从交互解释器开始：运行你的第一段 Python
+title: 01｜从交互解释器开始：运行你的第一段 Python
 date: 2026-10-17 09:00:00
 categories:
   - 技术科普
