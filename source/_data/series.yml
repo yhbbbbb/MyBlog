@@ -16,3 +16,9 @@
   icon: 📊
   category: 项目笔记
   order: 3
+- id: ai-productivity-reflections
+  name: AI 生产力观察
+  description: 从个人能力、组织流程和产业投资三个层面观察 AI 如何变成真实生产力。
+  icon: 🧭
+  category: 行业观察
+  order: 4
