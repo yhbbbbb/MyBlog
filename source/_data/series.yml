@@ -10,3 +10,9 @@
   icon: 🐍
   category: 技术科普
   order: 2
+- id: yy-fabric-dashboard
+  name: YY 面料数据串联看板
+  description: 记录从业务数据整理到局域网看板 Demo 的设计、实现与后续改进。
+  icon: 📊
+  category: 项目笔记
+  order: 3
