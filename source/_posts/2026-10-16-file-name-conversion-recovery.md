@@ -42,13 +42,13 @@ description: 记录 Marker 部门从手工处理唛架图纸到自动分拣工�
 
 {% mermaid %}
 flowchart LR
-    Source["🔵 源电脑\n唛架图纸\ntxt / cut / nc"] --> Share["🟡 服务器共享文件夹\n网络文件夹"]
-    Share --> Rule{"🟣 按文件名前缀\n判断类别"}
-    Rule -->|K 类| KFolder["🟢 K 目标目录\n针织机床电脑"]
-    Rule -->|W 类| WFolder["🍑 W 目标目录\n梭织机床电脑"]
-    KFolder --> KMachine["⚙️ K 类机床\n读取拼音文件名"]
-    WFolder --> WMachine["⚙️ W 类机床\n读取拼音文件名"]
-    Rule -.->|无法匹配| Pending["🌸 保留源文件\n写入日志"]
+    Source["🔵 源电脑<br>唛架图纸<br>txt / cut / nc"] --> Share["🟡 服务器共享文件夹<br>网络文件夹"]
+    Share --> Rule{"🟣 按文件名前缀<br>判断类别"}
+    Rule -->|K 类| KFolder["🟢 K 目标目录<br>针织机床电脑"]
+    Rule -->|W 类| WFolder["🍑 W 目标目录<br>梭织机床电脑"]
+    KFolder --> KMachine["⚙️ K 类机床<br>读取拼音文件名"]
+    WFolder --> WMachine["⚙️ W 类机床<br>读取拼音文件名"]
+    Rule -.->|无法匹配| Pending["🌸 保留源文件<br>写入日志"]
     style Source fill:#C7CEEA,stroke:#9FA8DA,stroke-width:2px,color:#333
     style Share fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
     style Rule fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
@@ -75,13 +75,13 @@ flowchart LR
 
 {% mermaid %}
 graph LR
-    A["🔵 源目录\n发现文件"] --> B["🟡 过滤\n扩展名与前缀"]
-    B -->|匹配成功| C["🟣 生成目标名\n中文转拼音"]
+    A["🔵 源目录<br>发现文件"] --> B["🟡 过滤<br>扩展名与前缀"]
+    B -->|匹配成功| C["🟣 生成目标名<br>中文转拼音"]
     B -->|无法匹配| D["🍑 跳过并记录"]
-    C --> E["🟡 等待稳定\n检查占用"]
-    E --> F["🟣 临时复制\n完整性校验"]
-    F -->|校验通过| G["🟢 完成替换\n清理源文件"]
-    F -->|失败| H["🍓 保留源文件\n记录并重试"]
+    C --> E["🟡 等待稳定<br>检查占用"]
+    E --> F["🟣 临时复制<br>完整性校验"]
+    F -->|校验通过| G["🟢 完成替换<br>清理源文件"]
+    F -->|失败| H["🍓 保留源文件<br>记录并重试"]
     style A fill:#C7CEEA,stroke:#9FA8DA,stroke-width:2px,color:#333
     style B fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
     style C fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
@@ -181,15 +181,15 @@ rename-to-pinyin/
 
 {% mermaid %}
 flowchart TB
-    GUI["🔵 gui.py\nTkinter 界面"] --> Processor["🟣 processor.py\n批处理、重试、状态"]
-    Monitor["🟡 monitor.py\n启动初扫与 watchdog"] --> Processor
-    Processor --> Rules["🍑 filename_rules.py\n拼音与 K/W 分类"]
-    Processor --> Filesystem["🟣 filesystem.py\n备份、复制、SHA-256 校验"]
-    Processor --> Config["🌸 config.py\n保存用户配置"]
-    Processor --> Logging["🟡 logging_config.py\n日志与清理"]
-    Runtime["⚪ runtime.py\n运行目录"] --> Config
+    GUI["🔵 gui.py<br>Tkinter 界面"] --> Processor["🟣 processor.py<br>批处理、重试、状态"]
+    Monitor["🟡 monitor.py<br>启动初扫与 watchdog"] --> Processor
+    Processor --> Rules["🍑 filename_rules.py<br>拼音与 K/W 分类"]
+    Processor --> Filesystem["🟣 filesystem.py<br>备份、复制、SHA-256 校验"]
+    Processor --> Config["🌸 config.py<br>保存用户配置"]
+    Processor --> Logging["🟡 logging_config.py<br>日志与清理"]
+    Runtime["⚪ runtime.py<br>运行目录"] --> Config
     Runtime --> Logging
-    Tests["🟢 tests/\n规则、文件系统、流程、日志"] -.-> Rules
+    Tests["🟢 tests/<br>规则、文件系统、流程、日志"] -.-> Rules
     Tests -.-> Filesystem
     Tests -.-> Processor
     style GUI fill:#C7CEEA,stroke:#9FA8DA,color:#333

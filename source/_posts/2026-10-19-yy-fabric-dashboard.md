@@ -31,12 +31,12 @@ description: 复盘 YY 面料数据串联看板 Demo：如何整理多来源业�
 
 {% mermaid %}
 flowchart LR
-    X["📄 业务 Excel\nWorkflow 与 Bulk"] --> T["🧹 离线整理\n字段、日期、数值"]
+    X["📄 业务 Excel<br>Workflow 与 Bulk"] --> T["🧹 离线整理<br>字段、日期、数值"]
     L["🗄️ 既有链路库"] --> T
-    T --> D["📦 dashboard.sqlite\n聚合、链路、质量记录"]
-    D --> Q["🔎 Python HTTP API\n只读查询与筛选"]
-    A["🔐 admin.sqlite\n用户、角色、会话"] --> Q
-    Q --> U["📊 原生前端\n看板、下钻、管理"]
+    T --> D["📦 dashboard.sqlite<br>聚合、链路、质量记录"]
+    D --> Q["🔎 Python HTTP API<br>只读查询与筛选"]
+    A["🔐 admin.sqlite<br>用户、角色、会话"] --> Q
+    Q --> U["📊 原生前端<br>看板、下钻、管理"]
     T -.->|异常与缺失| C["📝 数据质量检查"]
     style X fill:#C7CEEA,stroke:#9FA8DA,color:#333
     style L fill:#C7CEEA,stroke:#9FA8DA,color:#333

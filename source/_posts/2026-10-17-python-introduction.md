@@ -144,10 +144,10 @@ print(f"共 {len(csv_files)} 个 CSV 文件")
 
 {% mermaid %}
 flowchart LR
-    A["🔵 原始列表\n全部文件名"] --> B{"🟡 后缀是 CSV？"}
+    A["🔵 原始列表<br>全部文件名"] --> B{"🟡 后缀是 CSV？"}
     B -->|是| C["🟢 放入结果列表"]
     B -->|否| D["🍑 跳过当前项"]
-    C --> E["🟣 格式化输出\n文件名与数量"]
+    C --> E["🟣 格式化输出<br>文件名与数量"]
     D --> E
     style A fill:#C7CEEA,stroke:#9FA8DA,color:#333
     style B fill:#FFF9C4,stroke:#F9A825,color:#333

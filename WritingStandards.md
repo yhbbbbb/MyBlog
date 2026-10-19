@@ -44,14 +44,14 @@
 
 #### Mermaid 示例模板
 
-Hexo 的 NexT 主题使用标签插件渲染 Mermaid。不要使用语言标记为 `mermaid` 的三反引号代码围栏，否则图表会显示为普通代码块。当前站点已在 `_config.next.yml` 启用 Mermaid；每篇图表使用以下标签包裹：
+Hexo 的 NexT 主题使用标签插件渲染 Mermaid。不要使用语言标记为 `mermaid` 的三反引号代码围栏，否则图表会显示为普通代码块。当前站点已在 `_config.next.yml` 启用 Mermaid；每篇图表使用以下标签包裹。节点标签中的换行使用 `<br>`，不要使用字面量 `\n`，以免在网页上显示异常：
 
 ````text
 {% mermaid %}
 graph LR
-    A["🔵 输入层\n用户请求"]
-    B["🟣 处理层\n模型推理"]
-    C["🟢 输出层\n结果返回"]
+    A["🔵 输入层<br>用户请求"]
+    B["🟣 处理层<br>模型推理"]
+    C["🟢 输出层<br>结果返回"]
     D["🟡 注意事项"]
 
     A --> B --> C
@@ -355,7 +355,7 @@ sequenceDiagram
 
 ---
 
-*最后更新：2026-10-16 | 维护者：yhbbbbb*
+*最后更新：2026-10-19 | 维护者：yhbbbbb*
 
 
 ---
@@ -366,3 +366,4 @@ sequenceDiagram
 - **2026-10-15**：修正系列功能说明。`source/_data/series.yml` 目前仅登记系列元数据，系列页面生成器、文章页注入器和对应模板尚未实现。
 - **2026-10-16**：新增文章文件命名规则 `YYYY-MM-DD-project-slug.md`，并同步配置 Hexo 新文章文件名。
 - **2026-10-16**：将 Hexo `updated_option` 设为 `date`，要求实质性更新显式填写 `updated`，避免 GitHub Actions 检出时间造成虚假的更新时间。
+- **2026-10-19**：修正 Mermaid 节点换行写法，统一使用 `<br>`；文章中的 Mermaid 图表已同步检查，移除字面量 `\n`。

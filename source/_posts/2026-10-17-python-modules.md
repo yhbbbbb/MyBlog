@@ -71,7 +71,7 @@ from file_rules import classify
 
 {% mermaid %}
 flowchart LR
-    A["🔵 main.py\n导入模块"] --> B["🟡 查找\nsys.path"]
+    A["🔵 main.py<br>导入模块"] --> B["🟡 查找<br>sys.path"]
     B --> C["🟣 执行模块顶层代码"]
     C --> D["🟢 绑定模块名称"]
     D --> E["🍑 调用函数或访问对象"]

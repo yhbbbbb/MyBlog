@@ -102,9 +102,9 @@ JSON 不支持 Python 的所有对象，例如 `Path`、集合和自定义类实
 
 {% mermaid %}
 flowchart LR
-    Data["🔵 Python 数据"] --> Convert["🟡 json.dump\n序列化"]
+    Data["🔵 Python 数据"] --> Convert["🟡 json.dump<br>序列化"]
     Convert --> Text["🟣 UTF-8 JSON 文件"]
-    Text --> Parse["🍑 json.load\n反序列化"]
+    Text --> Parse["🍑 json.load<br>反序列化"]
     Parse --> Result["🟢 Python 字典或列表"]
     Text -.->|格式错误| Error["🌸 捕获 JSONDecodeError"]
     style Data fill:#C7CEEA,stroke:#9FA8DA,color:#333

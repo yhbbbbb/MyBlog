@@ -45,12 +45,12 @@ Python 官方教程适合已经接触过编程、准备学习 Python 的读者�
 
 {% mermaid %}
 flowchart LR
-    A["🔵 开始\n交互解释器"] --> B["🟡 语法\n表达式与控制流"]
-    B --> C["🍑 数据\n列表、字典与集合"]
-    C --> D["🟣 组织代码\n模块、函数与类"]
-    D --> E["🟡 可靠运行\n文件与异常"]
-    E --> F["🟢 工具箱\n标准库与包"]
-    F --> G["🍓 深入理解\n交互环境与浮点数"]
+    A["🔵 开始<br>交互解释器"] --> B["🟡 语法<br>表达式与控制流"]
+    B --> C["🍑 数据<br>列表、字典与集合"]
+    C --> D["🟣 组织代码<br>模块、函数与类"]
+    D --> E["🟡 可靠运行<br>文件与异常"]
+    E --> F["🟢 工具箱<br>标准库与包"]
+    F --> G["🍓 深入理解<br>交互环境与浮点数"]
     style A fill:#C7CEEA,stroke:#9FA8DA,stroke-width:2px,color:#333
     style B fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
     style C fill:#FFDAB9,stroke:#FFAB76,stroke-width:2px,color:#333

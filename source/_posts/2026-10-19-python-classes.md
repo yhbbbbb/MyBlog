@@ -112,11 +112,11 @@ total_length = sum(len(name) for name in matching_files(names))
 
 {% mermaid %}
 flowchart LR
-    Class["🟣 FileJob 类\n定义共同属性和方法"] --> One["🔵 job_a 实例\n订单.csv / pending"]
-    Class --> Two["🔵 job_b 实例\n日报.csv / done"]
+    Class["🟣 FileJob 类<br>定义共同属性和方法"] --> One["🔵 job_a 实例<br>订单.csv / pending"]
+    Class --> Two["🔵 job_b 实例<br>日报.csv / done"]
     One --> Method["🟡 调用 mark_done"]
     Method --> State["🟢 只改变 job_a 状态"]
-    Names["🍑 文件名序列"] --> Generator["🌸 生成器\n逐个筛选"]
+    Names["🍑 文件名序列"] --> Generator["🌸 生成器<br>逐个筛选"]
     Generator --> Output["🟢 按需消费结果"]
     style Class fill:#E8D5F5,stroke:#CE93D8,color:#333
     style One fill:#C7CEEA,stroke:#9FA8DA,color:#333
