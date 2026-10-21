@@ -20,7 +20,7 @@ description: 从检索失败现象出发，整理切块、混合检索、查询�
 
 {% asset_img rag-retrieval-map.svg RAG 检索失败诊断与优化手段图 %}
 
-上图为 Excalidraw 绘制；[下载可编辑源文件](/MyBlog/2026/10/21/rag-retrieval-optimization/rag-retrieval-map.excalidraw)。诊断时保存问题、召回候选、重排结果、最终上下文和回答，才能判断某项优化是否真正修复了失败点。
+上图为 Excalidraw 绘制，编辑源文件与 SVG 同目录。诊断时保存问题、召回候选、重排结果、最终上下文和回答，才能判断某项优化是否真正修复了失败点。
 
 ## 从简单、低成本的方法开始
 
@@ -88,4 +88,3 @@ Agentic RAG 让模型根据中间结果决定是否继续搜索、换查询或�
 - [Reciprocal Rank Fusion](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf)。
 - [Hypothetical Document Embeddings](https://arxiv.org/abs/2212.10496)。
 
-本文根据参考文章重新组织为问题诊断和方案选择指南，没有直接复制原文段落或配图。框架与模型 API 会持续演进，采用前应核对官方文档并用自己的数据测试。

@@ -26,7 +26,7 @@ description: 用一个文档问答场景解释 RAG 的索引、检索和生成�
 
 {% asset_img rag-pipeline.svg RAG 离线索引与在线问答流程图 %}
 
-上图使用 Excalidraw 绘制；[下载可编辑源文件](/MyBlog/2026/10/21/rag-basics/rag-pipeline.excalidraw)。图中的向量库只是索引的一种实现方式，实际系统也可以组合关键词检索、关系数据库或搜索引擎。
+上图使用 Excalidraw 绘制；可编辑源文件与 SVG 同目录保存。图中的向量库只是索引的一种实现方式，实际系统也可以组合关键词检索、关系数据库或搜索引擎。
 
 ### 1. 文档加载与切块
 
@@ -87,4 +87,3 @@ Embedding 模型把文本映射成向量，使语义相近的句子在向量空�
 - [鱼皮：RAG 是什么？16 种 RAG 方案一次讲清](https://ai.codefather.cn/post/2047162931736592386)。
 - [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401)。
 
-本文根据上述材料重新组织讲解，未直接复制原文段落或使用原文配图。框架名称和 API 会随版本变化，实际开发请以对应项目的当前文档为准。

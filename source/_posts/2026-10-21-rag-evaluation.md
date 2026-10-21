@@ -20,7 +20,7 @@ description: 建立可复用的 RAG 评估集，分别衡量检索、回答忠�
 
 {% asset_img rag-evaluation-loop.svg RAG 离线评估与线上监控闭环图 %}
 
-图由 Excalidraw 绘制；[下载可编辑源文件](/MyBlog/2026/10/21/rag-evaluation/rag-evaluation-loop.excalidraw)。离线评估用于比较改动，线上监控则用于发现真实用户问题分布和数据变化。
+图由 Excalidraw 绘制，原始 `.excalidraw` 文件与可显示的 SVG 放在文章资源目录。离线评估用于比较改动，线上监控则用于发现真实用户问题分布和数据变化。
 
 ## 建立一份小而有代表性的评估集
 
@@ -89,4 +89,4 @@ LangSmith、RAGAS、Langfuse 等工具可以管理数据集、运行追踪或评
 - [RAGAS 指标文档](https://docs.ragas.io/en/latest/concepts/metrics/)。
 - [LangSmith Evaluation 文档](https://docs.smith.langchain.com/evaluation)。
 
-本文为基于参考资料的原创整理，未直接复制原文段落或配图。RAG 评估指标与平台 API 会变化，实施时请核对当前官方文档，并将自动评分与人工复核结合。
+
