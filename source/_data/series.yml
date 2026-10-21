@@ -22,3 +22,9 @@
   icon: 🧭
   category: 行业观察
   order: 4
+- id: rag-practice
+  name: RAG 应用实践
+  description: 从基础检索增强生成到检索优化与效果评估，梳理构建可验证知识问答系统的方法。
+  icon: 🔎
+  category: 技术科普
+  order: 5
