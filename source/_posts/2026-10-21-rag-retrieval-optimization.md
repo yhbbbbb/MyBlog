@@ -36,6 +36,32 @@ description: 从检索失败现象出发，整理切块、混合检索、查询�
 
 融合分数必须做尺度处理，不能直接假设不同搜索引擎的原始分数可比较。常见做法是 Reciprocal Rank Fusion（RRF）按排名融合，或者对合并候选使用专门的重排器。
 
+RRF 不比较向量相似度和 BM25 的原始分数，而是按候选在各自结果列表中的名次计分：`RRF(d) = Σ 1 / (k + rank_i(d))`。`k` 是平滑常数，常用值在几十左右；同一文档在多个列表中都靠前，就会得到更高融合分。以下实现可直接运行：
+
+```python
+from collections import defaultdict
+
+
+def reciprocal_rank_fusion(result_lists, *, rank_constant=60):
+    """result_lists 是多个按相关性从高到低排列的文档 ID 列表。"""
+    scores = defaultdict(float)
+    for results in result_lists:
+        seen = set()
+        for rank, doc_id in enumerate(results, start=1):
+            if doc_id in seen:
+                continue
+            seen.add(doc_id)
+            scores[doc_id] += 1 / (rank_constant + rank)
+    return sorted(scores.items(), key=lambda item: (-item[1], item[0]))
+
+
+vector_hits = ["policy-17", "policy-05", "policy-31"]
+keyword_hits = ["policy-05", "policy-42", "policy-17"]
+print(reciprocal_rank_fusion([vector_hits, keyword_hits]))
+```
+
+实际使用时，两个检索器应返回同一层级的 ID（例如文档块 ID）；若一个返回文档、另一个返回段落，需要先定义去重和父子映射规则。RRF 的排序结果仍需通过测试集验证，不会自动识别权限错误、过期版本或语义上的细微差异。关键词检索可用 BM25 等算法生成，向量检索负责语义近邻；两边先取较宽候选，再融合、去重并应用可靠的权限与版本过滤。
+
 ## 查询改写：改变搜索表达，不改变用户目标
 
 用户问题可能太短、指代不清或缺少领域词。查询改写可以先补全上下文、生成多个表达，或将复杂问题拆成子问题分别检索。
@@ -44,11 +70,59 @@ description: 从检索失败现象出发，整理切块、混合检索、查询�
 
 查询转换增加了模型调用和延迟，也可能把原问题改偏。应保留原始查询，在日志中记录改写版本，并比较改写前后的检索指标。
 
+多查询适合用户说法差异较大、资料使用专业术语的场景。合并多个查询结果后要按块 ID 去重，否则相同证据可能占满 `top_k`。HyDE 生成的假设文档只能用于召回，后续上下文必须来自真实资料。路由也要保留“无法判断时走通用检索或澄清”的兜底分支。
+
+下面是一个规则路由示例，规则适合高确定性的编号和关键词；自然语言意图复杂时可替换为分类模型，但仍要设置默认路由：
+
+```python
+import re
+
+
+def route_query(question: str) -> str:
+    normalized = question.strip().lower()
+    if re.search(r"\b(?:R|INV|PO)-\d{3,}\b", question, re.IGNORECASE):
+        return "keyword_search"  # 单号、订单号优先精确查找
+    if any(word in normalized for word in ("最新", "生效日期", "版本")):
+        return "metadata_filtered_search"
+    if any(word in normalized for word in ("为什么", "比较", "区别")):
+        return "multi_query_search"
+    return "hybrid_search"  # 未命中规则时的明确默认路径
+```
+
+路由不是答案。应为每个分支准备正例、边界例和误路由案例，检查覆盖率、误分类率及各路径成本。不同路径召回的证据最终还要统一检查来源、版本、权限和重复项。
+
 ## 重排序与上下文压缩
 
 向量检索通常适合先快速召回较多候选。重排序模型（reranker）再同时查看查询和候选文本，判断二者的具体相关性，最后选出较少片段交给生成模型。
 
 重排常能改善候选顺序，但会增加一次模型计算；候选数量很大时尤其明显。上下文压缩可以过滤或提炼候选中的相关句子，减少提示长度，但压缩器也可能删掉例外条件、否定词或数字。上线前应检查压缩结果是否保留了原文证据。
+
+典型候选流水线可以是：向量召回 20 条、关键词召回 20 条、RRF 合并去重为约 30 条、reranker 选出 5 条，再按 Token 预算组成上下文。这些数值只是调参起点。记录每一步候选 ID 与分数，才能区分“没召回”和“重排错了”。
+
+```python
+def retrieve_context(question, *, vector_search, keyword_search,
+                     rerank, load_authorized_chunks, max_chars=6000):
+    vector_hits = vector_search(question, limit=20)
+    keyword_hits = keyword_search(question, limit=20)
+    fused = reciprocal_rank_fusion([
+        [hit["id"] for hit in vector_hits],
+        [hit["id"] for hit in keyword_hits],
+    ])
+    candidate_ids = [doc_id for doc_id, _ in fused[:30]]
+    # 按 ID 读取时再次执行权限过滤，避免权限只在路由层检查。
+    candidates = load_authorized_chunks(candidate_ids)
+    ranked = rerank(question, candidates)[:5]
+
+    selected, used = [], 0
+    for item in ranked:
+        size = len(item["text"])
+        if used + size <= max_chars:
+            selected.append(item)
+            used += size
+    return selected
+```
+
+`load_authorized_chunks` 是应用自己的安全读取函数，`rerank` 则由重排模型实现。这里用字符数粗略限制长度；接入模型时应改用对应 tokenizer 的 Token 预算，并为系统提示、用户问题和输出预留空间。
 
 ## 路由和 Agentic RAG
 
@@ -73,6 +147,17 @@ Agentic RAG 让模型根据中间结果决定是否继续搜索、换查询或�
 为每个优化准备一组失败案例和一组正常案例。一次只调整一个主要变量，例如切块规则或重排模型；记录召回是否找到证据、最终答案是否忠实、延迟和成本是否变化。
 
 如果重排让答案更准确，但 P95 延迟翻倍，就要判断这个取舍是否适合目标用户。**高级方案不是默认更好，而是在明确的错误类型上，带着可量化收益的方案。**
+
+建议依次排查：
+
+1. **资料是否存在且最新？** 检查源文件、权限、版本和解析结果。
+2. **证据是否完整地进入索引？** 检查切块文本、元数据、向量维度和索引时间。
+3. **正确证据是否被召回？** 查看原始查询的向量、关键词候选及 Recall@k。
+4. **证据是否排在前面？** 比较融合与 reranker 的排序。
+5. **模型上下文是否保留限定条件？** 检查过滤、截断、压缩和 Token 预算。
+6. **模型是否忠实作答？** 检查提示词、引用映射和拒答行为。
+
+每一步都保存 ID 和版本，避免只看最终答案猜原因。调参时保留基线配置，出现回归可以快速回退。
 
 ## 练习：给失败问题分诊
 
