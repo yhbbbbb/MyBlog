@@ -21,7 +21,7 @@ description: 建立可复用的 RAG 评估集，分别衡量检索、回答忠�
 
 {% asset_img rag-evaluation-loop.svg RAG 离线评估与线上监控闭环图 %}
 
-图由 Excalidraw 绘制，原始 `.excalidraw` 文件与可显示的 SVG 放在文章资源目录。离线评估用于比较改动，线上监控则用于发现真实用户问题分布和数据变化。
+离线评估用于比较改动，线上监控则用于发现真实用户问题分布和数据变化。
 
 ## 建立一份小而有代表性的评估集
 
@@ -173,8 +173,8 @@ def run_retrieval_eval(dataset, search, k=5):
 
 ## 参考资料
 
-- [知乎专栏：《深度好文！最全的大模型 RAG 技术概览》](https://zhuanlan.zhihu.com/p/678893732)，导出文件作者字段为“未知”，正文提及 @AI技术社区。
-- [知乎专栏：《大模型应用之RAG详解》](https://zhuanlan.zhihu.com/p/13679111673)，导出文件作者字段为“未知”。
+- [知乎专栏：《深度好文！最全的大模型 RAG 技术概览》](https://zhuanlan.zhihu.com/p/678893732) @AI技术社区。
+- [知乎专栏：《大模型应用之RAG详解》](https://zhuanlan.zhihu.com/p/13679111673)
 - [鱼皮：RAG 是什么？16 种 RAG 方案一次讲清](https://ai.codefather.cn/post/2047162931736592386)。
 - [RAGAS 指标文档](https://docs.ragas.io/en/latest/concepts/metrics/)。
 - [LangSmith Evaluation 文档](https://docs.smith.langchain.com/evaluation)。

@@ -168,8 +168,8 @@ Agentic RAG 让模型根据中间结果决定是否继续搜索、换查询或�
 
 ## 参考资料
 
-- [知乎专栏：《深度好文！最全的大模型 RAG 技术概览》](https://zhuanlan.zhihu.com/p/678893732)，导出文件作者字段为“未知”，正文提及 @AI技术社区。
-- [知乎专栏：《大模型应用之RAG详解》](https://zhuanlan.zhihu.com/p/13679111673)，导出文件作者字段为“未知”。
+- [知乎专栏：《深度好文！最全的大模型 RAG 技术概览》](https://zhuanlan.zhihu.com/p/678893732) @AI技术社区。
+- [知乎专栏：《大模型应用之RAG详解》](https://zhuanlan.zhihu.com/p/13679111673)
 - [鱼皮：RAG 是什么？16 种 RAG 方案一次讲清](https://ai.codefather.cn/post/2047162931736592386)。
 - [Reciprocal Rank Fusion](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf)。
 - [Hypothetical Document Embeddings](https://arxiv.org/abs/2212.10496)。
