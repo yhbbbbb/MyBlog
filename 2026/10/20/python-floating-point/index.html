@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="用二进制表示解释 0.1+0.2 的结果，掌握浮点数比较、round、Decimal 和金额计算中的精度边界。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="14｜浮点数为什么会有误差">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/20/python-floating-point/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="用二进制表示解释 0.1+0.2 的结果，掌握浮点数比较、round、Decimal 和金额计算中的精度边界。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-20T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-20T04:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Decimal">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="浮点数">
+<meta property="article:tag" content="精度">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/20/python-floating-point/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/20/python-floating-point/","path":"2026/10/20/python-floating-point/","title":"14｜浮点数为什么会有误差"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>14｜浮点数为什么会有误差 | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E8%BF%9B%E5%88%B6%E5%B0%8F%E6%95%B0%E4%B8%8D%E4%B8%80%E5%AE%9A%E8%83%BD%E7%94%A8%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%9C%89%E9%99%90%E8%A1%A8%E7%A4%BA"><span class="nav-number">1.</span> <span class="nav-text">十进制小数不一定能用二进制有限表示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E8%A6%81%E7%9B%B4%E6%8E%A5%E7%94%A8-%E6%AF%94%E8%BE%83%E8%BF%91%E4%BC%BC%E7%BB%93%E6%9E%9C"><span class="nav-number">2.</span> <span class="nav-text">不要直接用 &#x3D;&#x3D; 比较近似结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#round-%E4%B8%8D%E6%98%AF%E4%B8%87%E8%83%BD%E5%B7%A5%E5%85%B7"><span class="nav-number">3.</span> <span class="nav-text">round() 不是万能工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E5%93%AA%E7%A7%8D%E6%95%B0%E5%80%BC%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.</span> <span class="nav-text">选择哪种数值类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E5%86%99%E4%B8%80%E4%B8%AA%E5%8F%AF%E9%9D%A0%E7%9A%84%E9%87%91%E9%A2%9D%E6%AF%94%E8%BE%83"><span class="nav-number">5.</span> <span class="nav-text">练习：写一个可靠的金额比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="nav-number">6.</span> <span class="nav-text">下一步</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/20/python-floating-point/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="14｜浮点数为什么会有误差 | WantBeing">
+      <meta itemprop="description" content="用二进制表示解释 0.1+0.2 的结果，掌握浮点数比较、round、Decimal 和金额计算中的精度边界。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          14｜浮点数为什么会有误差
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-20 12:00:00" itemprop="dateCreated datePublished" datetime="2026-10-20T12:00:00+08:00">2026-10-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">用二进制表示解释 0.1+0.2 的结果，掌握浮点数比较、round、Decimal 和金额计算中的精度边界。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p><code>0.1 + 0.2 != 0.3</code> 不是 Python 算错了，而是十进制小数被放进二进制浮点数后产生了表示误差。</p>
+</blockquote>
+<h2 id="十进制小数不一定能用二进制有限表示"><a href="#十进制小数不一定能用二进制有限表示" class="headerlink" title="十进制小数不一定能用二进制有限表示"></a>十进制小数不一定能用二进制有限表示</h2><p>计算机通常用 IEEE 754 双精度浮点数保存 Python 的 <code>float</code>。很多十进制小数转换为二进制后是无限循环，只能保存最接近的有限近似值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">result = <span class="number">0.1</span> + <span class="number">0.2</span></span><br><span class="line"><span class="built_in">print</span>(result)          <span class="comment"># 0.30000000000000004</span></span><br><span class="line"><span class="built_in">print</span>(result == <span class="number">0.3</span>)   <span class="comment"># False</span></span><br></pre></td></tr></table></figure>
+
+<p>这类误差通常非常小，但在大量累加、边界判断和金额计算中会被放大。</p>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+    D[&quot;🔵 十进制小数&lt;br&gt;0.1、0.2&quot;] --&gt; B[&quot;🟣 二进制近似&lt;br&gt;float 表示&quot;]
+    B --&gt; C[&quot;🟡 运算&lt;br&gt;误差可能累积&quot;]
+    C --&gt; Q{&quot;🍑 业务要求？&quot;}
+    Q --&gt;|近似测量| F[&quot;🟢 math.isclose&lt;br&gt;相对&#x2F;绝对误差&quot;]
+    Q --&gt;|金额与规则| M[&quot;🌸 Decimal&lt;br&gt;明确舍入&quot;]
+    style D fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style B fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style C fill:#FFF9C4,stroke:#F9A825,color:#333
+    style Q fill:#FFDAB9,stroke:#FFAB76,color:#333
+    style F fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style M fill:#FFB3C6,stroke:#F48FB1,color:#333
+</code>
+</pre>
+
+<h2 id="不要直接用-比较近似结果"><a href="#不要直接用-比较近似结果" class="headerlink" title="不要直接用 == 比较近似结果"></a>不要直接用 <code>==</code> 比较近似结果</h2><p>对于测量值或计算结果，应给出允许误差：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"></span><br><span class="line">actual = <span class="number">0.1</span> + <span class="number">0.2</span></span><br><span class="line"><span class="built_in">print</span>(math.isclose(actual, <span class="number">0.3</span>, rel_tol=<span class="number">1e-9</span>, abs_tol=<span class="number">0.0</span>))</span><br></pre></td></tr></table></figure>
+
+<p><code>rel_tol</code> 控制相对误差，<code>abs_tol</code> 控制绝对误差。比较接近零的数时，绝对误差尤其重要。误差阈值应来自业务容许范围，而不是随意填写。</p>
+<h2 id="round-不是万能工具"><a href="#round-不是万能工具" class="headerlink" title="round() 不是万能工具"></a><code>round()</code> 不是万能工具</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="built_in">round</span>(<span class="number">2.675</span>, <span class="number">2</span>))  <span class="comment"># 2.67，具体结果与二进制表示有关</span></span><br></pre></td></tr></table></figure>
+
+<p>如果业务要求十进制规则，应从字符串构造 <code>Decimal</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> decimal <span class="keyword">import</span> Decimal, ROUND_HALF_UP</span><br><span class="line"></span><br><span class="line">price = Decimal(<span class="string">&quot;2.675&quot;</span>)</span><br><span class="line">total = price.quantize(Decimal(<span class="string">&quot;0.01&quot;</span>), rounding=ROUND_HALF_UP)</span><br><span class="line"><span class="built_in">print</span>(total)  <span class="comment"># 2.68</span></span><br></pre></td></tr></table></figure>
+
+<p>不要先把 <code>float</code> 传给 <code>Decimal</code>，否则浮点误差会一起被带入；金额也可以使用整数最小货币单位保存。</p>
+<h2 id="选择哪种数值类型"><a href="#选择哪种数值类型" class="headerlink" title="选择哪种数值类型"></a>选择哪种数值类型</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>科学计算、图形和测量</td>
+<td><code>float</code></td>
+<td>速度快，接受近似值</td>
+</tr>
+<tr>
+<td>金额、计费和明确舍入</td>
+<td><code>Decimal</code></td>
+<td>十进制规则更直观</td>
+</tr>
+<tr>
+<td>计数、订单数量</td>
+<td><code>int</code></td>
+<td>精确整数，不存在小数误差</td>
+</tr>
+<tr>
+<td>固定精度的金额存储</td>
+<td><code>int</code></td>
+<td>用“分”等最小单位保存</td>
+</tr>
+</tbody></table>
+<h2 id="练习：写一个可靠的金额比较"><a href="#练习：写一个可靠的金额比较" class="headerlink" title="练习：写一个可靠的金额比较"></a>练习：写一个可靠的金额比较</h2><p>实现 <code>same_amount(left, right)</code>：输入可以是字符串金额，统一转换为两位小数的 <code>Decimal</code> 后比较；再补充负数、空字符串和超过两位小数的测试。</p>
+<p><strong>官方资料：</strong><a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3.14/tutorial/floatingpoint.html">浮点算术：争议和限制</a>。</p>
+<h2 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h2><p>最后一篇把整个系列串起来：用函数、模块、文件、异常、依赖环境和测试完成一个可维护的小项目。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/%E6%B5%AE%E7%82%B9%E6%95%B0/" rel="tag"># 浮点数</a>
+              <a href="/MyBlog/tags/%E7%B2%BE%E5%BA%A6/" rel="tag"># 精度</a>
+              <a href="/MyBlog/tags/Decimal/" rel="tag"># Decimal</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/20/python-interactive-mode/" rel="prev" title="13｜交互式编辑、历史记录与启动文件">
+                  <i class="fa fa-angle-left"></i> 13｜交互式编辑、历史记录与启动文件
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/20/python-project-practice/" rel="next" title="15｜把知识串起来：从脚本到可维护项目">
+                  15｜把知识串起来：从脚本到可维护项目 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

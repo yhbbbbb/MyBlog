@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="结合两篇文章，讨论 AI 生成能力、组织效率、程序员成长与算力泡沫之间的关系，回答生成内容如何才能变成真实生产力。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI 生成之后：从代码幻觉到真实生产力">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/19/ai-productivity-reflection/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="结合两篇文章，讨论 AI 生成能力、组织效率、程序员成长与算力泡沫之间的关系，回答生成内容如何才能变成真实生产力。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-19T12:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-19T12:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="生产力">
+<meta property="article:tag" content="程序员成长">
+<meta property="article:tag" content="职业发展">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/19/ai-productivity-reflection/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/19/ai-productivity-reflection/","path":"2026/10/19/ai-productivity-reflection/","title":"AI 生成之后：从代码幻觉到真实生产力"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>AI 生成之后：从代码幻觉到真实生产力 | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%88%E6%8A%8A%E4%B8%A4%E7%AF%87%E6%96%87%E7%AB%A0%E6%94%BE%E5%9C%A8%E4%B8%80%E8%B5%B7%E7%9C%8B"><span class="nav-number">1.</span> <span class="nav-text">先把两篇文章放在一起看</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%87%AA%E5%8A%A8%E7%AD%89%E4%BA%8E%E7%94%9F%E4%BA%A7%E5%8A%9B"><span class="nav-number">2.</span> <span class="nav-text">生成为什么不自动等于生产力</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%80%9C%E6%9C%89%E6%95%88%E7%94%9F%E4%BA%A7%E5%8A%9B%E2%80%9D%E8%87%B3%E5%B0%91%E8%A6%81%E7%BB%8F%E8%BF%87%E4%B8%89%E6%AC%A1%E8%BD%AC%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text">“有效生产力”至少要经过三次转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%9F%BA%E7%A1%80%E8%83%BD%E5%8A%9B%E5%8F%8D%E8%80%8C%E6%9B%B4%E5%80%BC%E9%92%B1"><span class="nav-number">4.</span> <span class="nav-text">为什么基础能力反而更值钱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E5%8A%9B%E6%B3%A1%E6%B2%AB%E4%B8%8E-AI-%E4%BB%B7%E5%80%BC%E4%B8%8D%E6%98%AF%E5%90%8C%E4%B8%80%E4%B8%AA%E9%97%AE%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">算力泡沫与 AI 价值不是同一个问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E4%B8%AA%E4%BA%BA%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E5%AE%9E%E9%99%85%E5%90%AF%E5%8F%91"><span class="nav-number">6.</span> <span class="nav-text">对个人程序员的实际启发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E7%BB%93%E8%AE%BA"><span class="nav-number">7.</span> <span class="nav-text">我的结论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/19/ai-productivity-reflection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="AI 生成之后：从代码幻觉到真实生产力 | WantBeing">
+      <meta itemprop="description" content="结合两篇文章，讨论 AI 生成能力、组织效率、程序员成长与算力泡沫之间的关系，回答生成内容如何才能变成真实生产力。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AI 生成之后：从代码幻觉到真实生产力
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-19 20:00:00" itemprop="dateCreated datePublished" datetime="2026-10-19T20:00:00+08:00">2026-10-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E8%A1%8C%E4%B8%9A%E8%A7%82%E5%AF%9F/" itemprop="url" rel="index"><span itemprop="name">行业观察</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">结合两篇文章，讨论 AI 生成能力、组织效率、程序员成长与算力泡沫之间的关系，回答生成内容如何才能变成真实生产力。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>AI 可以把“写出东西”的成本压得很低，却不能自动把东西变成有价值的结果。</p>
+</blockquote>
+<h2 id="先把两篇文章放在一起看"><a href="#先把两篇文章放在一起看" class="headerlink" title="先把两篇文章放在一起看"></a>先把两篇文章放在一起看</h2><p>知乎文章《英伟达市值 9 天蒸发约 4 万亿元，全球 AI 股集体遭抛售，AI 泡沫是不是要破了？》把讨论从股价拉回了生产过程。作者提出一个很尖锐的区分：<strong>生成不等于生产力，生产力也不等于有效生产力。</strong> 大量代码、视频和报告可以被快速生成，但如果需求没有增加、质量没有验证、组织没有因此完成更多有效工作，Token 消耗就可能只是把内耗换了一种计价方式。</p>
+<p>CoolShell 的《程序员如何把控自己的职业》讨论的是另一端：技术变化不断发生，程序员真正能长期带走的能力不是某个短期流行工具，而是一手知识、基础原理、结构化思考、总结归纳、实践和坚持。</p>
+<p>两篇文章并不矛盾。一篇追问“AI 的产出有没有进入真实经济”，另一篇追问“人在技术变化中靠什么保持判断力”。它们共同指向一个判断：<strong>工具的速度越快，人的选择、验证和组织能力越重要。</strong></p>
+<h2 id="生成为什么不自动等于生产力"><a href="#生成为什么不自动等于生产力" class="headerlink" title="生成为什么不自动等于生产力"></a>生成为什么不自动等于生产力</h2><p>把“生成”理解成“生产”，通常跳过了中间的几道工序：</p>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+    I[&quot;🔵 需求&lt;br&gt;要解决什么问题&quot;] --&gt; S[&quot;🟣 生成&lt;br&gt; 代码、文档或方案&quot;]
+    S --&gt; V[&quot;🟡 验证&lt;br&gt; 正确、稳定、合规&quot;]
+    V --&gt; A[&quot;🍑 接入流程&lt;br&gt; 能被团队使用&quot;]
+    A --&gt; O[&quot;🟢 结果&lt;br&gt; 节省时间或创造收入&quot;]
+    V -.-&gt;|失败| R[&quot;🌸 返工&lt;br&gt; 补充上下文与测试&quot;]
+    R --&gt; S
+    style I fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style S fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style V fill:#FFF9C4,stroke:#F9A825,color:#333
+    style A fill:#FFDAB9,stroke:#FFAB76,color:#333
+    style O fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style R fill:#FFB3C6,stroke:#F48FB1,color:#333
+</code>
+</pre>
+
+<p>例如，Agent 十分钟生成一个文件上传接口，并不代表团队十分钟就完成了功能。还要确认权限边界、异常处理、日志、数据库迁移、测试和部署方式。若接口生成后没人理解，也没人愿意维护，速度越快，后面堆积的返工越多。</p>
+<p>这也是我在使用 Agent 辅助写博客和项目时越来越重视边界的原因：先说明仓库状态、修改范围、输出格式和验收命令，再让工具执行。<strong>生成阶段追求速度，验收阶段必须恢复慢思考。</strong></p>
+<h2 id="“有效生产力”至少要经过三次转换"><a href="#“有效生产力”至少要经过三次转换" class="headerlink" title="“有效生产力”至少要经过三次转换"></a>“有效生产力”至少要经过三次转换</h2><p>可以把 AI 带来的价值拆成三个层次：</p>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>关键问题</th>
+<th>常见失败</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>产出效率</td>
+<td>能不能更快写出初稿？</td>
+<td>代码很多，但需求不清</td>
+</tr>
+<tr>
+<td>个人效率</td>
+<td>能不能减少重复劳动？</td>
+<td>节省时间被无意义返工吃掉</td>
+</tr>
+<tr>
+<td>组织效率</td>
+<td>团队是否交付了更多有效结果？</td>
+<td>生成量上升，客户价值和收入不变</td>
+</tr>
+</tbody></table>
+<p>第一层最容易展示，所以发布会和产品演示都喜欢展示“一句话生成”。第三层最难，因为它牵涉需求优先级、审核机制、团队分工和资源分配。一个组织如果没有明确的验收标准，AI 只会让更多不确定的工作更快进入队列。</p>
+<p>知乎文章提到的“无限供给与有限注意力”也是同一个问题。内容可以批量生成，但人的时间、信任和注意力不会同步增加。内容生产成本下降以后，筛选、推荐、验证和建立信誉的成本会上升。对代码同样如此：仓库里文件变多，不代表系统更可靠；PR 变多，也不代表产品迭代更快。</p>
+<h2 id="为什么基础能力反而更值钱"><a href="#为什么基础能力反而更值钱" class="headerlink" title="为什么基础能力反而更值钱"></a>为什么基础能力反而更值钱</h2><p>CoolShell 文章给程序员的建议，在 Agent 时代仍然成立，甚至更加迫切。</p>
+<p>第一，一手资料决定判断上限。遇到模型给出的 API、SQL 或安全建议，能直接查官方文档的人，和只能凭语气判断答案的人，两者之间的风险完全不同。</p>
+<p>第二，原理决定迁移能力。框架会变，模型会换，部署方式会变，但数据结构、网络、操作系统、数据库事务和并发这些基础问题不会因为出现 Agent 就消失。知道程序为什么慢、请求为什么丢、权限为什么越界，才能判断生成的结果是否真的能用。</p>
+<p>第三，结构化思考决定提问质量。好的提示词不一定要堆很多的形容词，把目标、输入、约束、失败处理和验收标准写清楚比堆砌更重要。需求越清楚，Agent 越像一个可检查的协作者；需求越模糊，Agent 越容易用一堆漂亮文本掩盖未知。</p>
+<p>第四，实践和总结把知识变成能力。让 Agent 帮忙写一个脚本在当下很容易实现，难的是跑过真实数据、记录失败样本、补测试，然后把经验沉淀成下一次可以复用的规则。没有反馈闭环，使用 AI 只是在重复消费答案。</p>
+<h2 id="算力泡沫与-AI-价值不是同一个问题"><a href="#算力泡沫与-AI-价值不是同一个问题" class="headerlink" title="算力泡沫与 AI 价值不是同一个问题"></a>算力泡沫与 AI 价值不是同一个问题</h2><p>“AI 是不是泡沫”经常把三个问题混在一起：技术有没有长期价值，某类基础设施的投资是否过热，当前公司的估值能否兑现未来现金流。它们的答案可以不同。</p>
+<p>AI 可能长期改变软件开发、搜索、教育和企业流程；与此同时，某一阶段的 GPU、云服务、存储或模型调用需求也可能包含补贴、重复投资和低价值消耗。技术方向成立，不代表每一家公司的价格都合理；短期需求旺盛，也不代表所有 Token 都创造了等量价值。</p>
+<p>“生成了多少”都是泡沫，真正要跟踪的是下面这些指标，这才是从‘生产力工具’变成‘生产力’：</p>
+<ul>
+<li>一个功能从需求到上线的总周期是否缩短；</li>
+<li>缺陷、回滚和维护成本是否下降；</li>
+<li>同样的人力是否能服务更多真实用户；</li>
+<li>AI 费用是否和可验证的收入、留存或交付结果相关；</li>
+<li>被替代的岗位和新增的任务之间，是否出现了新的分工。</li>
+</ul>
+<p>如果只能证明调用量增长，却无法证明客户价值增长，那更像是基础设施的繁荣，不能直接称为生产率提升。</p>
+<h2 id="对个人程序员的实际启发"><a href="#对个人程序员的实际启发" class="headerlink" title="对个人程序员的实际启发"></a>对个人程序员的实际启发</h2><p>我不认为正确答案是拒绝 Agent，也不认为答案是把所有工作都交给 Agent。更可行的做法是把人和工具放在不同位置：</p>
+<table>
+<thead>
+<tr>
+<th>人负责</th>
+<th>Agent 适合协助</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>判断问题是否值得解决</td>
+<td>搜索资料、整理候选方案</td>
+</tr>
+<tr>
+<td>定义业务规则和边界</td>
+<td>生成样板代码与测试草稿</td>
+</tr>
+<tr>
+<td>选择取舍并承担后果</td>
+<td>执行重复转换、批量检查</td>
+</tr>
+<tr>
+<td>验证结果和维护系统</td>
+<td>汇总日志、解释差异、提出遗漏</td>
+</tr>
+</tbody></table>
+<p>对正在学习 Python、自动化或数据工具的人来说，最值得练习的并非“让模型一次写出完整项目”，是采用AI去完成一个个小闭环：自己描述问题，借助 Agent 生成第一版，运行真实的输入，记录失败，再修改规则和测试。这个过程会同时训练我们的需求表达、代码阅读、调试和复盘能力。</p>
+<h2 id="我的结论"><a href="#我的结论" class="headerlink" title="我的结论"></a>我的结论</h2><p>AI 不是因为能生成内容就自动成为生产力，也不会因为某轮资本市场回调就失去长期价值。真正的分水岭在于：<strong>组织能否把生成能力接入清晰的需求、可靠的验证和可持续的分工。</strong></p>
+<p>对个人而言，基础原理、一手资料、结构化表达和持续实践，是抵抗工具更替的底层能力。对企业而言，应该先改造需求和验收流程，再计算模型调用节省了多少人力。对投资者而言，应该区分技术价值、基础设施周期和具体资产价格，不能用其中一个问题替代另外两个问题。</p>
+<p>这两篇文章给我的最大提醒是：不要被“生成得很快”催眠，也不要被“泡沫”两个字给唬住。当下真正值得做的，是选一个真实问题，设定可测量的结果，用 AI 减少重复劳动，再用数据证明它有没有让事情变得更好。</p>
+<p><strong>参考阅读：</strong></p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/2094715615177085550/answer/2094953466313680548">牛肉丸夫斯基：英伟达市值 9 天蒸发约 4 万亿元，全球 AI 股集体遭抛售，AI 泡沫是不是要破了？</a></li>
+<li><a target="_blank" rel="noopener" href="https://coolshell.org/articles/20977.html/">陈皓：程序员如何把控自己的职业</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/MyBlog/tags/AI/" rel="tag"># AI</a>
+              <a href="/MyBlog/tags/%E7%94%9F%E4%BA%A7%E5%8A%9B/" rel="tag"># 生产力</a>
+              <a href="/MyBlog/tags/%E7%A8%8B%E5%BA%8F%E5%91%98%E6%88%90%E9%95%BF/" rel="tag"># 程序员成长</a>
+              <a href="/MyBlog/tags/%E8%81%8C%E4%B8%9A%E5%8F%91%E5%B1%95/" rel="tag"># 职业发展</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/19/yy-fabric-dashboard/" rel="prev" title="从表格到看板：YY 面料数据串联项目复盘">
+                  <i class="fa fa-angle-left"></i> 从表格到看板：YY 面料数据串联项目复盘
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/20/python-venv-packages/" rel="next" title="11｜Python 虚拟环境与包：让项目依赖可控">
+                  11｜Python 虚拟环境与包：让项目依赖可控 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

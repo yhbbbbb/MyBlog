@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="复盘如何用清晰的任务边界和验收标准，让 Agent 从空目录搭建 Hexo、配置 NexT 与 Actions，并排查 GitHub Pages 部署问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="让 Agent 辅助我搭建 Hexo 技术博客">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/15/agent-assisted-hexo-blog/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="复盘如何用清晰的任务边界和验收标准，让 Agent 从空目录搭建 Hexo、配置 NexT 与 Actions，并排查 GitHub Pages 部署问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-15T08:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-16T08:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="AI 编程">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="GitHub Pages">
+<meta property="article:tag" content="Hexo">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/15/agent-assisted-hexo-blog/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/15/agent-assisted-hexo-blog/","path":"2026/10/15/agent-assisted-hexo-blog/","title":"让 Agent 辅助我搭建 Hexo 技术博客"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>让 Agent 辅助我搭建 Hexo 技术博客 | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%88%E6%8A%8A%E4%BB%BB%E5%8A%A1%E8%AF%B4%E6%B8%85%E6%A5%9A"><span class="nav-number">1.</span> <span class="nav-text">先把任务说清楚</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E7%8E%AF%E5%A2%83%E6%A3%80%E6%9F%A5%E5%88%B0%E6%9C%AC%E5%9C%B0%E9%A2%84%E8%A7%88"><span class="nav-number">2.</span> <span class="nav-text">从环境检查到本地预览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA%E5%92%8C%E5%8F%91%E5%B8%83"><span class="nav-number">3.</span> <span class="nav-text">自动构建和发布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%9F%E6%AD%A3%E8%8A%B1%E6%97%B6%E9%97%B4%E7%9A%84%E6%98%AF%E8%BE%B9%E7%95%8C%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">真正花时间的是边界问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hexo-%E5%91%BD%E4%BB%A4%E5%8F%AA%E6%98%BE%E7%A4%BA%E5%B8%AE%E5%8A%A9"><span class="nav-number">4.1.</span> <span class="nav-text">Hexo 命令只显示帮助</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9C%E7%AB%AF-main-%E5%B7%B2%E6%9C%89%E5%88%9D%E5%A7%8B%E5%8C%96%E6%8F%90%E4%BA%A4"><span class="nav-number">4.2.</span> <span class="nav-text">远端 main 已有初始化提交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pages-%E8%BF%98%E6%B2%A1%E6%9C%89%E7%AB%99%E7%82%B9%E9%85%8D%E7%BD%AE"><span class="nav-number">4.3.</span> <span class="nav-text">Pages 还没有站点配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%B1%BB%E5%92%8C%E6%A0%87%E7%AD%BE%E9%A1%B5%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8D%95%E7%8B%AC-404"><span class="nav-number">4.4.</span> <span class="nav-text">分类和标签页为什么单独 404</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E6%A3%80%E6%9F%A5%E7%BB%93%E6%9E%9C"><span class="nav-number">4.5.</span> <span class="nav-text">其他检查结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%E5%8A%9F%E8%83%BD%E6%8C%89%E9%9C%80%E6%89%93%E5%BC%80"><span class="nav-number">5.</span> <span class="nav-text">可选功能按需打开</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E6%AC%A1%E6%9C%89%E6%95%88%E5%8D%8F%E4%BD%9C%E7%9A%84%E9%AA%8C%E6%94%B6%E6%B8%85%E5%8D%95"><span class="nav-number">6.</span> <span class="nav-text">一次有效协作的验收清单</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/15/agent-assisted-hexo-blog/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="让 Agent 辅助我搭建 Hexo 技术博客 | WantBeing">
+      <meta itemprop="description" content="复盘如何用清晰的任务边界和验收标准，让 Agent 从空目录搭建 Hexo、配置 NexT 与 Actions，并排查 GitHub Pages 部署问题。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          让 Agent 辅助我搭建 Hexo 技术博客
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-15 16:00:00" itemprop="dateCreated datePublished" datetime="2026-10-15T16:00:00+08:00">2026-10-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-10-16 16:00:00" itemprop="dateModified" datetime="2026-10-16T16:00:00+08:00">2026-10-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E9%A1%B9%E7%9B%AE%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">项目笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">复盘如何用清晰的任务边界和验收标准，让 Agent 从空目录搭建 Hexo、配置 NexT 与 Actions，并排查 GitHub Pages 部署问题。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>搭出一个博客并不难，难的是让它从本地预览一路稳定地走到 GitHub Pages。</p>
+</blockquote>
+<p>这次我用 Agent 从一个空的本地目录搭建技术博客，用于记录自己的技术学习和项目实践。最后跑通了本地构建、GitHub Actions 和 GitHub Pages。回头看，真正决定效率的不是提示词写得多长，而是有没有把<strong>目标、仓库现状、操作边界和验收方式</strong>一次说明白。</p>
+<h2 id="先把任务说清楚"><a href="#先把任务说清楚" class="headerlink" title="先把任务说清楚"></a>先把任务说清楚</h2><p>一开始的需求有两个版本。简洁版适合快速启动，要求列出环境、初始化命令、主题、自动部署和常见操作；详细版进一步明确了 Windows、源码放 <code>main</code>、静态页面放 <code>gh-pages</code>、本地预览、文章创建和自定义域名等约束。</p>
+<p>两种写法各有用途：快速版先拿到路线图，详细版则把容易反复确认的决定提前说清楚。</p>
+<table>
+<thead>
+<tr>
+<th>提示词</th>
+<th>适用场景</th>
+<th>容易遗漏的内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>简洁版</td>
+<td>先看整体方案、验证技术路线</td>
+<td>当前仓库状态、部署分支、验收标准</td>
+</tr>
+<tr>
+<td>详细版</td>
+<td>希望 Agent 直接改仓库并验证</td>
+<td>如何保护已有改动、远端初始提交如何处理</td>
+</tr>
+</tbody></table>
+<p>实际协作时，我会在原需求上再补几条边界：**先检查工作区，不覆盖已有文件；命令和配置分开；每一步给核对项；遇到冲突先检查历史；完成后实际构建并报告结果。**这能减少“配置看起来正确，但没法部署”的返工。</p>
+<p>下面是这次需求整理后的提示词骨架，可以按自己的仓库替换信息：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">请在当前仓库搭建一个 Hexo 技术博客，并直接完成可在本地验证的配置。</span><br><span class="line"></span><br><span class="line">目标：Windows 本地写作和预览；源码在 main；GitHub Actions 将 public/ 发布到 gh-pages。</span><br><span class="line">技术栈：Hexo、NexT、GitHub Pages。内容方向：Python、AHK、n8n、SQL、前端和项目笔记。</span><br><span class="line"></span><br><span class="line">请按顺序完成：</span><br><span class="line">1. 检查 Node、npm、Git 版本和当前仓库状态；说明最低版本及校验命令。</span><br><span class="line">2. 初始化 Hexo 项目，配置本地预览和新建文章命令。</span><br><span class="line">3. 安装 NexT，设置标题、简介、导航、代码高亮和文章目录。</span><br><span class="line">4. 配置 main push 后自动构建并发布到 gh-pages 的 GitHub Actions。</span><br><span class="line">5. 写明新建文章、预览、构建、清理缓存和查看部署日志的方法。</span><br><span class="line">6. 说明图片路径、渲染失败、部署失败和自定义域名的处理方式。</span><br><span class="line"></span><br><span class="line">操作边界：</span><br><span class="line">- 修改前先检查仓库，不覆盖或删除已有文件和未提交改动。</span><br><span class="line">- 如果远端已有提交，先 fetch 并检查差异，再合并，不要强制推送。</span><br><span class="line">- 配置文件使用中文注释；区分需要手动执行的命令和文件内容。</span><br><span class="line">- 每个阶段列出检查项；最后实际执行构建并报告未通过项。</span><br></pre></td></tr></table></figure>
+
+<p>提示词把<strong>想要的结果</strong>和<strong>Agent 的操作权限</strong>分开写。前者让它知道要交付什么，后者能减少覆盖文件、强推分支等风险。部署权限、仓库名称和站点根路径也应写明，因为这些选项会直接改变最终地址和工作流行为。</p>
+<h2 id="从环境检查到本地预览"><a href="#从环境检查到本地预览" class="headerlink" title="从环境检查到本地预览"></a>从环境检查到本地预览</h2><p>仓库已经在 GitHub 创建，工作目录是 <code>D:\MyBlog</code>。第一步不是立刻运行初始化命令，而是先检查目录和版本，确定有没有现存文件需要保留。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">node <span class="literal">--version</span></span><br><span class="line">npm.cmd <span class="literal">--version</span></span><br><span class="line">git <span class="literal">--version</span></span><br><span class="line">git status <span class="literal">--short</span> <span class="literal">--branch</span></span><br></pre></td></tr></table></figure>
+
+<p>这次电脑上是 Node.js <code>v24.15.0</code>、npm <code>11.12.1</code>。Hexo 8 要求 Node.js <code>20.19.0</code> 或更高版本，CI 使用 Node.js 22。PowerShell 的执行策略还拦截了 <code>npm.ps1</code>，所以本机命令使用 <code>npm.cmd</code>；无需为了 Hexo 去修改整台电脑的执行策略。</p>
+<p>项目依赖通过 <code>package.json</code> 和锁文件安装，主题 NexT 作为 Git 子模块放在 <code>themes/next</code>。这让主仓库记录明确的主题版本，也让 Actions checkout 时能取回主题源码。</p>
+<p>基础站点信息和访问路径放在 <code>_config.yml</code>。这是普通 GitHub 项目站点，不是 <code>username.github.io</code> 根站点，因此需要：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">url:</span> <span class="string">https://yhbbbbb.github.io/MyBlog</span></span><br><span class="line"><span class="attr">root:</span> <span class="string">/MyBlog/</span></span><br></pre></td></tr></table></figure>
+
+<p>如果少了 <code>/MyBlog/</code>，CSS、图片和导航链接会指向域名根目录，发布后就会出现资源 404。绑定自定义域名时，才将 <code>url</code> 改成自己的域名并把 <code>root</code> 改为 <code>/</code>。</p>
+<p>主题使用 NexT 的 Gemini 方案。网站标题、简介、导航栏、头像、文章目录和代码块配置分别落在站点配置与 <code>_config.next.yml</code> 中。以后升级主题时，个人设置留在独立配置文件里，更容易检查和维护。</p>
+<p>本地常用命令如下：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">npm.cmd ci</span><br><span class="line">npm.cmd run server</span><br><span class="line">npm.cmd run new <span class="literal">--</span> <span class="string">&quot;Agent 辅助搭建博客&quot;</span></span><br><span class="line">npm.cmd run build</span><br><span class="line">npm.cmd run clean</span><br></pre></td></tr></table></figure>
+
+<p>预览地址是 <code>http://localhost:4000/MyBlog/</code>。文章保存在 <code>source/_posts/</code>；启用文章资源目录后，可以把图片放在文章对应的资源目录内，再用相对图片名引用。</p>
+<h2 id="自动构建和发布"><a href="#自动构建和发布" class="headerlink" title="自动构建和发布"></a>自动构建和发布</h2><p>工作流监听 <code>main</code> 分支的 push：检出主仓库和 NexT 子模块、安装锁文件指定的依赖、运行 Hexo 构建，再把 <code>public/</code> 发布到 <code>gh-pages</code>。工作流使用仓库自带的 <code>GITHUB_TOKEN</code>，并需要有写入仓库内容的权限。</p>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+    A[&quot;📝 更新文章或配置&quot;] --&gt; B[&quot;⬆️ 推送 main&quot;]
+    B --&gt; C[&quot;⚙️ Actions 检出源码和主题&quot;]
+    C --&gt; D[&quot;📦 npm ci 并构建 public&quot;]
+    D --&gt; E[&quot;🚀 发布到 gh-pages&quot;]
+    E --&gt; F[&quot;🌐 GitHub Pages 提供网站&quot;]
+    C -.-&gt; G[&quot;⚠️ 构建失败时查看 Actions 日志&quot;]
+    D -.-&gt; G
+    style A fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style B fill:#FFDAB9,stroke:#FFAB76,color:#333
+    style C fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style D fill:#FFF9C4,stroke:#F9A825,color:#333
+    style E fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style F fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style G fill:#FFB3C6,stroke:#F48FB1,color:#333
+</code>
+</pre>
+
+<p>这里有两个独立设置容易混淆：Actions 工作流需要 <strong>Read and write permissions</strong> 才能推送 <code>gh-pages</code>；仓库的 Pages 设置还要将发布源指定为 <code>gh-pages / (root)</code>。工作流成功只说明文件已经发布到分支，不代表 Pages 站点一定已经启用。</p>
+<h2 id="真正花时间的是边界问题"><a href="#真正花时间的是边界问题" class="headerlink" title="真正花时间的是边界问题"></a>真正花时间的是边界问题</h2><h3 id="Hexo-命令只显示帮助"><a href="#Hexo-命令只显示帮助" class="headerlink" title="Hexo 命令只显示帮助"></a>Hexo 命令只显示帮助</h3><p>初次构建时，Hexo 没有执行 <code>generate</code>，只列出了帮助命令。排查后发现项目 <code>package.json</code> 缺少 Hexo CLI 用于识别项目的 <code>hexo</code> 元数据。补齐项目标记并更新锁文件后，构建开始正常生成页面。</p>
+<p>这个问题说明“依赖已经安装”不等于“项目已经正确初始化”。验证要看真实命令是否执行，并检查 <code>public/index.html</code>、文章页和 <code>atom.xml</code> 是否生成。</p>
+<h3 id="远端-main-已有初始化提交"><a href="#远端-main-已有初始化提交" class="headerlink" title="远端 main 已有初始化提交"></a>远端 main 已有初始化提交</h3><p>本地提交第一次推送时被拒绝，因为 GitHub 仓库创建时已有 README 和许可证。安全的处理方式是先 fetch、检查提交差异，再合并两段历史；README 冲突保留完整的博客手册，远端 MIT 许可证也保留下来。<strong>没有用 force push 覆盖远端。</strong></p>
+<p>这正是提示词里需要明确“先检查远端历史”的原因。一个已创建的仓库不一定是空仓库，即使本地目录看起来刚初始化。</p>
+<h3 id="Pages-还没有站点配置"><a href="#Pages-还没有站点配置" class="headerlink" title="Pages 还没有站点配置"></a>Pages 还没有站点配置</h3><p>Actions 创建并发布了 <code>gh-pages</code> 后，站点一开始仍返回 GitHub Pages 404。问题不在 Hexo 构建，而是仓库 Pages 发布源尚未选择。设置为 <code>gh-pages</code> 分支和根目录后，项目地址才返回 HTTP 200，页面的 CSS、头像和文章路径也正确使用 <code>/MyBlog/</code>。</p>
+<h3 id="分类和标签页为什么单独-404"><a href="#分类和标签页为什么单独-404" class="headerlink" title="分类和标签页为什么单独 404"></a>分类和标签页为什么单独 404</h3><p>上线后还发现导航里的 <code>/categories/</code> 和 <code>/tags/</code> 返回 404，但具体分类 <code>/categories/项目笔记/</code> 和标签 <code>/tags/Agent/</code> 都能打开。检查 <code>public/</code> 后，原因很明确：Hexo 的分类生成器默认只生成每个分类的明细页；标签生成器默认也不生成标签总览页。导航链接指向的索引页根本没有对应的 <code>index.html</code>。</p>
+<p>NexT 的通用页面布局会根据 Front Matter 的 <code>type</code> 显示分类列表或标签云。因此，在 <code>source/categories/index.md</code> 和 <code>source/tags/index.md</code> 分别创建索引页，并设置正确的 <code>type</code> 与 <code>layout</code>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">分类</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">categories</span></span><br><span class="line"><span class="attr">layout:</span> <span class="string">page</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">标签</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">tags</span></span><br><span class="line"><span class="attr">layout:</span> <span class="string">page</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
+
+<p>清理并构建后检查入口文件是否存在：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">npm.cmd run clean</span><br><span class="line">npm.cmd run build</span><br><span class="line"><span class="built_in">Test-Path</span> public\categories\index.html</span><br><span class="line"><span class="built_in">Test-Path</span> public\tags\index.html</span><br></pre></td></tr></table></figure>
+
+<p>两个 <code>Test-Path</code> 都应返回 <code>True</code>。这和单个分类、标签的明细页是两层路由：前者展示目录，后者展示对应文章列表。</p>
+<h3 id="其他检查结果"><a href="#其他检查结果" class="headerlink" title="其他检查结果"></a>其他检查结果</h3><ul>
+<li>本地执行 <code>npm.cmd run clean</code> 和 <code>npm.cmd run build</code>，Hexo 成功生成首页、文章、分类、标签、归档、关于页和 Atom 订阅。</li>
+<li>图片链接要使用站点相对或文章资源目录中的路径，不能使用 <code>D:\...</code> 这样的本机绝对路径。</li>
+<li>npm audit 报告了传递依赖问题。<code>npm audit fix --force</code> 提议将 Hexo 降级到 3.9，因此没有照单执行；这类修复要先核对影响，不能为了清空数字破坏锁定的主版本。</li>
+</ul>
+<h2 id="可选功能按需打开"><a href="#可选功能按需打开" class="headerlink" title="可选功能按需打开"></a>可选功能按需打开</h2><p>NexT 已提供代码高亮和文章目录。数学公式可以启用主题内置 KaTeX，并在需要公式的文章 Front Matter 中加 <code>mathjax: true</code>。RSS 则由 <code>hexo-generator-feed</code> 生成 Atom 文件。Mermaid 原本默认关闭；为了让本文流程图实际渲染，我在 <code>_config.next.yml</code> 启用了主题内置支持，没有手写主题 JavaScript。</p>
+<p>对于读者看不到、构建产物也没有生成的功能，提示词里可以先标为“可选”，不要误以为配置文件里写了一段 YAML 就代表功能已经可用。开启后应在本地构建页面确认对应资源和输出。</p>
+<h2 id="一次有效协作的验收清单"><a href="#一次有效协作的验收清单" class="headerlink" title="一次有效协作的验收清单"></a>一次有效协作的验收清单</h2><p>这次搭建走通的判断标准不是“Agent 说配置好了”，而是下面这些结果都能被检查：</p>
+<ul>
+<li>本机能运行 Hexo，本地预览页面能打开。</li>
+<li><code>npm ci</code> 后可重复安装，构建输出写入 <code>public/</code>。</li>
+<li><code>main</code> 保存源码，主题子模块可被 CI 检出。</li>
+<li>push 后 Actions 构建成功，<code>gh-pages</code> 有生成的 HTML 和静态资源。</li>
+<li>GitHub Pages 设置使用正确的发布分支和目录，线上地址返回 HTTP 200。</li>
+<li>已有文件、远端提交和个人修改都没有被意外覆盖。</li>
+</ul>
+<p>**Agent 最适合承担的是把清晰任务变成可验证的改动。**把仓库状态、成功标准和不可触碰的边界一起交代，再要求它执行构建和检查，才是把“帮我搭个网站”变成一次可复现的工程协作。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Hexo/" rel="tag"># Hexo</a>
+              <a href="/MyBlog/tags/GitHub-Pages/" rel="tag"># GitHub Pages</a>
+              <a href="/MyBlog/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/MyBlog/tags/AI-%E7%BC%96%E7%A8%8B/" rel="tag"># AI 编程</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/14/hello-world/" rel="prev" title="Hello World">
+                  <i class="fa fa-angle-left"></i> Hello World
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/16/file-name-conversion-recovery/" rel="next" title="从痛点到工具：文件分拣程序的制作过程">
+                  从痛点到工具：文件分拣程序的制作过程 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>
