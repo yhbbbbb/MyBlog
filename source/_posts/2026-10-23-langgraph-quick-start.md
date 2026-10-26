@@ -1,6 +1,7 @@
 ---
 title: LangGraph 快速入门：用状态图构建可控的 Agent 工作流
 date: 2026-10-23 10:00:00
+update: 2026-10-26 10:00:00
 categories:
   - AI Agent
 tags:
