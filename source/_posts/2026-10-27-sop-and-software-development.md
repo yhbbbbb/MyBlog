@@ -58,8 +58,6 @@ SOP 是 **Standard Operating Procedure**，中文通常译为“标准作业程�
 
 这张图表达的是一个闭环：需求不是直接变成代码，而是经过设计、实现、验证和发布；发布后的指标与故障又会反过来修订需求、代码和 SOP。图中所有检查点都应该留下可追踪的记录，例如 Issue、Pull Request、测试报告和发布日志。
 
-可编辑的 Excalidraw 源文件：[下载 sop-development-loop.excalidraw](/MyBlog/2026/10/27/sop-and-software-development/sop-development-loop.excalidraw)。
-
 ## 一份开发 SOP 至少写清楚什么
 
 我会用“输入—动作—判断—产物—责任”五个问题检查一份 SOP 是否可执行：
@@ -91,8 +89,6 @@ SOP 是 **Standard Operating Procedure**，中文通常译为“标准作业程�
 {% asset_img development-task-sop.svg 一次软件开发任务的标准执行流程 %}
 
 开发任务适合采用小步闭环：先确认目标和验收条件，再设计最小方案；实现后立即执行自动检查，最后通过评审和验收。任何一个检查点失败，都应该回到对应步骤修复，而不是带着不确定性继续向后推进。
-
-可编辑源文件：[下载 development-task-sop.excalidraw](/MyBlog/2026/10/27/sop-and-software-development/development-task-sop.excalidraw)。
 
 ### 把验收条件提前写出来
 
@@ -221,7 +217,6 @@ python -m build
 
 故障 SOP 的重点不是追责，而是让团队在压力下仍然按照顺序行动：先止损和恢复服务，再收集证据，最后分析根因并更新测试、监控和文档。没有复盘的故障处理，只是把同一个问题推迟到下一次发生。
 
-可编辑源文件：[下载 incident-review-loop.excalidraw](/MyBlog/2026/10/27/sop-and-software-development/incident-review-loop.excalidraw)。
 
 ### 故障记录至少包含什么
 
