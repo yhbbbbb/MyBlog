@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">RAG 离线索引与在线问答流程</title>
+  <desc id="desc">上方是离线文档索引流程，下方是用户问题的在线检索与生成流程。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1 1 Q5 4 10 6 Q5 8 1 11" fill="none" stroke="#4d5555" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <filter id="pencil"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="1" seed="13"/><feDisplacementMap in="SourceGraphic" scale="1.2"/></filter>
+    <style>
+      .label{font:600 18px 'Segoe Print','Comic Sans MS',sans-serif;fill:#303b3b;text-anchor:middle}
+      .small{font:16px 'Segoe Print','Comic Sans MS',sans-serif;fill:#536060;text-anchor:middle}
+      .section{font:700 22px 'Segoe Print','Comic Sans MS',sans-serif;fill:#374141}
+      .box{stroke:#435051;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;filter:url(#pencil)}
+      .arrow{fill:none;stroke:#4d5555;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="560" rx="18" fill="#fffdf8"/>
+  <text x="54" y="46" class="section">离线：知识进入索引</text>
+  <path class="box" fill="#C7CEEA" d="M50 82 Q56 76 66 79 L232 77 Q241 81 239 91 L242 179 Q238 188 228 186 L61 189 Q51 185 53 175 Z"/>
+  <text x="146" y="124" class="label">📄 文档来源</text><text x="146" y="153" class="small">PDF / 网页 / Markdown</text>
+  <path class="arrow" d="M245 132 Q268 128 293 132"/>
+  <path class="box" fill="#FFDAB9" d="M302 82 Q310 77 318 80 L487 78 Q496 82 494 93 L495 177 Q492 188 482 185 L311 189 Q303 185 305 175 Z"/>
+  <text x="399" y="124" class="label">✂️ 清理与切块</text><text x="399" y="153" class="small">保留段落和来源</text>
+  <path class="arrow" d="M497 132 Q521 128 546 132"/>
+  <path class="box" fill="#E8D5F5" d="M555 82 Q563 77 571 80 L742 78 Q750 82 748 93 L750 177 Q746 188 737 185 L564 189 Q556 185 558 175 Z"/>
+  <text x="652" y="124" class="label">🔢 Embedding</text><text x="652" y="153" class="small">文本转换为向量</text>
+  <path class="arrow" d="M752 132 Q777 128 801 132"/>
+  <path class="box" fill="#B5EAD7" d="M810 82 Q818 77 827 80 L996 78 Q1005 82 1003 93 L1005 177 Q1000 188 991 185 L819 189 Q811 185 813 175 Z"/>
+  <text x="907" y="124" class="label">🗂️ 建立索引</text><text x="907" y="153" class="small">向量 + 原文 + 元数据</text>
+  <path d="M52 224 Q600 209 1147 224" fill="none" stroke="#d9d4c7" stroke-width="2" stroke-dasharray="6 8"/>
+  <text x="54" y="270" class="section">在线：检索证据并生成回答</text>
+  <path class="box" fill="#C7CEEA" d="M50 309 Q58 303 67 306 L193 304 Q203 308 201 319 L203 410 Q199 419 190 416 L60 420 Q52 416 54 406 Z"/>
+  <text x="127" y="350" class="label">❓ 用户问题</text><text x="127" y="379" class="small">原始查询</text>
+  <path class="arrow" d="M204 362 Q220 358 236 362"/>
+  <path class="box" fill="#E8D5F5" d="M244 309 Q252 303 261 306 L387 304 Q397 308 395 319 L397 410 Q393 419 384 416 L254 420 Q246 416 248 406 Z"/>
+  <text x="321" y="350" class="label">🔢 查询向量</text><text x="321" y="379" class="small">相同编码空间</text>
+  <path class="arrow" d="M399 362 Q415 358 431 362"/>
+  <path class="box" fill="#FFF9C4" d="M440 309 Q448 303 457 306 L583 304 Q593 308 591 319 L593 410 Q589 419 580 416 L450 420 Q442 416 444 406 Z"/>
+  <text x="517" y="350" class="label">🔎 检索 Top-k</text><text x="517" y="379" class="small">返回候选片段</text>
+  <path class="arrow" d="M595 362 Q611 358 627 362"/>
+  <path class="box" fill="#FFDAB9" d="M636 309 Q644 303 653 306 L779 304 Q789 308 787 319 L789 410 Q785 419 776 416 L646 420 Q638 416 640 406 Z"/>
+  <text x="713" y="350" class="label">🧾 证据 + 提示</text><text x="713" y="379" class="small">问题与来源片段</text>
+  <path class="arrow" d="M791 362 Q807 358 823 362"/>
+  <path class="box" fill="#FFB3C6" d="M832 309 Q840 303 849 306 L975 304 Q985 308 983 319 L985 410 Q981 419 972 416 L842 420 Q834 416 836 406 Z"/>
+  <text x="909" y="350" class="label">🤖 模型生成</text><text x="909" y="379" class="small">依据证据回答</text>
+  <path class="arrow" d="M987 362 Q1003 358 1019 362"/>
+  <path class="box" fill="#B5EAD7" d="M1028 309 Q1036 303 1044 306 L1150 304 Q1159 308 1157 319 L1159 410 Q1155 419 1147 416 L1038 420 Q1030 416 1032 406 Z"/>
+  <text x="1094" y="350" class="label">✅ 答案</text><text x="1094" y="379" class="small">含引用位置</text>
+  <text x="600" y="496" class="small">检索相似度提供候选，不代表事实已验证；保留原文位置，才能核对答案依据。</text>
+</svg>

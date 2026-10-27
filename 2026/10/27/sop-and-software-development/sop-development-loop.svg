@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">SOP 与软件交付闭环</title>
+  <desc id="desc">需求经过设计、实现、验证和发布，线上反馈与故障复盘回到 SOP 更新，形成持续改进闭环。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1 1 Q5 4 10 6 Q5 8 1 11" fill="none" stroke="#4d5555" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <filter id="pencil"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="1" seed="21"/><feDisplacementMap in="SourceGraphic" scale="1.1"/></filter>
+    <style>
+      .title{font:700 28px 'Segoe Print','Microsoft YaHei',sans-serif;fill:#273333;text-anchor:middle}.label{font:600 19px 'Segoe Print','Microsoft YaHei',sans-serif;fill:#303b3b;text-anchor:middle}.small{font:16px 'Segoe Print','Microsoft YaHei',sans-serif;fill:#536060;text-anchor:middle}.box{stroke:#435051;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;filter:url(#pencil)}.arrow{fill:none;stroke:#4d5555;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}.feedback{fill:none;stroke:#8a6c50;stroke-width:2.5;stroke-dasharray:9 7;stroke-linecap:round;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="560" rx="18" fill="#fffdf8"/><text x="600" y="48" class="title">SOP 与软件交付的可追踪闭环</text>
+  <rect x="55" y="85" width="1090" height="380" rx="25" fill="#f6f2e9" stroke="#cbbda7" stroke-width="2" stroke-dasharray="10 8"/><text x="90" y="120" class="small" text-anchor="start">标准作业：输入 · 检查点 · 产物 · 异常路径</text>
+  <rect x="90" y="220" width="165" height="90" rx="16" fill="#d9e9e7" class="box"/><text x="172" y="258" class="label">需求</text><text x="172" y="285" class="small">目标与验收条件</text>
+  <rect x="320" y="220" width="165" height="90" rx="16" fill="#dbe7f3" class="box"/><text x="402" y="258" class="label">设计</text><text x="402" y="285" class="small">边界与方案</text>
+  <rect x="550" y="220" width="165" height="90" rx="16" fill="#e5dcef" class="box"/><text x="632" y="258" class="label">实现</text><text x="632" y="285" class="small">代码与测试</text>
+  <rect x="780" y="220" width="165" height="90" rx="16" fill="#f2dfb9" class="box"/><text x="862" y="258" class="label">验证</text><text x="862" y="285" class="small">评审与 CI</text>
+  <rect x="1010" y="220" width="95" height="90" rx="16" fill="#dcebd9" class="box"/><text x="1057" y="258" class="label">发布</text><text x="1057" y="285" class="small">监控</text>
+  <path d="M255 265 L320 265" class="arrow"/><path d="M485 265 L550 265" class="arrow"/><path d="M715 265 L780 265" class="arrow"/><path d="M945 265 L1010 265" class="arrow"/>
+  <rect x="410" y="375" width="380" height="58" rx="16" fill="#fff8df" class="box"/><text x="600" y="410" class="label">日志、指标、故障复盘与 SOP 修订</text>
+  <path d="M1055 310 C1055 430 900 475 790 405" class="feedback"/><path d="M410 405 C250 475 125 410 170 310" class="feedback"/>
+  <text x="990" y="440" class="small">线上反馈</text><text x="245" y="440" class="small">流程更新</text>
+</svg>

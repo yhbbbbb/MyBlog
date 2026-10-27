@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="从 State、Node、Edge 和 Checkpoint 出发，使用 Python 构建一个带工具调用、条件分支和记忆能力的 LangGraph Agent。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangGraph 快速入门：用状态图构建可控的 Agent 工作流">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/23/langgraph-quick-start/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="从 State、Node、Edge 和 Checkpoint 出发，使用 Python 构建一个带工具调用、条件分支和记忆能力的 LangGraph Agent。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yhbbbbb.github.io/MyBlog/2026/10/23/langgraph-quick-start/langgraph-flow.svg">
+<meta property="article:published_time" content="2026-10-23T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-23T02:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="LangChain">
+<meta property="article:tag" content="LangGraph">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yhbbbbb.github.io/MyBlog/2026/10/23/langgraph-quick-start/langgraph-flow.svg">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/23/langgraph-quick-start/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/23/langgraph-quick-start/","path":"2026/10/23/langgraph-quick-start/","title":"LangGraph 快速入门：用状态图构建可控的 Agent 工作流"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>LangGraph 快速入门：用状态图构建可控的 Agent 工作流 | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-LangGraph"><span class="nav-number">1.</span> <span class="nav-text">为什么需要 LangGraph</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E5%BC%A0%E5%9B%BE%E7%9C%8B%E6%87%82%E6%9C%80%E5%B0%8F%E6%89%A7%E8%A1%8C%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">一张图看懂最小执行模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E7%8E%AF%E5%A2%83"><span class="nav-number">3.</span> <span class="nav-text">准备环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%9B%BE%EF%BC%9A%E8%8A%82%E7%82%B9%E5%92%8C%E8%BE%B9"><span class="nav-number">4.</span> <span class="nav-text">第一个图：节点和边</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8%E6%9D%A1%E4%BB%B6%E8%BE%B9%E6%9E%84%E5%BB%BA%E5%86%B3%E7%AD%96"><span class="nav-number">5.</span> <span class="nav-text">用条件边构建决策</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%85%A5%E6%B6%88%E6%81%AF%E5%92%8C%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8"><span class="nav-number">6.</span> <span class="nav-text">接入消息和工具调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E8%AE%BE%E8%AE%A1%E7%9A%84%E4%B8%89%E4%B8%AA%E5%8E%9F%E5%88%99"><span class="nav-number">7.</span> <span class="nav-text">状态设计的三个原则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E4%BF%9D%E5%AD%98%E4%BA%8B%E5%AE%9E%EF%BC%8C%E4%B8%8D%E4%BF%9D%E5%AD%98%E8%BF%87%E5%A4%9A%E4%B8%B4%E6%97%B6%E6%96%87%E6%9C%AC"><span class="nav-number">7.1.</span> <span class="nav-text">状态保存事实，不保存过多临时文本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E8%BF%94%E5%9B%9E%E5%A2%9E%E9%87%8F%E6%9B%B4%E6%96%B0"><span class="nav-number">7.2.</span> <span class="nav-text">节点返回增量更新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E6%B6%88%E6%81%AF%E5%AD%97%E6%AE%B5%E5%AE%9A%E4%B9%89%E5%90%88%E5%B9%B6%E8%A7%84%E5%88%99"><span class="nav-number">7.3.</span> <span class="nav-text">为消息字段定义合并规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Checkpoint%EF%BC%9A%E8%AE%A9-Agent-%E5%8F%AF%E6%81%A2%E5%A4%8D"><span class="nav-number">8.</span> <span class="nav-text">Checkpoint：让 Agent 可恢复</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF%E5%92%8C%E6%8E%92%E6%9F%A5%E9%A1%BA%E5%BA%8F"><span class="nav-number">9.</span> <span class="nav-text">常见错误和排查顺序</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#KeyError-%E6%88%96%E8%8A%82%E7%82%B9%E8%AF%BB%E4%B8%8D%E5%88%B0%E5%AD%97%E6%AE%B5"><span class="nav-number">9.1.</span> <span class="nav-text">KeyError 或节点读不到字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E7%BC%96%E8%AF%91%E5%A4%B1%E8%B4%A5%E6%88%96%E8%BF%90%E8%A1%8C%E5%90%8E%E6%B2%A1%E6%9C%89%E7%BB%93%E6%9D%9F"><span class="nav-number">9.2.</span> <span class="nav-text">图编译失败或运行后没有结束</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E6%B2%A1%E6%9C%89%E8%B0%83%E7%94%A8%E5%B7%A5%E5%85%B7"><span class="nav-number">9.3.</span> <span class="nav-text">模型没有调用工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Checkpoint-%E7%9C%8B%E4%B8%8D%E5%88%B0%E5%8E%86%E5%8F%B2"><span class="nav-number">9.4.</span> <span class="nav-text">Checkpoint 看不到历史</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%BC%8F%E8%BE%93%E5%87%BA%E4%B8%8E%E6%9C%80%E7%BB%88%E7%8A%B6%E6%80%81%E4%B8%8D%E4%B8%80%E8%87%B4"><span class="nav-number">9.5.</span> <span class="nav-text">流式输出与最终状态不一致</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E-Demo-%E5%88%B0%E7%94%9F%E4%BA%A7%E7%9A%84%E8%B7%AF%E7%BA%BF"><span class="nav-number">10.</span> <span class="nav-text">从 Demo 到生产的路线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">11.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/23/langgraph-quick-start/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="LangGraph 快速入门：用状态图构建可控的 Agent 工作流 | WantBeing">
+      <meta itemprop="description" content="从 State、Node、Edge 和 Checkpoint 出发，使用 Python 构建一个带工具调用、条件分支和记忆能力的 LangGraph Agent。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LangGraph 快速入门：用状态图构建可控的 Agent 工作流
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-23 10:00:00" itemprop="dateCreated datePublished" datetime="2026-10-23T10:00:00+08:00">2026-10-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/AI-Agent/" itemprop="url" rel="index"><span itemprop="name">AI Agent</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">从 State、Node、Edge 和 Checkpoint 出发，使用 Python 构建一个带工具调用、条件分支和记忆能力的 LangGraph Agent。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>Agent 的关键不是让模型“自己想很多步”，而是把每一步的状态、可用工具和下一步路径定义清楚。LangGraph 用图结构把这种流程变成可以检查、暂停和恢复的程序。</p>
+</blockquote>
+<h2 id="为什么需要-LangGraph"><a href="#为什么需要-LangGraph" class="headerlink" title="为什么需要 LangGraph"></a>为什么需要 LangGraph</h2><p>只用一次 LLM 调用时，代码通常是“准备提示词、调用模型、读取回答”。但真实应用很快会出现更多步骤：先判断用户意图，再查询数据库；工具失败时重试；需要人工确认时暂停；对话继续时保留前面的消息；最终还要记录每一步发生了什么。</p>
+<p>如果这些逻辑全部写在一个很长的 <code>while</code> 循环里，状态变量、异常处理和分支条件会互相缠绕。LangGraph 将流程拆成四类对象：</p>
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>作用</th>
+<th>在代码中的表现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>State</td>
+<td>保存节点之间共享的数据</td>
+<td><code>TypedDict</code>、<code>MessagesState</code></td>
+</tr>
+<tr>
+<td>Node</td>
+<td>修改状态的函数或 Runnable</td>
+<td><code>def call_model(state): ...</code></td>
+</tr>
+<tr>
+<td>Edge</td>
+<td>决定下一步走向</td>
+<td><code>add_edge</code>、<code>add_conditional_edges</code></td>
+</tr>
+<tr>
+<td>Checkpoint</td>
+<td>保存某次运行的状态</td>
+<td><code>InMemorySaver</code>、数据库 Checkpointer</td>
+</tr>
+</tbody></table>
+<p>图不是为了画一张漂亮的流程图，而是为了让执行边界变得明确：节点接收什么、返回什么、什么条件会转向哪里、何时结束。</p>
+<h2 id="一张图看懂最小执行模型"><a href="#一张图看懂最小执行模型" class="headerlink" title="一张图看懂最小执行模型"></a>一张图看懂最小执行模型</h2><img src="/MyBlog/2026/10/23/langgraph-quick-start/langgraph-flow.svg" class="" title="LangGraph Agent 的状态、节点、工具和条件边流程图">
+
+<p>图中每次节点执行都会读取当前 State，并返回需要合并回 State 的字段。模型节点可以直接结束，也可以请求工具；工具节点执行完成后，边再把控制权交回模型。<a href="/MyBlog/2026/10/23/langgraph-quick-start/langgraph-flow.excalidraw">下载可编辑的 Excalidraw 源文件</a>。SVG 和源文件保存在本文资源目录中。</p>
+<h2 id="准备环境"><a href="#准备环境" class="headerlink" title="准备环境"></a>准备环境</h2><p>下面示例以 Python 3.10+ 为基线。LangGraph 本身负责图执行，模型和工具通常来自 LangChain 集成包。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">python <span class="literal">-m</span> venv .venv</span><br><span class="line">.\.venv\Scripts\Activate.ps1</span><br><span class="line">python <span class="literal">-m</span> pip install <span class="literal">-U</span> pip</span><br><span class="line">pip install <span class="literal">-U</span> langgraph langchain langchain<span class="literal">-openai</span></span><br></pre></td></tr></table></figure>
+
+<p>如果使用其他模型提供商，只替换对应的模型集成包和初始化代码即可。不要把 API Key 写进源码或提交到 Git：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$env:OPENAI_API_KEY</span> = <span class="string">&quot;你的 API Key&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>在 CI 或生产环境中，应使用 GitHub Actions Secrets、系统环境变量或密钥服务注入凭据。本文代码以 LangGraph 当前 Python API 为主，具体模型参数和包版本请以官方文档为准。</p>
+<h2 id="第一个图：节点和边"><a href="#第一个图：节点和边" class="headerlink" title="第一个图：节点和边"></a>第一个图：节点和边</h2><p>先不接模型，用一个计数器理解图的基本执行方式。State 是节点之间传递的字典，节点返回的字段会合并回当前状态。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing_extensions <span class="keyword">import</span> TypedDict</span><br><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> START, END, StateGraph</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CounterState</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    count: <span class="built_in">int</span></span><br><span class="line">    message: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add_one</span>(<span class="params">state: CounterState</span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;count&quot;</span>: state[<span class="string">&quot;count&quot;</span>] + <span class="number">1</span>&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">format_message</span>(<span class="params">state: CounterState</span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;message&quot;</span>: <span class="string">f&quot;当前计数：<span class="subst">&#123;state[<span class="string">&#x27;count&#x27;</span>]&#125;</span>&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">builder = StateGraph(CounterState)</span><br><span class="line">builder.add_node(<span class="string">&quot;add_one&quot;</span>, add_one)</span><br><span class="line">builder.add_node(<span class="string">&quot;format_message&quot;</span>, format_message)</span><br><span class="line">builder.add_edge(START, <span class="string">&quot;add_one&quot;</span>)</span><br><span class="line">builder.add_edge(<span class="string">&quot;add_one&quot;</span>, <span class="string">&quot;format_message&quot;</span>)</span><br><span class="line">builder.add_edge(<span class="string">&quot;format_message&quot;</span>, END)</span><br><span class="line"></span><br><span class="line">graph = builder.<span class="built_in">compile</span>()</span><br><span class="line">result = graph.invoke(&#123;<span class="string">&quot;count&quot;</span>: <span class="number">0</span>, <span class="string">&quot;message&quot;</span>: <span class="string">&quot;&quot;</span>&#125;)</span><br><span class="line"><span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
+
+<p>执行顺序是 <code>START -&gt; add_one -&gt; format_message -&gt; END</code>。<code>compile()</code> 会校验图的连接关系并返回可执行对象；之后可以用 <code>invoke()</code> 执行一次，用 <code>stream()</code> 观察中间事件。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> event <span class="keyword">in</span> graph.stream(&#123;<span class="string">&quot;count&quot;</span>: <span class="number">2</span>, <span class="string">&quot;message&quot;</span>: <span class="string">&quot;&quot;</span>&#125;, stream_mode=<span class="string">&quot;updates&quot;</span>):</span><br><span class="line">    <span class="built_in">print</span>(event)</span><br></pre></td></tr></table></figure>
+
+<p>调试 Agent 时，先把每个节点的输入和输出记录下来，比只打印最终回答更容易定位问题。</p>
+<h2 id="用条件边构建决策"><a href="#用条件边构建决策" class="headerlink" title="用条件边构建决策"></a>用条件边构建决策</h2><p>真实流程很少只有一条直线。条件边的路由函数读取 State，返回一个字符串；这个字符串通过映射表对应到下一个节点。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Literal</span></span><br><span class="line"><span class="keyword">from</span> typing_extensions <span class="keyword">import</span> TypedDict</span><br><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> START, END, StateGraph</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TicketState</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    question: <span class="built_in">str</span></span><br><span class="line">    category: <span class="built_in">str</span></span><br><span class="line">    answer: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">classify</span>(<span class="params">state: TicketState</span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">    question = state[<span class="string">&quot;question&quot;</span>]</span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;退款&quot;</span> <span class="keyword">in</span> question <span class="keyword">or</span> <span class="string">&quot;报销&quot;</span> <span class="keyword">in</span> question:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;category&quot;</span>: <span class="string">&quot;policy&quot;</span>&#125;</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;category&quot;</span>: <span class="string">&quot;general&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">route</span>(<span class="params">state: TicketState</span>) -&gt; <span class="type">Literal</span>[<span class="string">&quot;policy&quot;</span>, <span class="string">&quot;general&quot;</span>]:</span><br><span class="line">    <span class="keyword">return</span> state[<span class="string">&quot;category&quot;</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">answer_policy</span>(<span class="params">state: TicketState</span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;answer&quot;</span>: <span class="string">&quot;请先检索当前生效的制度原文，再给出带来源的回答。&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">answer_general</span>(<span class="params">state: TicketState</span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;answer&quot;</span>: <span class="string">&quot;这是一个通用问题，可以交给普通问答节点处理。&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">builder = StateGraph(TicketState)</span><br><span class="line">builder.add_node(<span class="string">&quot;classify&quot;</span>, classify)</span><br><span class="line">builder.add_node(<span class="string">&quot;policy&quot;</span>, answer_policy)</span><br><span class="line">builder.add_node(<span class="string">&quot;general&quot;</span>, answer_general)</span><br><span class="line">builder.add_edge(START, <span class="string">&quot;classify&quot;</span>)</span><br><span class="line">builder.add_conditional_edges(</span><br><span class="line">    <span class="string">&quot;classify&quot;</span>,</span><br><span class="line">    route,</span><br><span class="line">    &#123;<span class="string">&quot;policy&quot;</span>: <span class="string">&quot;policy&quot;</span>, <span class="string">&quot;general&quot;</span>: <span class="string">&quot;general&quot;</span>&#125;,</span><br><span class="line">)</span><br><span class="line">builder.add_edge(<span class="string">&quot;policy&quot;</span>, END)</span><br><span class="line">builder.add_edge(<span class="string">&quot;general&quot;</span>, END)</span><br><span class="line">ticket_graph = builder.<span class="built_in">compile</span>()</span><br></pre></td></tr></table></figure>
+
+<p>路由函数最好只负责决策，不在里面执行副作用。把分类、检索、生成分别建成节点，便于替换实现、单独测试和统计耗时。</p>
+<h2 id="接入消息和工具调用"><a href="#接入消息和工具调用" class="headerlink" title="接入消息和工具调用"></a>接入消息和工具调用</h2><p>Agent 常见的循环是“模型决定是否调用工具 -&gt; 工具返回结果 -&gt; 模型继续回答”。LangGraph 提供 <code>MessagesState</code> 保存消息列表；LangChain 的 <code>ToolNode</code> 可以执行模型请求的工具，<code>tools_condition</code> 可以根据最后一条消息是否包含工具调用来选择路径。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain_core.messages <span class="keyword">import</span> HumanMessage</span><br><span class="line"><span class="keyword">from</span> langchain_core.tools <span class="keyword">import</span> tool</span><br><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI</span><br><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> START, END, MessagesState, StateGraph</span><br><span class="line"><span class="keyword">from</span> langgraph.prebuilt <span class="keyword">import</span> ToolNode, tools_condition</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@tool</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_weather</span>(<span class="params">city: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;返回示例天气；生产环境应调用真实天气 API。&quot;&quot;&quot;</span></span><br><span class="line">    demo = &#123;<span class="string">&quot;北京&quot;</span>: <span class="string">&quot;晴，22°C&quot;</span>, <span class="string">&quot;上海&quot;</span>: <span class="string">&quot;小雨，19°C&quot;</span>&#125;</span><br><span class="line">    <span class="keyword">return</span> demo.get(city, <span class="string">f&quot;没有找到 <span class="subst">&#123;city&#125;</span> 的天气数据&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">tools = [get_weather]</span><br><span class="line">model = ChatOpenAI(model=<span class="string">&quot;gpt-4o-mini&quot;</span>, temperature=<span class="number">0</span>).bind_tools(tools)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">call_model</span>(<span class="params">state: MessagesState</span>):</span><br><span class="line">    response = model.invoke(state[<span class="string">&quot;messages&quot;</span>])</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;messages&quot;</span>: [response]&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">builder = StateGraph(MessagesState)</span><br><span class="line">builder.add_node(<span class="string">&quot;model&quot;</span>, call_model)</span><br><span class="line">builder.add_node(<span class="string">&quot;tools&quot;</span>, ToolNode(tools))</span><br><span class="line">builder.add_edge(START, <span class="string">&quot;model&quot;</span>)</span><br><span class="line">builder.add_conditional_edges(</span><br><span class="line">    <span class="string">&quot;model&quot;</span>,</span><br><span class="line">    tools_condition,</span><br><span class="line">    &#123;<span class="string">&quot;tools&quot;</span>: <span class="string">&quot;tools&quot;</span>, END: END&#125;,</span><br><span class="line">)</span><br><span class="line">builder.add_edge(<span class="string">&quot;tools&quot;</span>, <span class="string">&quot;model&quot;</span>)</span><br><span class="line">agent = builder.<span class="built_in">compile</span>()</span><br><span class="line"></span><br><span class="line">result = agent.invoke(&#123;</span><br><span class="line">    <span class="string">&quot;messages&quot;</span>: [HumanMessage(content=<span class="string">&quot;北京今天天气怎么样？&quot;</span>)]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="built_in">print</span>(result[<span class="string">&quot;messages&quot;</span>][-<span class="number">1</span>].content)</span><br></pre></td></tr></table></figure>
+
+<p>这段代码需要模型具备工具调用能力。<code>ToolNode</code> 并不会替你验证工具参数、权限或外部 API 的返回内容；生产代码应增加参数校验、超时、重试、限流和敏感操作确认。对于付款、删除、发送邮件等不可逆操作，建议在工具节点前增加人工审批节点。</p>
+<h2 id="状态设计的三个原则"><a href="#状态设计的三个原则" class="headerlink" title="状态设计的三个原则"></a>状态设计的三个原则</h2><h3 id="状态保存事实，不保存过多临时文本"><a href="#状态保存事实，不保存过多临时文本" class="headerlink" title="状态保存事实，不保存过多临时文本"></a>状态保存事实，不保存过多临时文本</h3><p>State 中应放后续节点真正需要的数据，例如 <code>messages</code>、<code>user_id</code>、<code>search_results</code>、<code>approved</code>。把整段调试日志和重复的提示词都塞进 State，会增加序列化、持久化和上下文成本。</p>
+<h3 id="节点返回增量更新"><a href="#节点返回增量更新" class="headerlink" title="节点返回增量更新"></a>节点返回增量更新</h3><p>节点通常只返回它负责修改的字段：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">retrieve</span>(<span class="params">state</span>):</span><br><span class="line">    documents = search(state[<span class="string">&quot;messages&quot;</span>][-<span class="number">1</span>].content)</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;documents&quot;</span>: documents&#125;</span><br></pre></td></tr></table></figure>
+
+<p>不要在每个节点里复制一份完整 State 再返回。字段越集中，越容易判断是谁改变了数据。</p>
+<h3 id="为消息字段定义合并规则"><a href="#为消息字段定义合并规则" class="headerlink" title="为消息字段定义合并规则"></a>为消息字段定义合并规则</h3><p>消息列表需要追加，而不是每次覆盖。<code>MessagesState</code> 已经提供了适合消息的 reducer；自定义 State 时，如果同一字段会被多个节点更新，要明确采用覆盖、追加还是自定义合并，否则并行节点可能产生难以解释的结果。</p>
+<h2 id="Checkpoint：让-Agent-可恢复"><a href="#Checkpoint：让-Agent-可恢复" class="headerlink" title="Checkpoint：让 Agent 可恢复"></a>Checkpoint：让 Agent 可恢复</h2><p>没有 Checkpoint 时，<code>invoke()</code> 结束后，图运行期间的 State 不会自动成为下一次请求的记忆。开发阶段可以使用内存保存器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langgraph.checkpoint.memory <span class="keyword">import</span> InMemorySaver</span><br><span class="line"></span><br><span class="line">checkpointer = InMemorySaver()</span><br><span class="line">agent = builder.<span class="built_in">compile</span>(checkpointer=checkpointer)</span><br><span class="line"></span><br><span class="line">config = &#123;<span class="string">&quot;configurable&quot;</span>: &#123;<span class="string">&quot;thread_id&quot;</span>: <span class="string">&quot;demo-user-001&quot;</span>&#125;&#125;</span><br><span class="line">agent.invoke(</span><br><span class="line">    &#123;<span class="string">&quot;messages&quot;</span>: [HumanMessage(content=<span class="string">&quot;我在北京，天气如何？&quot;</span>)]&#125;,</span><br><span class="line">    config,</span><br><span class="line">)</span><br><span class="line">agent.invoke(</span><br><span class="line">    &#123;<span class="string">&quot;messages&quot;</span>: [HumanMessage(content=<span class="string">&quot;那上海呢？&quot;</span>)]&#125;,</span><br><span class="line">    config,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>两次调用使用同一个 <code>thread_id</code>，图才有机会读取同一条会话的历史。<code>InMemorySaver</code> 只适合本地调试，服务重启后数据会消失；生产环境应根据官方支持情况选择数据库 Checkpointer，并设计会话过期、隐私删除和迁移策略。</p>
+<p>Checkpoint 还可以支持：</p>
+<ul>
+<li>在关键节点暂停，等待人工确认后继续；</li>
+<li>某一步失败后从最近状态恢复，而不是从头调用模型；</li>
+<li>查看某个线程的状态变化，重放一次问题；</li>
+<li>在部署新版本前保留旧图运行记录。</li>
+</ul>
+<h2 id="常见错误和排查顺序"><a href="#常见错误和排查顺序" class="headerlink" title="常见错误和排查顺序"></a>常见错误和排查顺序</h2><h3 id="KeyError-或节点读不到字段"><a href="#KeyError-或节点读不到字段" class="headerlink" title="KeyError 或节点读不到字段"></a><code>KeyError</code> 或节点读不到字段</h3><p>先检查 State 类型定义、入口输入和上游节点返回值。节点返回的键必须与 State 字段一致；条件路由读取的字段必须在它之前被写入。</p>
+<h3 id="图编译失败或运行后没有结束"><a href="#图编译失败或运行后没有结束" class="headerlink" title="图编译失败或运行后没有结束"></a>图编译失败或运行后没有结束</h3><p>检查每个节点是否能从 <code>START</code> 到达，终止路径是否连接到 <code>END</code>，条件边映射的返回值是否覆盖所有分支。循环图必须有明确的退出条件，不能只依赖模型“应该会停”。</p>
+<h3 id="模型没有调用工具"><a href="#模型没有调用工具" class="headerlink" title="模型没有调用工具"></a>模型没有调用工具</h3><p>确认模型支持 tool calling，且调用了 <code>bind_tools(tools)</code>；工具函数需要清晰的名称、参数类型和 docstring。打印模型返回的最后一条消息，检查是否真的存在 <code>tool_calls</code>。</p>
+<h3 id="Checkpoint-看不到历史"><a href="#Checkpoint-看不到历史" class="headerlink" title="Checkpoint 看不到历史"></a>Checkpoint 看不到历史</h3><p>检查每次调用是否传入相同的 <code>configurable.thread_id</code>，并确认使用的 Checkpointer 与图实例一致。多用户服务不能把所有请求复用同一个 thread ID。</p>
+<h3 id="流式输出与最终状态不一致"><a href="#流式输出与最终状态不一致" class="headerlink" title="流式输出与最终状态不一致"></a>流式输出与最终状态不一致</h3><p><code>stream()</code> 返回的是中间事件，事件模式不同，结构也不同。先固定 <code>stream_mode</code>，再把每类事件记录成测试样例；不要把中间 token 直接当成最终 State。</p>
+<h2 id="从-Demo-到生产的路线"><a href="#从-Demo-到生产的路线" class="headerlink" title="从 Demo 到生产的路线"></a>从 Demo 到生产的路线</h2><p>可以按下面顺序逐步升级：</p>
+<ol>
+<li>用一个无模型的计数图验证 State、节点和边。</li>
+<li>接入一个只读工具，记录模型、工具和路由的每次输入输出。</li>
+<li>加入错误重试、超时、工具白名单和请求级 trace ID。</li>
+<li>为条件路由准备正例、边界例和错误路由测试。</li>
+<li>用 Checkpoint 支持会话恢复和人工审批，并明确数据保留策略。</li>
+<li>统计每个节点的延迟、失败率、Token 成本和循环次数。</li>
+<li>对高风险工具增加权限校验、幂等键和人工确认。</li>
+</ol>
+<p>LangGraph 解决的是“如何编排和控制 Agent 执行过程”，不是自动替你解决知识库质量、提示词质量、模型幻觉或业务权限。它最有价值的地方，是让这些问题落在可以观察、测试和回滚的节点边界上。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.runoob.com/ai-agent/langgraph-quick-start.html">菜鸟教程：LangGraph 快速入门</a>，本文的入门阅读来源。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.langchain.com/oss/python/langgraph/quickstart">LangGraph 官方 Quickstart</a>，核对 <code>StateGraph</code>、节点、边和编译流程。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.langchain.com/oss/python/langgraph/graph-api">LangGraph 官方文档：Graph API</a>，核对 State、Reducer、START&#x2F;END 和条件边。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.langchain.com/oss/python/langgraph/persistence">LangGraph 官方文档：Persistence</a>，核对 Checkpoint、thread 和恢复机制。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.langchain.com/oss/python/langgraph/prebuilt">LangGraph 官方文档：Prebuilt components</a>，核对 <code>ToolNode</code> 和 <code>tools_condition</code>。</li>
+</ul>
+<p>本文代码为教学示例，模型名称、包版本和集成接口可能随 SDK 更新；运行前请以对应版本官方文档为准。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/LangGraph/" rel="tag"># LangGraph</a>
+              <a href="/MyBlog/tags/LangChain/" rel="tag"># LangChain</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/21/rag-evaluation/" rel="prev" title="RAG 应用实践（下）：用评估集证明系统真的变好了">
+                  <i class="fa fa-angle-left"></i> RAG 应用实践（下）：用评估集证明系统真的变好了
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/27/sop-and-software-development/" rel="next" title="我对 SOP 的理解：从职场流程到可维护代码">
+                  我对 SOP 的理解：从职场流程到可维护代码 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

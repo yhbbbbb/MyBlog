@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="使用 if、for、range 和函数拆解重复逻辑，理解循环控制、参数传递与常见函数设计习惯。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03｜条件、循环与函数：让代码按规则运行">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/17/python-control-flow/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="使用 if、for、range 和函数拆解重复逻辑，理解循环控制、参数传递与常见函数设计习惯。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-17T01:20:00.000Z">
+<meta property="article:modified_time" content="2026-10-17T01:20:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Python 教程">
+<meta property="article:tag" content="函数">
+<meta property="article:tag" content="控制流">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/17/python-control-flow/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/17/python-control-flow/","path":"2026/10/17/python-control-flow/","title":"03｜条件、循环与函数：让代码按规则运行"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>03｜条件、循环与函数：让代码按规则运行 | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A9%E7%A8%8B%E5%BA%8F%E6%9B%BF%E4%BD%A0%E5%81%9A%E9%87%8D%E5%A4%8D%E5%88%A4%E6%96%AD"><span class="nav-number">1.</span> <span class="nav-text">让程序替你做重复判断</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E8%AF%AD%E5%8F%A5%EF%BC%9A%E9%80%89%E6%8B%A9%E4%B8%80%E6%9D%A1%E8%B7%AF%E5%BE%84"><span class="nav-number">2.</span> <span class="nav-text">条件语句：选择一条路径</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%EF%BC%9A%E9%81%8D%E5%8E%86%E6%95%B0%E6%8D%AE%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E6%89%8B%E5%86%99%E4%B8%8B%E6%A0%87"><span class="nav-number">3.</span> <span class="nav-text">循环：遍历数据，而不是手写下标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%EF%BC%9A%E7%BB%99%E4%B8%80%E7%BB%84%E6%AD%A5%E9%AA%A4%E4%B8%80%E4%B8%AA%E5%90%8D%E5%AD%97"><span class="nav-number">4.</span> <span class="nav-text">函数：给一组步骤一个名字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="nav-number">5.</span> <span class="nav-text">常见误区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E6%89%B9%E9%87%8F%E7%BB%9F%E8%AE%A1%E5%88%86%E7%B1%BB%E7%BB%93%E6%9E%9C"><span class="nav-number">6.</span> <span class="nav-text">练习：批量统计分类结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="nav-number">7.</span> <span class="nav-text">下一步</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/17/python-control-flow/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="03｜条件、循环与函数：让代码按规则运行 | WantBeing">
+      <meta itemprop="description" content="使用 if、for、range 和函数拆解重复逻辑，理解循环控制、参数传递与常见函数设计习惯。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          03｜条件、循环与函数：让代码按规则运行
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-17 09:20:00" itemprop="dateCreated datePublished" datetime="2026-10-17T09:20:00+08:00">2026-10-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">使用 if、for、range 和函数拆解重复逻辑，理解循环控制、参数传递与常见函数设计习惯。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>自动化不是把一段代码重复粘贴十次，而是把变化的条件和重复的动作写成清楚的规则。</p>
+</blockquote>
+<h2 id="让程序替你做重复判断"><a href="#让程序替你做重复判断" class="headerlink" title="让程序替你做重复判断"></a>让程序替你做重复判断</h2><p>如果要检查一批文件名是否符合规则，人可以逐个看，程序则可以逐项判断。Python 的控制流工具主要包括条件语句、循环和函数：条件决定走哪条路，循环处理一组数据，函数为一组有名字的步骤划出边界。</p>
+<p>下面先看一个简单分类器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">category_for</span>(<span class="params">filename</span>):</span><br><span class="line">    <span class="keyword">if</span> filename.startswith(<span class="string">&quot;GS&quot;</span>) <span class="keyword">and</span> filename.endswith(<span class="string">&quot;K.txt&quot;</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;针织 K 类&quot;</span></span><br><span class="line">    <span class="keyword">elif</span> filename.startswith(<span class="string">&quot;GS&quot;</span>) <span class="keyword">and</span> filename.endswith(<span class="string">&quot;W.txt&quot;</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;梭织 W 类&quot;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">files = [<span class="string">&quot;GS01K.txt&quot;</span>, <span class="string">&quot;GS02W.txt&quot;</span>, <span class="string">&quot;notes.txt&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> filename <span class="keyword">in</span> files:</span><br><span class="line">    category = category_for(filename)</span><br><span class="line">    <span class="keyword">if</span> category <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;跳过：<span class="subst">&#123;filename&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;filename&#125;</span> -&gt; <span class="subst">&#123;category&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这里把“判断一个文件名”的工作放进函数，再对列表中的每个名字重复调用。规则只写一份，修改时也只需要改一个位置。</p>
+<h2 id="条件语句：选择一条路径"><a href="#条件语句：选择一条路径" class="headerlink" title="条件语句：选择一条路径"></a>条件语句：选择一条路径</h2><p>Python 用 <code>if</code>、<code>elif</code>、<code>else</code> 表达分支。条件后面必须有冒号，代码块通过缩进表示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">status = <span class="string">&quot;ready&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> status == <span class="string">&quot;ready&quot;</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;可以开始&quot;</span>)</span><br><span class="line"><span class="keyword">elif</span> status == <span class="string">&quot;waiting&quot;</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;继续等待&quot;</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;检查状态&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>==</code> 用于比较是否相等，<code>=</code> 用于赋值。初学者常把二者混淆。组合条件可以使用 <code>and</code>、<code>or</code> 和 <code>not</code>；复杂条件最好拆成带有含义的变量或函数，避免一行里塞进过多判断。</p>
+<p>Python 3.10 起还支持 <code>match</code> 结构，可用于匹配具体值或数据结构。它不只是其他语言中 <code>switch</code> 的逐项替代：模式可以解构序列和映射。简单的真假分支仍然用 <code>if</code> 更直观。</p>
+<h2 id="循环：遍历数据，而不是手写下标"><a href="#循环：遍历数据，而不是手写下标" class="headerlink" title="循环：遍历数据，而不是手写下标"></a>循环：遍历数据，而不是手写下标</h2><p><code>for</code> 循环会从可迭代对象（iterable）中依次取值：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">names = [<span class="string">&quot;日报.csv&quot;</span>, <span class="string">&quot;订单.csv&quot;</span>, <span class="string">&quot;汇总.txt&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> name <span class="keyword">in</span> names:</span><br><span class="line">    <span class="built_in">print</span>(name)</span><br></pre></td></tr></table></figure>
+
+<p>如果确实需要序号，使用 <code>enumerate</code>，不要自己维护计数器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> index, name <span class="keyword">in</span> <span class="built_in">enumerate</span>(names, start=<span class="number">1</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;index&#125;</span>. <span class="subst">&#123;name&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>range</code> 生成整数序列，结束值不包含在结果中：</p>
+<figure class="highlight pycon"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python"><span class="built_in">list</span>(<span class="built_in">range</span>(<span class="number">2</span>, <span class="number">6</span>))</span></span><br><span class="line">[2, 3, 4, 5]</span><br></pre></td></tr></table></figure>
+
+<p>常见写法是 <code>range(len(items))</code>，但如果只需要元素，直接遍历更清楚；如果需要位置和元素，一般用 <code>enumerate</code>。</p>
+<p><code>while</code> 会在条件为真时重复执行，适合“直到满足条件为止”的场景。要确保循环体能改变条件，否则程序会一直运行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">attempts = <span class="number">0</span></span><br><span class="line"><span class="keyword">while</span> attempts &lt; <span class="number">3</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;检查连接&quot;</span>)</span><br><span class="line">    attempts += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p><code>break</code> 退出最近一层循环，<code>continue</code> 跳过本轮剩余语句。循环也可以带 <code>else</code>：当循环没有被 <code>break</code> 提前结束时执行。这常用于搜索：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">target = <span class="string">&quot;订单.csv&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> name <span class="keyword">in</span> names:</span><br><span class="line">    <span class="keyword">if</span> name == target:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;找到了&quot;</span>)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;列表里没有目标文件&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>else</code> 属于 <code>for</code>，不是 <code>if</code>。如果阅读起来不直观，也可以改用一个布尔标记或单独的搜索函数。</p>
+<h2 id="函数：给一组步骤一个名字"><a href="#函数：给一组步骤一个名字" class="headerlink" title="函数：给一组步骤一个名字"></a>函数：给一组步骤一个名字</h2><p>函数通过 <code>def</code> 定义，可以接收参数并用 <code>return</code> 返回结果。没有显式 <code>return</code> 时，函数返回 <code>None</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">classify</span>(<span class="params">filename</span>):</span><br><span class="line">    <span class="keyword">if</span> filename.endswith(<span class="string">&quot;K.txt&quot;</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;K&quot;</span></span><br><span class="line">    <span class="keyword">if</span> filename.endswith(<span class="string">&quot;W.txt&quot;</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;W&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>
+
+<p>参数可以使用位置或关键字传入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">make_label</span>(<span class="params">filename, prefix=<span class="string">&quot;待处理&quot;</span></span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&quot;<span class="subst">&#123;prefix&#125;</span>：<span class="subst">&#123;filename&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(make_label(<span class="string">&quot;订单.csv&quot;</span>))</span><br><span class="line"><span class="built_in">print</span>(make_label(<span class="string">&quot;订单.csv&quot;</span>, prefix=<span class="string">&quot;已发现&quot;</span>))</span><br></pre></td></tr></table></figure>
+
+<p>默认参数在函数定义时求值。不要把可变列表或字典直接作为默认值，否则多个调用可能共享同一个对象：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">add_item</span>(<span class="params">item, items=<span class="literal">None</span></span>):</span><br><span class="line">    <span class="keyword">if</span> items <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        items = []</span><br><span class="line">    items.append(item)</span><br><span class="line">    <span class="keyword">return</span> items</span><br></pre></td></tr></table></figure>
+
+<p>函数可以用文档字符串说明用途，也可以用类型标注表达预期输入和输出：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">file_count</span>(<span class="params">names: <span class="built_in">list</span>[<span class="built_in">str</span>]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;返回文件名列表中的项目数量。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">len</span>(names)</span><br></pre></td></tr></table></figure>
+
+<p>类型标注默认不会在运行时强制检查类型。它主要供读者、编辑器和静态检查工具使用。</p>
+<pre>
+<code class="mermaid">
+
+flowchart TD
+    A[&quot;🔵 获取文件名&quot;] --&gt; B{&quot;🟡 符合 K 规则？&quot;}
+    B --&gt;|是| C[&quot;🟢 返回 K 类&quot;]
+    B --&gt;|否| D{&quot;🍑 符合 W 规则？&quot;}
+    D --&gt;|是| E[&quot;🟢 返回 W 类&quot;]
+    D --&gt;|否| F[&quot;🌸 返回未匹配&quot;]
+    C --&gt; G[&quot;🟣 调用者处理结果&quot;]
+    E --&gt; G
+    F --&gt; G
+    style A fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style B fill:#FFF9C4,stroke:#F9A825,color:#333
+    style C fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style D fill:#FFDAB9,stroke:#FFAB76,color:#333
+    style E fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style F fill:#FFB3C6,stroke:#F48FB1,color:#333
+    style G fill:#E8D5F5,stroke:#CE93D8,color:#333
+</code>
+</pre>
+
+<h2 id="常见误区"><a href="#常见误区" class="headerlink" title="常见误区"></a>常见误区</h2><table>
+<thead>
+<tr>
+<th>误区</th>
+<th>问题</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用 <code>range(len(items))</code> 遍历所有列表</td>
+<td>下标让代码更绕，也容易越界</td>
+<td>直接遍历元素；需要编号时用 <code>enumerate</code></td>
+</tr>
+<tr>
+<td>把 <code>print</code> 当作函数结果</td>
+<td><code>print</code> 负责显示，返回值是 <code>None</code></td>
+<td>需要计算结果时使用 <code>return</code></td>
+</tr>
+<tr>
+<td>默认参数写 <code>items=[]</code></td>
+<td>列表只在定义函数时创建一次，调用间会共享</td>
+<td>用 <code>None</code> 作为默认值，再在函数内创建列表</td>
+</tr>
+<tr>
+<td>循环中无条件使用 <code>break</code></td>
+<td>只处理到第一项就退出</td>
+<td>明确写出终止条件，并测试有&#x2F;无匹配两种情况</td>
+</tr>
+</tbody></table>
+<h2 id="练习：批量统计分类结果"><a href="#练习：批量统计分类结果" class="headerlink" title="练习：批量统计分类结果"></a>练习：批量统计分类结果</h2><p>扩展前面的 <code>category_for</code>，遍历至少五个文件名，分别统计 K 类、W 类和未匹配文件的数量。把“判断分类”和“统计输出”放在不同函数中。</p>
+<p>测试时要包括边界样例：空列表、没有匹配项、大小写不同的扩展名，以及名称前缀正确但后缀不正确的文件。</p>
+<h2 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h2><p>控制流告诉程序如何走，数据结构则决定程序如何保存和查找信息。下一篇会比较列表、元组、集合和字典，并用它们实现更清晰的统计逻辑。</p>
+<p><strong>官方资料</strong>：<a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3.14/tutorial/controlflow.html">更多控制流工具</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/Python-%E6%95%99%E7%A8%8B/" rel="tag"># Python 教程</a>
+              <a href="/MyBlog/tags/%E6%8E%A7%E5%88%B6%E6%B5%81/" rel="tag"># 控制流</a>
+              <a href="/MyBlog/tags/%E5%87%BD%E6%95%B0/" rel="tag"># 函数</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/17/python-introduction/" rel="prev" title="02｜Python 速览：变量、字符串与列表">
+                  <i class="fa fa-angle-left"></i> 02｜Python 速览：变量、字符串与列表
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/17/python-data-structures/" rel="next" title="04｜列表、元组、集合和字典怎么选">
+                  04｜列表、元组、集合和字典怎么选 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="学习格式化输出、模板、struct、threading、logging、weakref、itertools 和 Decimal，理解工具适用边界。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="10｜Python 标准库实用工具（二）">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/19/python-stdlib-advanced/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="学习格式化输出、模板、struct、threading、logging、weakref、itertools 和 Decimal，理解工具适用边界。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-19T02:40:00.000Z">
+<meta property="article:modified_time" content="2026-10-19T02:40:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Python 教程">
+<meta property="article:tag" content="多线程">
+<meta property="article:tag" content="日志">
+<meta property="article:tag" content="标准库">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/19/python-stdlib-advanced/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/19/python-stdlib-advanced/","path":"2026/10/19/python-stdlib-advanced/","title":"10｜Python 标准库实用工具（二）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>10｜Python 标准库实用工具（二） | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E2%80%9C%E8%84%9A%E6%9C%AC%E8%83%BD%E8%BF%90%E8%A1%8C%E2%80%9D%E8%B5%B0%E5%90%91%E2%80%9C%E8%84%9A%E6%9C%AC%E5%8F%AF%E7%BB%B4%E6%8A%A4%E2%80%9D"><span class="nav-number">1.</span> <span class="nav-text">从“脚本能运行”走向“脚本可维护”</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%BC%E5%BC%8F%E5%8C%96%E8%BE%93%E5%87%BA%E4%B8%8E%E6%A8%A1%E6%9D%BF"><span class="nav-number">2.</span> <span class="nav-text">格式化输出与模板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8-struct-%E8%AF%BB%E5%8F%96%E5%9B%BA%E5%AE%9A%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%B8%83%E5%B1%80"><span class="nav-number">3.</span> <span class="nav-text">用 struct 读取固定二进制布局</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#threading%EF%BC%9A%E9%80%82%E5%90%88%E7%AD%89%E5%BE%85%E5%9E%8B%E5%B7%A5%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">threading：适合等待型工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logging%EF%BC%9A%E4%B8%BA%E8%BF%90%E8%A1%8C%E7%95%99%E4%B8%8B%E5%8F%AF%E7%94%A8%E8%AE%B0%E5%BD%95"><span class="nav-number">5.</span> <span class="nav-text">logging：为运行留下可用记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%B1%E5%BC%95%E7%94%A8%E5%92%8C%E8%BF%AD%E4%BB%A3%E5%B7%A5%E5%85%B7"><span class="nav-number">6.</span> <span class="nav-text">弱引用和迭代工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Decimal%EF%BC%9A%E9%9C%80%E8%A6%81%E5%8D%81%E8%BF%9B%E5%88%B6%E7%B2%BE%E7%A1%AE%E8%A7%84%E5%88%99%E6%97%B6"><span class="nav-number">7.</span> <span class="nav-text">Decimal：需要十进制精确规则时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E9%80%89%E6%8B%A9%E9%80%9F%E6%9F%A5"><span class="nav-number">8.</span> <span class="nav-text">工具选择速查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E5%B9%B6%E5%8F%91%E6%A3%80%E6%9F%A5%E5%A4%9A%E4%B8%AA%E6%96%87%E4%BB%B6"><span class="nav-number">9.</span> <span class="nav-text">练习：并发检查多个文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="nav-number">10.</span> <span class="nav-text">下一步</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/19/python-stdlib-advanced/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="10｜Python 标准库实用工具（二） | WantBeing">
+      <meta itemprop="description" content="学习格式化输出、模板、struct、threading、logging、weakref、itertools 和 Decimal，理解工具适用边界。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          10｜Python 标准库实用工具（二）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-19 10:40:00" itemprop="dateCreated datePublished" datetime="2026-10-19T10:40:00+08:00">2026-10-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">学习格式化输出、模板、struct、threading、logging、weakref、itertools 和 Decimal，理解工具适用边界。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>线程可以让等待中的任务并行推进，却不会自动让程序更快、更安全。选工具之前，先确认瓶颈是什么。</p>
+</blockquote>
+<h2 id="从“脚本能运行”走向“脚本可维护”"><a href="#从“脚本能运行”走向“脚本可维护”" class="headerlink" title="从“脚本能运行”走向“脚本可维护”"></a>从“脚本能运行”走向“脚本可维护”</h2><p>标准库第二部分涉及一些更专门的工具：终端输出格式化、模板替换、二进制数据布局、多线程、日志、弱引用、列表工具和十进制计算。</p>
+<p>不需要一次记住所有模块。可以从当前问题出发：输出给谁看、数据是什么格式、任务在等待还是计算、精度要求是什么，再选择对应工具。</p>
+<h2 id="格式化输出与模板"><a href="#格式化输出与模板" class="headerlink" title="格式化输出与模板"></a>格式化输出与模板</h2><p>前文已经用 f-string 格式化输出。若模板和数据需要分开保存，可以使用 <code>string.Template</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> string <span class="keyword">import</span> Template</span><br><span class="line"></span><br><span class="line">message = Template(<span class="string">&quot;任务 $name 已完成，状态：$status&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(message.substitute(name=<span class="string">&quot;日报&quot;</span>, status=<span class="string">&quot;成功&quot;</span>))</span><br></pre></td></tr></table></figure>
+
+<p><code>substitute()</code> 遇到缺失变量会报错；<code>safe_substitute()</code> 会保留未替换占位符，适合不完整模板的展示场景。涉及用户输入时，模板替换不等同于 HTML 或 SQL 安全转义，输出到特定语言仍要用对应的安全 API。</p>
+<h2 id="用-struct-读取固定二进制布局"><a href="#用-struct-读取固定二进制布局" class="headerlink" title="用 struct 读取固定二进制布局"></a>用 struct 读取固定二进制布局</h2><p>文本适合人阅读，二进制数据常用于紧凑记录或协议。<code>struct</code> 可以按指定格式在 Python 值和字节串之间转换：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"></span><br><span class="line">record = struct.pack(<span class="string">&quot;&lt;Ih&quot;</span>, <span class="number">1024</span>, -<span class="number">3</span>)</span><br><span class="line">file_size, status = struct.unpack(<span class="string">&quot;&lt;Ih&quot;</span>, record)</span><br><span class="line"><span class="built_in">print</span>(file_size, status)</span><br></pre></td></tr></table></figure>
+
+<p>格式前缀 <code>&lt;</code> 指定小端字节序，<code>I</code> 表示无符号整数，<code>h</code> 表示短整数。二进制格式必须明确字节序、字段宽度和对齐方式；读取外部数据时还要验证长度，不能直接假定输入完整。</p>
+<h2 id="threading：适合等待型工作"><a href="#threading：适合等待型工作" class="headerlink" title="threading：适合等待型工作"></a>threading：适合等待型工作</h2><p>线程（thread）让同一进程中的多个执行路径可以交错推进。对等待网络、磁盘或其他 I&#x2F;O 的任务，多线程可以减少整体等待；对纯 Python 计算密集任务，线程通常不会让 CPU 计算按核心数线性加速。</p>
+<p>线程间共享数据需要同步。锁（lock）可以保护临界区，但锁的范围应尽可能短：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> threading <span class="keyword">import</span> Lock, Thread</span><br><span class="line"></span><br><span class="line">completed = <span class="number">0</span></span><br><span class="line">completed_lock = Lock()</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">record_completion</span>() -&gt; <span class="literal">None</span>:</span><br><span class="line">    <span class="keyword">global</span> completed</span><br><span class="line">    <span class="keyword">with</span> completed_lock:</span><br><span class="line">        completed += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">workers = [Thread(target=record_completion) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>)]</span><br><span class="line"><span class="keyword">for</span> worker <span class="keyword">in</span> workers:</span><br><span class="line">    worker.start()</span><br><span class="line"><span class="keyword">for</span> worker <span class="keyword">in</span> workers:</span><br><span class="line">    worker.join()</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(completed)</span><br></pre></td></tr></table></figure>
+
+<p><code>join()</code> 等待线程结束。真实程序还要定义异常传递、取消和超时策略。CPU 密集型工作可以评估 <code>multiprocessing</code> 或其他并行工具；不要仅因“有线程”就认为任务已并行提速。</p>
+<h2 id="logging：为运行留下可用记录"><a href="#logging：为运行留下可用记录" class="headerlink" title="logging：为运行留下可用记录"></a>logging：为运行留下可用记录</h2><p><code>print()</code> 适合临时查看结果，长期运行的程序应使用 <code>logging</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"></span><br><span class="line">logging.basicConfig(</span><br><span class="line">    level=logging.INFO,</span><br><span class="line">    <span class="built_in">format</span>=<span class="string">&quot;%(asctime)s %(levelname)s %(message)s&quot;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">logging.info(<span class="string">&quot;扫描完成：%d 个文件&quot;</span>, <span class="number">12</span>)</span><br><span class="line">logging.warning(<span class="string">&quot;目标目录暂时不可达&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>日志级别从低到高通常包括 <code>DEBUG</code>、<code>INFO</code>、<code>WARNING</code>、<code>ERROR</code> 和 <code>CRITICAL</code>。使用参数化消息 <code>logging.info(&quot;结果 %s&quot;, value)</code>，比先用 f-string 拼好字符串更方便日志系统判断是否需要格式化。</p>
+<p>应用程序通常应配置命名 logger 和 handler，而不是在每个模块重复调用 <code>basicConfig()</code>。日志也要注意轮转、保留周期和敏感信息脱敏。</p>
+<h2 id="弱引用和迭代工具"><a href="#弱引用和迭代工具" class="headerlink" title="弱引用和迭代工具"></a>弱引用和迭代工具</h2><p>弱引用（weak reference）不会阻止对象被垃圾回收，适用于缓存或观察关系等特定场景。它不是替代正常引用的默认方式；需要保证对象存活时，应持有普通引用。</p>
+<p><code>itertools</code> 提供组合、分组和迭代器链等工具：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> itertools <span class="keyword">import</span> islice</span><br><span class="line"></span><br><span class="line">numbers = (number * number <span class="keyword">for</span> number <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1_000_000</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">list</span>(islice(numbers, <span class="number">5</span>)))</span><br></pre></td></tr></table></figure>
+
+<p><code>islice</code> 只取前几个结果，不需要先创建百万项列表。迭代器工具适合数据流式处理；如果需要重复遍历或随机访问，先物化成列表会更直白。</p>
+<h2 id="Decimal：需要十进制精确规则时"><a href="#Decimal：需要十进制精确规则时" class="headerlink" title="Decimal：需要十进制精确规则时"></a>Decimal：需要十进制精确规则时</h2><p>二进制浮点数无法精确表示很多十进制小数。财务金额等需要十进制规则的场景，可以用 <code>decimal.Decimal</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> decimal <span class="keyword">import</span> Decimal</span><br><span class="line"></span><br><span class="line">price = Decimal(<span class="string">&quot;0.10&quot;</span>)</span><br><span class="line">quantity = <span class="number">3</span></span><br><span class="line">total = price * quantity</span><br><span class="line"><span class="built_in">print</span>(total)  <span class="comment"># 0.30</span></span><br></pre></td></tr></table></figure>
+
+<p>应从字符串构造 <code>Decimal</code>。<code>Decimal(0.1)</code> 会把已经近似表示的二进制浮点值带进来，失去使用十进制类型的意义。舍入规则也应依据业务明确设置。</p>
+<pre>
+<code class="mermaid">
+
+flowchart TD
+    Need[&quot;🔵 遇到实现需求&quot;] --&gt; Kind{&quot;🟡 问题类型？&quot;}
+    Kind --&gt;|长期运行诊断| Log[&quot;🟢 logging&quot;]
+    Kind --&gt;|I&#x2F;O 等待| Thread[&quot;🍑 threading + 同步&quot;]
+    Kind --&gt;|固定二进制布局| Struct[&quot;🟣 struct&quot;]
+    Kind --&gt;|十进制精度| Decimal[&quot;🌸 Decimal&quot;]
+    Kind --&gt;|迭代器组合| Iter[&quot;🟡 itertools&quot;]
+    style Need fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style Kind fill:#FFF9C4,stroke:#F9A825,color:#333
+    style Log fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style Thread fill:#FFDAB9,stroke:#FFAB76,color:#333
+    style Struct fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style Decimal fill:#FFB3C6,stroke:#F48FB1,color:#333
+    style Iter fill:#FFF9C4,stroke:#F9A825,color:#333
+</code>
+</pre>
+
+<h2 id="工具选择速查"><a href="#工具选择速查" class="headerlink" title="工具选择速查"></a>工具选择速查</h2><table>
+<thead>
+<tr>
+<th>需求</th>
+<th>工具</th>
+<th>需要留意</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>终端显示动态值</td>
+<td>f-string</td>
+<td>复杂模板考虑分离数据和模板</td>
+</tr>
+<tr>
+<td>用户可编辑的简单占位模板</td>
+<td><code>string.Template</code></td>
+<td>不提供 HTML&#x2F;SQL 安全转义</td>
+</tr>
+<tr>
+<td>固定字节布局</td>
+<td><code>struct</code></td>
+<td>明确字节序、长度和字段宽度</td>
+</tr>
+<tr>
+<td>多个 I&#x2F;O 等待任务</td>
+<td><code>threading</code></td>
+<td>共享状态需要同步，设计取消与异常策略</td>
+</tr>
+<tr>
+<td>程序运行记录</td>
+<td><code>logging</code></td>
+<td>设置级别、handler、轮转和脱敏</td>
+</tr>
+<tr>
+<td>迭代器组合和切片</td>
+<td><code>itertools</code></td>
+<td>多数迭代器只能消费一次</td>
+</tr>
+<tr>
+<td>十进制精确运算</td>
+<td><code>Decimal</code></td>
+<td>从字符串构造并明确舍入规则</td>
+</tr>
+</tbody></table>
+<h2 id="练习：并发检查多个文件"><a href="#练习：并发检查多个文件" class="headerlink" title="练习：并发检查多个文件"></a>练习：并发检查多个文件</h2><p>模拟检查多个路径是否存在。先用普通循环，再用线程执行这些 I&#x2F;O 检查；确保每个线程只负责独立检查，主线程汇总结果。记录日志而不是只打印，并测试其中一个路径无权限或不存在时的表现。</p>
+<p>不要用很小的样本宣称线程一定更快。对真实收益进行判断，需要足够多的等待任务和可重复的测量。</p>
+<h2 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h2><p>标准库提供的是可组合的积木，不是应该全部加入项目的功能清单。先识别问题，再选择能减少复杂度的模块；下一篇将学习虚拟环境和包管理，把项目依赖隔离并固定下来。</p>
+<p><strong>官方资料</strong>：<a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3.14/tutorial/stdlib2.html">标准库概览第二部分</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/Python-%E6%95%99%E7%A8%8B/" rel="tag"># Python 教程</a>
+              <a href="/MyBlog/tags/%E6%A0%87%E5%87%86%E5%BA%93/" rel="tag"># 标准库</a>
+              <a href="/MyBlog/tags/%E6%97%A5%E5%BF%97/" rel="tag"># 日志</a>
+              <a href="/MyBlog/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"># 多线程</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/19/python-stdlib/" rel="prev" title="09｜Python 标准库实用工具（一）">
+                  <i class="fa fa-angle-left"></i> 09｜Python 标准库实用工具（一）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/19/yy-fabric-dashboard/" rel="next" title="从表格到看板：YY 面料数据串联项目复盘">
+                  从表格到看板：YY 面料数据串联项目复盘 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

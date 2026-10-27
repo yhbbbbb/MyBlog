@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="建立可复用的 RAG 评估集，分别衡量检索、回答忠实度、相关性、延迟和成本，并把离线评估连接到持续监控。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAG 应用实践（下）：用评估集证明系统真的变好了">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/21/rag-evaluation/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="建立可复用的 RAG 评估集，分别衡量检索、回答忠实度、相关性、延迟和成本，并把离线评估连接到持续监控。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yhbbbbb.github.io/MyBlog/2026/10/21/rag-evaluation/rag-evaluation-loop.svg">
+<meta property="article:published_time" content="2026-10-21T10:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-21T10:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="LangSmith">
+<meta property="article:tag" content="RAG">
+<meta property="article:tag" content="RAGAS">
+<meta property="article:tag" content="系统评估">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yhbbbbb.github.io/MyBlog/2026/10/21/rag-evaluation/rag-evaluation-loop.svg">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/21/rag-evaluation/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/21/rag-evaluation/","path":"2026/10/21/rag-evaluation/","title":"RAG 应用实践（下）：用评估集证明系统真的变好了"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>RAG 应用实践（下）：用评估集证明系统真的变好了 | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#RAG-%E8%87%B3%E5%B0%91%E8%A6%81%E8%AF%84%E4%BC%B0%E4%B8%89%E4%B8%AA%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.</span> <span class="nav-text">RAG 至少要评估三个对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%BA%E7%AB%8B%E4%B8%80%E4%BB%BD%E5%B0%8F%E8%80%8C%E6%9C%89%E4%BB%A3%E8%A1%A8%E6%80%A7%E7%9A%84%E8%AF%84%E4%BC%B0%E9%9B%86"><span class="nav-number">2.</span> <span class="nav-text">建立一份小而有代表性的评估集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B1%82%E6%8C%87%E6%A0%87%EF%BC%8C%E4%B8%8D%E8%AE%A9%E4%B8%80%E4%B8%AA%E5%88%86%E6%95%B0%E6%8E%A9%E7%9B%96%E5%A4%B1%E8%B4%A5"><span class="nav-number">3.</span> <span class="nav-text">分层指标，不让一个分数掩盖失败</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E7%B4%A2%E6%8C%87%E6%A0%87"><span class="nav-number">3.1.</span> <span class="nav-text">检索指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%8C%87%E6%A0%87"><span class="nav-number">3.2.</span> <span class="nav-text">生成指标</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%BA%E5%B7%A5%E8%AF%84%E4%BC%B0%E5%92%8C%E8%87%AA%E5%8A%A8%E5%8C%96%E8%AF%84%E4%BC%B0%E9%85%8D%E5%90%88%E4%BD%BF%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">人工评估和自动化评估配合使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E7%A6%BB%E7%BA%BF%E5%88%86%E6%95%B0%E8%B5%B0%E5%90%91%E7%BA%BF%E4%B8%8A%E5%8F%AF%E9%9D%A0%E6%80%A7"><span class="nav-number">5.</span> <span class="nav-text">从离线分数走向线上可靠性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E8%AF%84%E4%BC%B0%E4%B8%80%E6%AC%A1%E6%A3%80%E7%B4%A2%E4%BC%98%E5%8C%96"><span class="nav-number">6.</span> <span class="nav-text">练习：评估一次检索优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E5%88%97%E5%9B%9E%E9%A1%BE"><span class="nav-number">7.</span> <span class="nav-text">系列回顾</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">8.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/21/rag-evaluation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="RAG 应用实践（下）：用评估集证明系统真的变好了 | WantBeing">
+      <meta itemprop="description" content="建立可复用的 RAG 评估集，分别衡量检索、回答忠实度、相关性、延迟和成本，并把离线评估连接到持续监控。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RAG 应用实践（下）：用评估集证明系统真的变好了
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-21 18:00:00" itemprop="dateCreated datePublished" datetime="2026-10-21T18:00:00+08:00">2026-10-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">建立可复用的 RAG 评估集，分别衡量检索、回答忠实度、相关性、延迟和成本，并把离线评估连接到持续监控。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>换了 Embedding、切块或提示词后，如果没有固定的问题集对照，团队只能凭几条演示问题猜测系统有没有进步。</p>
+</blockquote>
+<h2 id="RAG-至少要评估三个对象"><a href="#RAG-至少要评估三个对象" class="headerlink" title="RAG 至少要评估三个对象"></a>RAG 至少要评估三个对象</h2><p>完整 RAG 的输入是问题，检索器返回上下文，生成器输出答案。评估不能只给最终答案打一个总分：检索失败和生成失败需要不同的修复方式。</p>
+<img src="/MyBlog/2026/10/21/rag-evaluation/rag-evaluation-loop.svg" class="" title="RAG 离线评估与线上监控闭环图">
+
+<p>离线评估用于比较改动，线上监控则用于发现真实用户问题分布和数据变化。</p>
+<h2 id="建立一份小而有代表性的评估集"><a href="#建立一份小而有代表性的评估集" class="headerlink" title="建立一份小而有代表性的评估集"></a>建立一份小而有代表性的评估集</h2><p>每条样例至少保存：用户问题、正确答案要点、支持答案的来源文档或段落、问题类型，以及可能的不可回答标记。样例应覆盖常见问题、长尾问题、模糊表达、相似文档干扰和资料缺失情况。</p>
+<p>可以从真实日志抽样，但要移除个人信息和敏感内容。专家标注成本高时，先选 30 到 100 个高价值问题，确保每个重要类别都有覆盖，再逐步扩充。评估集不是越大越好，标签必须可信且能追溯。</p>
+<p>建议用 JSONL 管理样本，每一行是一条独立记录，便于 Git diff、批量运行和增量标注。答案可以保存必要事实点，而不是只保存一段标准措辞；这样能接受语义等价的回答，同时保持可审计的判定依据。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;expense-001&quot;</span><span class="punctuation">,</span><span class="attr">&quot;question&quot;</span><span class="punctuation">:</span><span class="string">&quot;出差回来后多久要提交报销？&quot;</span><span class="punctuation">,</span><span class="attr">&quot;reference_points&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="string">&quot;返程后10个工作日内&quot;</span><span class="punctuation">,</span><span class="string">&quot;提交报销申请&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="attr">&quot;relevant_chunk_ids&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="string">&quot;travel-policy-v3:42&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="attr">&quot;answerable&quot;</span><span class="punctuation">:</span><span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span><span class="attr">&quot;category&quot;</span><span class="punctuation">:</span><span class="string">&quot;期限&quot;</span><span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;expense-002&quot;</span><span class="punctuation">,</span><span class="attr">&quot;question&quot;</span><span class="punctuation">:</span><span class="string">&quot;临时出差的特殊报销额度是多少？&quot;</span><span class="punctuation">,</span><span class="attr">&quot;reference_points&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="attr">&quot;relevant_chunk_ids&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="attr">&quot;answerable&quot;</span><span class="punctuation">:</span><span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span><span class="attr">&quot;category&quot;</span><span class="punctuation">:</span><span class="string">&quot;资料缺失&quot;</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>relevant_chunk_ids</code> 应标出所有必要证据，不应只记录一条“看起来相关”的段落。不可回答样本同样重要：它们用于检查系统是否会在资料缺失时坦率拒答，而不是把相似内容拼成一个看似可信的答案。</p>
+<h2 id="分层指标，不让一个分数掩盖失败"><a href="#分层指标，不让一个分数掩盖失败" class="headerlink" title="分层指标，不让一个分数掩盖失败"></a>分层指标，不让一个分数掩盖失败</h2><table>
+<thead>
+<tr>
+<th>层次</th>
+<th>常见指标</th>
+<th>它回答的问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>检索</td>
+<td>Recall@k、Precision@k、MRR、nDCG</td>
+<td>正确证据是否进入候选，位置是否足够靠前？</td>
+</tr>
+<tr>
+<td>上下文</td>
+<td>Context Precision、Context Recall</td>
+<td>上下文是否相关、是否覆盖回答所需事实？</td>
+</tr>
+<tr>
+<td>生成</td>
+<td>Faithfulness、Answer Relevance</td>
+<td>回答是否被证据支持，是否回应了问题？</td>
+</tr>
+<tr>
+<td>运行</td>
+<td>延迟、失败率、Token&#x2F;调用成本</td>
+<td>系统是否足够快、稳定且可负担？</td>
+</tr>
+</tbody></table>
+<p>指标定义会因评估工具而有细节差异。例如 Recall@k 依赖你如何标注文档相关性；Faithfulness 常由另一个模型评审，也会继承评审模型的偏差。因此指标要结合人工复核和固定样例使用。</p>
+<h3 id="检索指标"><a href="#检索指标" class="headerlink" title="检索指标"></a>检索指标</h3><p>Recall@k 衡量相关证据是否出现在前 <code>k</code> 个结果中；Precision@k 衡量这 <code>k</code> 个结果里相关内容占多少。MRR 关注第一个相关结果的位置，nDCG 则考虑多个结果的排序和相关等级。</p>
+<p>如果答案依赖两个不同章节，单看第一条命中会高估检索效果。标注时需要记录全部必要证据，而不只是最容易找到的一段。</p>
+<p>下面这个纯 Python 实现可以计算单问题的 Recall@k、Precision@k 和 MRR。它假设每个相关块同等重要；若相关性有等级差异或问题需要多个证据联合回答，应另外计算 nDCG，并用人工检查确认标注口径。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">retrieval_metrics</span>(<span class="params">retrieved_ids: <span class="built_in">list</span>[<span class="built_in">str</span>], relevant_ids: <span class="built_in">set</span>[<span class="built_in">str</span>], k: <span class="built_in">int</span> = <span class="number">5</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;对一个问题计算基础检索指标。空相关集返回 None，避免伪造高分。&quot;&quot;&quot;</span></span><br><span class="line">    top_k = retrieved_ids[:k]</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> relevant_ids:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;recall@k&quot;</span>: <span class="literal">None</span>, <span class="string">&quot;precision@k&quot;</span>: <span class="literal">None</span>, <span class="string">&quot;mrr&quot;</span>: <span class="literal">None</span>&#125;</span><br><span class="line"></span><br><span class="line">    hits = [doc_id <span class="keyword">for</span> doc_id <span class="keyword">in</span> top_k <span class="keyword">if</span> doc_id <span class="keyword">in</span> relevant_ids]</span><br><span class="line">    first_rank = <span class="built_in">next</span>(</span><br><span class="line">        (rank <span class="keyword">for</span> rank, doc_id <span class="keyword">in</span> <span class="built_in">enumerate</span>(retrieved_ids, start=<span class="number">1</span>)</span><br><span class="line">         <span class="keyword">if</span> doc_id <span class="keyword">in</span> relevant_ids),</span><br><span class="line">        <span class="literal">None</span>,</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;recall@k&quot;</span>: <span class="built_in">len</span>(<span class="built_in">set</span>(hits)) / <span class="built_in">len</span>(relevant_ids),</span><br><span class="line">        <span class="string">&quot;precision@k&quot;</span>: <span class="built_in">len</span>(<span class="built_in">set</span>(hits)) / k,</span><br><span class="line">        <span class="string">&quot;mrr&quot;</span>: <span class="number">1</span> / first_rank <span class="keyword">if</span> first_rank <span class="keyword">else</span> <span class="number">0.0</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(retrieval_metrics(</span><br><span class="line">    retrieved_ids=[<span class="string">&quot;chunk-a&quot;</span>, <span class="string">&quot;chunk-c&quot;</span>, <span class="string">&quot;chunk-b&quot;</span>],</span><br><span class="line">    relevant_ids=&#123;<span class="string">&quot;chunk-b&quot;</span>, <span class="string">&quot;chunk-c&quot;</span>&#125;,</span><br><span class="line">    k=<span class="number">3</span>,</span><br><span class="line">))</span><br></pre></td></tr></table></figure>
+
+<p>MRR 的倒数排名针对第一个相关结果；Recall@k 看所有已标注必要证据中命中了多少。计算 <code>precision@k</code> 时，即使实际返回不足 <code>k</code> 条，也按固定的 <code>k</code> 作分母，以反映候选列表空缺。不同团队可能采用不同约定，报告时要写明定义。</p>
+<h3 id="生成指标"><a href="#生成指标" class="headerlink" title="生成指标"></a>生成指标</h3><p>忠实度（faithfulness）关注回答中的陈述能否从上下文推出；答案相关性（answer relevance）关注是否答到了用户真正问的内容。回答“资料没有说明”有时是正确结果，因此评估集要加入缺少证据的问题，检查系统是否会编造。</p>
+<p>LLM-as-a-judge 可以批量评分，但它是辅助标注者，不是客观裁判。对高风险领域，应抽样人工审核，并检查评分标准是否偏爱冗长、格式化但并不准确的答案。</p>
+<p>让评审模型按明确维度分别给分，比只问“答案好吗”更容易定位问题。评审输入至少包含原问题、检索上下文、生成答案和评分规则；不要把参考答案直接混入模型回答上下文，否则评测会绕过检索系统本身。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">请只按下面的证据评估回答，不要补充外部知识。</span><br><span class="line"></span><br><span class="line">问题：&#123;question&#125;</span><br><span class="line">检索上下文：&#123;contexts&#125;</span><br><span class="line">系统回答：&#123;answer&#125;</span><br><span class="line">必要事实点：&#123;reference_points&#125;</span><br><span class="line"></span><br><span class="line">输出 JSON：</span><br><span class="line">&#123;</span><br><span class="line">  &quot;faithfulness&quot;: 0-2,</span><br><span class="line">  &quot;coverage&quot;: 0-2,</span><br><span class="line">  &quot;answers_question&quot;: true/false,</span><br><span class="line">  &quot;unsupported_claims&quot;: [&quot;逐条列出上下文无法支持的陈述&quot;],</span><br><span class="line">  &quot;missing_points&quot;: [&quot;未覆盖的必要事实点&quot;]</span><br><span class="line">&#125;</span><br><span class="line">评分约定：0=失败，1=部分满足，2=满足。若资料不足且系统明确拒答，</span><br><span class="line">不得因它没有猜测 reference_points 而扣分。</span><br></pre></td></tr></table></figure>
+
+<p>要固定评审模型、提示词和采样参数，并抽取一部分样本由人复核。自动评分适合发现相对回归，不适合单独决定高风险回答是否可发布。</p>
+<h2 id="人工评估和自动化评估配合使用"><a href="#人工评估和自动化评估配合使用" class="headerlink" title="人工评估和自动化评估配合使用"></a>人工评估和自动化评估配合使用</h2><p>人工评估能发现业务语境、危险遗漏和引用是否真正支持结论，但速度较慢。自动评估适合重复比较配置、快速定位回归；它也可能受模型版本、提示词和样例分布影响。</p>
+<p>LangSmith、RAGAS、Langfuse 等工具可以管理数据集、运行追踪或评估器。选工具时要看数据如何保存、是否会发送到外部服务、团队是否需要长期追踪。工具本身不会替你定义业务上的“正确答案”。</p>
+<p>一个最小迭代循环是：</p>
+<ol>
+<li>固定数据集和当前基线。</li>
+<li>每次改变一个主要因素，例如切块或 reranker。</li>
+<li>运行检索与生成评估，保存失败样例。</li>
+<li>人工检查指标变化背后的答案和证据。</li>
+<li>只有质量收益超过延迟、成本和维护代价时才保留改动。</li>
+</ol>
+<p>可以把实验结果写成 CSV 或数据表，至少保留配置版本、数据集版本、检索指标、生成指标、P50&#x2F;P95 延迟、失败率和每次请求成本。基线必须可复现：固定评估样本、模型版本、Embedding 版本、提示词、检索参数和索引快照。否则前后分数差异可能来自数据或模型变化，而不是此次优化。</p>
+<p>一个简单的评估循环可以先把检索指标和人工&#x2F;模型评审结果分开保存：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">run_retrieval_eval</span>(<span class="params">dataset, search, k=<span class="number">5</span></span>):</span><br><span class="line">    rows = []</span><br><span class="line">    <span class="keyword">for</span> sample <span class="keyword">in</span> dataset:</span><br><span class="line">        hits = search(sample[<span class="string">&quot;question&quot;</span>], limit=k)</span><br><span class="line">        hit_ids = [item[<span class="string">&quot;id&quot;</span>] <span class="keyword">for</span> item <span class="keyword">in</span> hits]</span><br><span class="line">        metrics = retrieval_metrics(</span><br><span class="line">            hit_ids, <span class="built_in">set</span>(sample[<span class="string">&quot;relevant_chunk_ids&quot;</span>]), k=k</span><br><span class="line">        )</span><br><span class="line">        rows.append(&#123;<span class="string">&quot;id&quot;</span>: sample[<span class="string">&quot;id&quot;</span>], **metrics, <span class="string">&quot;hit_ids&quot;</span>: hit_ids&#125;)</span><br><span class="line">    <span class="keyword">return</span> rows</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># dataset 为 JSONL 解析后的字典列表；search 接入你的检索器。</span></span><br><span class="line"><span class="comment"># 将 rows 连同代码版本、索引版本和模型配置写入实验记录。</span></span><br></pre></td></tr></table></figure>
+
+<p>对生成质量的自动评分器应作为独立阶段运行，并记录原始评审理由。若平均分提高但某个关键类别退步，不能只看全体平均值；要按类别切片检查，例如“资料缺失”“日期版本”“多段证据”和“权限边界”。</p>
+<h2 id="从离线分数走向线上可靠性"><a href="#从离线分数走向线上可靠性" class="headerlink" title="从离线分数走向线上可靠性"></a>从离线分数走向线上可靠性</h2><p>生产监控还要记录检索耗时、生成耗时、超时、空检索、引用缺失、模型调用失败和成本。日志应使用文档 ID 或版本标识，而不是无差别保存敏感原文。</p>
+<p>数据更新也需要纳入评估。索引构建应有版本号、更新时间和回滚方案；新文档导入后，跑一组关键回归问题，确认权限过滤、来源定位和回答质量没有退化。</p>
+<p>线上观测还应注意数据治理：日志可能包含用户问题、检索片段或个人信息。记录必要的追踪 ID、文档 ID、分数、耗时和错误类型；是否保存原文、保存多久、谁能访问，应由数据分级和组织政策决定。对外部评估平台要先确认数据传输和保留设置。</p>
+<h2 id="练习：评估一次检索优化"><a href="#练习：评估一次检索优化" class="headerlink" title="练习：评估一次检索优化"></a>练习：评估一次检索优化</h2><p>沿用中篇建立的问题集，新增每个问题的必要证据标注。比较基础向量检索和“向量 + 关键词 + reranker”的 Recall@5、MRR、忠实度、P95 延迟和单次成本；随机抽查回答，解释指标升降是由哪批样例造成的。</p>
+<p><strong>只有把质量、速度和成本放在同一张结果表里，才能判断优化是否适合真实用户。</strong></p>
+<h2 id="系列回顾"><a href="#系列回顾" class="headerlink" title="系列回顾"></a>系列回顾</h2><p>上篇拆解了索引、检索和生成；中篇根据错误类型选择检索优化；本篇用评估集和生产指标验证改动。三篇合起来是一条工程闭环：先拿到可追溯证据，再改善证据命中，最后用数据证明改善确实发生。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/678893732">知乎专栏：《深度好文！最全的大模型 RAG 技术概览》</a> @AI技术社区。</li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/13679111673">知乎专栏：《大模型应用之RAG详解》</a></li>
+<li><a target="_blank" rel="noopener" href="https://ai.codefather.cn/post/2047162931736592386">鱼皮：RAG 是什么？16 种 RAG 方案一次讲清</a>。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.ragas.io/en/latest/concepts/metrics/">RAGAS 指标文档</a>。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.smith.langchain.com/evaluation">LangSmith Evaluation 文档</a>。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/RAG/" rel="tag"># RAG</a>
+              <a href="/MyBlog/tags/%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/" rel="tag"># 系统评估</a>
+              <a href="/MyBlog/tags/LangSmith/" rel="tag"># LangSmith</a>
+              <a href="/MyBlog/tags/RAGAS/" rel="tag"># RAGAS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/21/rag-retrieval-optimization/" rel="prev" title="RAG 应用实践（中）：检索不准，先定位再优化">
+                  <i class="fa fa-angle-left"></i> RAG 应用实践（中）：检索不准，先定位再优化
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/23/langgraph-quick-start/" rel="next" title="LangGraph 快速入门：用状态图构建可控的 Agent 工作流">
+                  LangGraph 快速入门：用状态图构建可控的 Agent 工作流 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

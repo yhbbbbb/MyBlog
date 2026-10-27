@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="把 SOP 从职场里的标准作业程序映射到软件开发，讨论需求、编码、评审、测试、发布和复盘如何形成可执行的工程流程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我对 SOP 的理解：从职场流程到可维护代码">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/27/sop-and-software-development/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="把 SOP 从职场里的标准作业程序映射到软件开发，讨论需求、编码、评审、测试、发布和复盘如何形成可执行的工程流程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yhbbbbb.github.io/MyBlog/2026/10/27/sop-and-software-development/sop-development-loop.svg">
+<meta property="og:image" content="https://yhbbbbb.github.io/MyBlog/2026/10/27/sop-and-software-development/development-task-sop.svg">
+<meta property="og:image" content="https://yhbbbbb.github.io/MyBlog/2026/10/27/sop-and-software-development/incident-review-loop.svg">
+<meta property="article:published_time" content="2026-10-27T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-27T02:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="SOP">
+<meta property="article:tag" content="代码规范">
+<meta property="article:tag" content="工程化">
+<meta property="article:tag" content="测试">
+<meta property="article:tag" content="软件开发">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yhbbbbb.github.io/MyBlog/2026/10/27/sop-and-software-development/sop-development-loop.svg">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/27/sop-and-software-development/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/27/sop-and-software-development/","path":"2026/10/27/sop-and-software-development/","title":"我对 SOP 的理解：从职场流程到可维护代码"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>我对 SOP 的理解：从职场流程到可维护代码 | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E7%90%86%E8%A7%A3%E7%9A%84-SOP%EF%BC%8C%E4%B8%8D%E6%98%AF%E2%80%9C%E6%8A%8A%E4%BA%BA%E5%8F%98%E6%88%90%E6%9C%BA%E5%99%A8%E2%80%9D"><span class="nav-number">1.</span> <span class="nav-text">我理解的 SOP，不是“把人变成机器”</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BB%A3%E7%A0%81%E5%B0%A4%E5%85%B6%E9%9C%80%E8%A6%81-SOP"><span class="nav-number">2.</span> <span class="nav-text">为什么代码尤其需要 SOP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%8F%E9%AA%8C%E4%B8%8D%E5%86%99%E4%B8%8B%E6%9D%A5%EF%BC%8C%E5%B0%B1%E5%8F%AA%E8%83%BD%E9%9D%A0%E5%8F%A3%E5%8F%A3%E7%9B%B8%E4%BC%A0"><span class="nav-number">2.1.</span> <span class="nav-text">经验不写下来，就只能靠口口相传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%83%BD%E8%BF%90%E8%A1%8C%EF%BC%8C%E4%B8%8D%E4%BB%A3%E8%A1%A8%E6%B5%81%E7%A8%8B%E5%8F%AF%E9%9D%A0"><span class="nav-number">2.2.</span> <span class="nav-text">代码能运行，不代表流程可靠</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E4%B8%80%EF%BC%9ASOP-%E4%B8%8E%E4%BB%A3%E7%A0%81%E4%BA%A4%E4%BB%98%E7%9A%84%E9%97%AD%E7%8E%AF"><span class="nav-number">3.</span> <span class="nav-text">图一：SOP 与代码交付的闭环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BB%BD%E5%BC%80%E5%8F%91-SOP-%E8%87%B3%E5%B0%91%E5%86%99%E6%B8%85%E6%A5%9A%E4%BB%80%E4%B9%88"><span class="nav-number">4.</span> <span class="nav-text">一份开发 SOP 至少写清楚什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E4%BA%8C%EF%BC%9A%E4%B8%80%E6%AC%A1%E5%BC%80%E5%8F%91%E4%BB%BB%E5%8A%A1%E6%80%8E%E6%A0%B7%E6%8C%89-SOP-%E6%89%A7%E8%A1%8C"><span class="nav-number">5.</span> <span class="nav-text">图二：一次开发任务怎样按 SOP 执行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%8A%E9%AA%8C%E6%94%B6%E6%9D%A1%E4%BB%B6%E6%8F%90%E5%89%8D%E5%86%99%E5%87%BA%E6%9D%A5"><span class="nav-number">5.1.</span> <span class="nav-text">把验收条件提前写出来</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%8A%E2%80%9C%E4%BC%9A%E5%81%9A%E2%80%9D%E5%8F%98%E6%88%90%E5%8F%AF%E5%A4%8D%E7%94%A8%E7%9A%84%E4%BB%A3%E7%A0%81-SOP"><span class="nav-number">6.</span> <span class="nav-text">把“会做”变成可复用的代码 SOP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%88%E5%AE%9A%E4%B9%89%E8%BE%B9%E7%95%8C%EF%BC%8C%E5%86%8D%E5%86%99%E5%AE%9E%E7%8E%B0"><span class="nav-number">6.1.</span> <span class="nav-text">先定义边界，再写实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8%E6%B5%8B%E8%AF%95%E6%8A%8A-SOP-%E5%8F%98%E6%88%90%E8%87%AA%E5%8A%A8%E6%A3%80%E6%9F%A5"><span class="nav-number">6.2.</span> <span class="nav-text">用测试把 SOP 变成自动检查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%AF%84%E5%AE%A1%E4%B9%9F%E6%98%AF%E4%B8%80%E9%81%93-SOP-%E6%A3%80%E6%9F%A5%E7%82%B9"><span class="nav-number">6.3.</span> <span class="nav-text">代码评审也是一道 SOP 检查点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%8A-SOP-%E5%86%99%E6%88%90%E5%B7%A5%E5%85%B7%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E5%8F%AA%E6%94%BE%E5%9C%A8%E6%96%87%E6%A1%A3%E9%87%8C"><span class="nav-number">7.</span> <span class="nav-text">把 SOP 写成工具，而不是只放在文档里</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%91%E5%B8%83-SOP%EF%BC%9A%E6%8A%8A%E9%A3%8E%E9%99%A9%E6%8E%A7%E5%88%B6%E5%9C%A8%E4%B8%8A%E7%BA%BF%E4%B9%8B%E5%89%8D"><span class="nav-number">8.</span> <span class="nav-text">发布 SOP：把风险控制在上线之前</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E4%B8%89%EF%BC%9A%E6%95%85%E9%9A%9C%E5%A4%84%E7%90%86%E4%B8%8D%E6%98%AF%E2%80%9C%E8%B0%81%E6%9C%89%E7%A9%BA%E8%B0%81%E6%9D%A5%E6%94%B9%E2%80%9D"><span class="nav-number">9.</span> <span class="nav-text">图三：故障处理不是“谁有空谁来改”</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%85%E9%9A%9C%E8%AE%B0%E5%BD%95%E8%87%B3%E5%B0%91%E5%8C%85%E5%90%AB%E4%BB%80%E4%B9%88"><span class="nav-number">9.1.</span> <span class="nav-text">故障记录至少包含什么</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SOP-%E7%9A%84%E8%BE%B9%E7%95%8C%EF%BC%9A%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%B8%8D%E8%83%BD%E7%85%A7%E6%9C%AC%E5%AE%A3%E7%A7%91"><span class="nav-number">10.</span> <span class="nav-text">SOP 的边界：什么时候不能照本宣科</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%8E%E6%A0%B7%E5%88%A4%E6%96%AD%E4%B8%80%E4%BB%BD-SOP-%E6%98%AF%E5%90%A6%E7%9C%9F%E7%9A%84%E6%9C%89%E7%94%A8"><span class="nav-number">11.</span> <span class="nav-text">怎样判断一份 SOP 是否真的有用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E7%BB%93%E8%AE%BA"><span class="nav-number">12.</span> <span class="nav-text">我的结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">13.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/27/sop-and-software-development/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="我对 SOP 的理解：从职场流程到可维护代码 | WantBeing">
+      <meta itemprop="description" content="把 SOP 从职场里的标准作业程序映射到软件开发，讨论需求、编码、评审、测试、发布和复盘如何形成可执行的工程流程。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          我对 SOP 的理解：从职场流程到可维护代码
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-27 10:00:00" itemprop="dateCreated datePublished" datetime="2026-10-27T10:00:00+08:00">2026-10-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">项目实践</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">把 SOP 从职场里的标准作业程序映射到软件开发，讨论需求、编码、评审、测试、发布和复盘如何形成可执行的工程流程。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>同一件事由不同的人完成，步骤、判断和结果往往完全不同；换一个新人，流程就重新摸索一遍。对软件开发来说，这种不确定性最终会变成缺陷、返工和不可维护的代码。SOP 的价值，就是把可靠的经验变成团队可以重复执行、检查和改进的工作方法。</p>
+</blockquote>
+<h2 id="我理解的-SOP，不是“把人变成机器”"><a href="#我理解的-SOP，不是“把人变成机器”" class="headerlink" title="我理解的 SOP，不是“把人变成机器”"></a>我理解的 SOP，不是“把人变成机器”</h2><p>SOP 是 <strong>Standard Operating Procedure</strong>，中文通常译为“标准作业程序”。它不是一篇只在培训时阅读的长文，也不是把每一个动作都规定死的管理口号，而是一份能够指导实际操作的工作说明：在什么条件下，由谁，以什么输入，按哪些步骤，产出什么结果，并在什么检查点确认结果合格。</p>
+<p>在职场中，SOP 能降低出错率、提高效率、沉淀经验并保持结果一致。把这个概念放到编程中，会发现很多工程实践本质上都是 SOP：</p>
+<table>
+<thead>
+<tr>
+<th>职场 SOP 的要素</th>
+<th>软件开发中的对应物</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>输入材料</td>
+<td>需求、接口协议、配置、数据样例</td>
+</tr>
+<tr>
+<td>操作步骤</td>
+<td>设计、编码、测试、构建、发布命令</td>
+</tr>
+<tr>
+<td>标准结果</td>
+<td>可运行功能、测试报告、构建包、变更记录</td>
+</tr>
+<tr>
+<td>检查点</td>
+<td>代码评审、自动化测试、静态检查、验收</td>
+</tr>
+<tr>
+<td>异常处理</td>
+<td>回滚、重试、降级、告警、人工升级</td>
+</tr>
+<tr>
+<td>版本记录</td>
+<td>Git 提交、发布版本、SOP 修订记录</td>
+</tr>
+<tr>
+<td>持续改进</td>
+<td>缺陷复盘、指标分析、流程更新</td>
+</tr>
+</tbody></table>
+<p>因此，我认为好的开发 SOP 不是“让所有人写出一模一样的代码”，而是让所有人对关键边界达成一致：什么可以自由发挥，什么必须验证，什么情况下必须停下来求助。</p>
+<h2 id="为什么代码尤其需要-SOP"><a href="#为什么代码尤其需要-SOP" class="headerlink" title="为什么代码尤其需要 SOP"></a>为什么代码尤其需要 SOP</h2><h3 id="经验不写下来，就只能靠口口相传"><a href="#经验不写下来，就只能靠口口相传" class="headerlink" title="经验不写下来，就只能靠口口相传"></a>经验不写下来，就只能靠口口相传</h3><p>老员工知道哪个接口不能重复调用、哪个共享目录必须先检查权限、哪个配置不能直接改生产环境。这些经验如果只存在某个人脑中，团队就会形成单点依赖。人员请假、离职或换岗后，新人只能通过试错重新得到同样的结论。</p>
+<p>代码仓库保存了程序，却不一定保存“为什么这样做”。README、运行手册、提交信息、测试用例和故障记录，都是把隐性经验变成显性资产的方式。</p>
+<h3 id="代码能运行，不代表流程可靠"><a href="#代码能运行，不代表流程可靠" class="headerlink" title="代码能运行，不代表流程可靠"></a>代码能运行，不代表流程可靠</h3><p>一次手动运行成功，只能说明某个输入在某个环境下成功过。真正可交付的功能还要回答：</p>
+<ul>
+<li>输入为空、格式错误或超长时怎么办？</li>
+<li>网络服务超时、返回重复数据或权限不足时怎么办？</li>
+<li>这个功能如何测试，怎样证明没有破坏旧功能？</li>
+<li>谁能发布，发布前要检查什么，失败后如何回滚？</li>
+<li>运行后如何知道它真的工作正常？</li>
+</ul>
+<p>这些问题如果没有写进流程，团队就会在故障发生时临时讨论，结果通常是忙乱、依赖个人经验和重复踩坑。</p>
+<h2 id="图一：SOP-与代码交付的闭环"><a href="#图一：SOP-与代码交付的闭环" class="headerlink" title="图一：SOP 与代码交付的闭环"></a>图一：SOP 与代码交付的闭环</h2><img src="/MyBlog/2026/10/27/sop-and-software-development/sop-development-loop.svg" class="" title="SOP 与软件交付闭环：从输入到复盘">
+
+<p>这张图表达的是一个闭环：需求不是直接变成代码，而是经过设计、实现、验证和发布；发布后的指标与故障又会反过来修订需求、代码和 SOP。图中所有检查点都应该留下可追踪的记录，例如 Issue、Pull Request、测试报告和发布日志。</p>
+<h2 id="一份开发-SOP-至少写清楚什么"><a href="#一份开发-SOP-至少写清楚什么" class="headerlink" title="一份开发 SOP 至少写清楚什么"></a>一份开发 SOP 至少写清楚什么</h2><p>我会用“输入—动作—判断—产物—责任”五个问题检查一份 SOP 是否可执行：</p>
+<ol>
+<li><strong>输入是什么？</strong> 是需求单、CSV 文件、接口请求还是上一节点的输出？格式和前置条件是什么？</li>
+<li><strong>动作怎么做？</strong> 使用哪个工具、命令、脚本和配置？步骤能否由新人按顺序完成？</li>
+<li><strong>判断点在哪里？</strong> 什么结果算成功？遇到异常选择重试、跳过、回滚还是升级？</li>
+<li><strong>产物是什么？</strong> 代码、测试报告、构建包、日志和文档分别保存在哪里？</li>
+<li><strong>责任是谁？</strong> 谁执行、谁复核、谁批准发布，谁在失败时负责响应？</li>
+</ol>
+<p>例如，“完成登录功能”不是一个合格的开发 SOP 步骤。更可执行的写法是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">输入：登录接口需求、用户名/密码字段规则、错误码约定</span><br><span class="line">步骤：</span><br><span class="line">1. 在 feature/login 分支实现参数校验和登录调用</span><br><span class="line">2. 为成功、密码错误、空字段、接口超时分别增加测试</span><br><span class="line">3. 本地运行 lint、单元测试和构建命令</span><br><span class="line">4. 创建 Pull Request，填写影响范围和回滚方式</span><br><span class="line">检查点：所有自动化检查通过，至少一名同事完成代码评审</span><br><span class="line">产物：提交记录、测试报告、PR 链接</span><br><span class="line">异常：测试失败时禁止合并；接口变更时退回需求确认</span><br></pre></td></tr></table></figure>
+
+<p>它没有规定每一行代码怎么写，却把输入、边界、检查和产物说清楚了。这就是“标准化结果”，而不是“僵化实现”。</p>
+<h2 id="图二：一次开发任务怎样按-SOP-执行"><a href="#图二：一次开发任务怎样按-SOP-执行" class="headerlink" title="图二：一次开发任务怎样按 SOP 执行"></a>图二：一次开发任务怎样按 SOP 执行</h2><img src="/MyBlog/2026/10/27/sop-and-software-development/development-task-sop.svg" class="" title="一次软件开发任务的标准执行流程">
+
+<p>开发任务适合采用小步闭环：先确认目标和验收条件，再设计最小方案；实现后立即执行自动检查，最后通过评审和验收。任何一个检查点失败，都应该回到对应步骤修复，而不是带着不确定性继续向后推进。</p>
+<h3 id="把验收条件提前写出来"><a href="#把验收条件提前写出来" class="headerlink" title="把验收条件提前写出来"></a>把验收条件提前写出来</h3><p>需求越模糊，编码阶段的自由度越大，最后争议也越多。可以用 Given&#x2F;When&#x2F;Then 把目标写成可验证的例子：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Given 用户已经登录且拥有项目查看权限</span><br><span class="line">When 用户请求 GET /api/projects</span><br><span class="line">Then 返回 HTTP 200，并只包含该用户有权限查看的项目</span><br><span class="line"></span><br><span class="line">Given 用户没有项目查看权限</span><br><span class="line">When 用户请求 GET /api/projects</span><br><span class="line">Then 返回 HTTP 403，且响应中不泄露项目名称和内部 ID</span><br></pre></td></tr></table></figure>
+
+<p>这些例子既可以交给测试人员，也可以直接转成自动化测试。它们会迫使团队提前讨论权限、错误码和隐私边界。</p>
+<h2 id="把“会做”变成可复用的代码-SOP"><a href="#把“会做”变成可复用的代码-SOP" class="headerlink" title="把“会做”变成可复用的代码 SOP"></a>把“会做”变成可复用的代码 SOP</h2><h3 id="先定义边界，再写实现"><a href="#先定义边界，再写实现" class="headerlink" title="先定义边界，再写实现"></a>先定义边界，再写实现</h3><p>很多返工不是因为代码难，而是函数边界没有定义清楚。例如一个函数既读取文件、修改数据、调用网络接口，又负责打印结果，测试时很难替换任何一个外部依赖。可以先把纯逻辑和副作用分开：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@dataclass(<span class="params">frozen=<span class="literal">True</span></span>)</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RenamePlan</span>:</span><br><span class="line">    source: <span class="built_in">str</span></span><br><span class="line">    target: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">build_rename_plan</span>(<span class="params">filename: <span class="built_in">str</span>, pinyin_name: <span class="built_in">str</span></span>) -&gt; RenamePlan:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;只计算目标路径，不执行文件复制。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> filename <span class="keyword">or</span> <span class="keyword">not</span> pinyin_name:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">&quot;文件名和拼音名不能为空&quot;</span>)</span><br><span class="line">    suffix = filename.rsplit(<span class="string">&quot;.&quot;</span>, <span class="number">1</span>)[-<span class="number">1</span>] <span class="keyword">if</span> <span class="string">&quot;.&quot;</span> <span class="keyword">in</span> filename <span class="keyword">else</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    target_name = <span class="string">f&quot;<span class="subst">&#123;pinyin_name&#125;</span>.<span class="subst">&#123;suffix&#125;</span>&quot;</span> <span class="keyword">if</span> suffix <span class="keyword">else</span> pinyin_name</span><br><span class="line">    <span class="keyword">return</span> RenamePlan(source=filename, target=target_name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">copy_file</span>(<span class="params">plan: RenamePlan, copier</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;副作用集中在边界函数，copier 可在测试中替换。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> copier(plan.source, plan.target)</span><br></pre></td></tr></table></figure>
+
+<p>这样的 SOP 是：<code>build_rename_plan</code> 只负责规则，<code>copy_file</code> 只负责外部动作。规则可以用大量样例测试，复制失败也可以独立测试重试、日志和告警。函数名、参数类型和异常约定就是代码层面的作业说明。</p>
+<h3 id="用测试把-SOP-变成自动检查"><a href="#用测试把-SOP-变成自动检查" class="headerlink" title="用测试把 SOP 变成自动检查"></a>用测试把 SOP 变成自动检查</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pytest</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">test_build_rename_plan_keeps_extension</span>():</span><br><span class="line">    plan = build_rename_plan(<span class="string">&quot;样衣.cut&quot;</span>, <span class="string">&quot;yangyi&quot;</span>)</span><br><span class="line">    <span class="keyword">assert</span> plan.target == <span class="string">&quot;yangyi.cut&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">test_build_rename_plan_rejects_empty_name</span>():</span><br><span class="line">    <span class="keyword">with</span> pytest.raises(ValueError, <span class="keyword">match</span>=<span class="string">&quot;不能为空&quot;</span>):</span><br><span class="line">        build_rename_plan(<span class="string">&quot;样衣.cut&quot;</span>, <span class="string">&quot;&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>测试不是为了证明程序永远正确，而是把已经识别出的规则和边界固定下来。以后修改实现时，测试会告诉我们是否破坏了原有约定。</p>
+<h3 id="代码评审也是一道-SOP-检查点"><a href="#代码评审也是一道-SOP-检查点" class="headerlink" title="代码评审也是一道 SOP 检查点"></a>代码评审也是一道 SOP 检查点</h3><p>我会在 Pull Request 中固定检查以下内容：</p>
+<ul>
+<li>需求和验收条件是否能在代码中对应上？</li>
+<li>是否处理了空值、异常、超时、重复执行和权限边界？</li>
+<li>是否有足够小的单元测试或集成测试？</li>
+<li>日志是否记录了定位问题所需的信息，同时避免密码、Token 和个人隐私？</li>
+<li>配置是否通过环境变量或配置文件注入，而不是写死在代码里？</li>
+<li>数据库、文件和 API 操作是否考虑幂等性和回滚？</li>
+<li>是否补充 README、变更记录或运行手册？</li>
+</ul>
+<p>评审清单不应替代思考，但能减少“大家以为别人会检查”的遗漏。</p>
+<h2 id="把-SOP-写成工具，而不是只放在文档里"><a href="#把-SOP-写成工具，而不是只放在文档里" class="headerlink" title="把 SOP 写成工具，而不是只放在文档里"></a>把 SOP 写成工具，而不是只放在文档里</h2><p>最可靠的流程，是能由工具自动执行的流程。例如在 Python 项目中，可以把常用检查集中到 <code>pyproject.toml</code> 或 Makefile；在前端项目中，可以用 npm scripts；在 CI 中，每次提交自动运行同一套命令。</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[tool.ruff]</span></span><br><span class="line"><span class="attr">line-length</span> = <span class="number">100</span></span><br><span class="line"><span class="attr">target-version</span> = <span class="string">&quot;py311&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[tool.pytest.ini_options]</span></span><br><span class="line"><span class="attr">testpaths</span> = [<span class="string">&quot;tests&quot;</span>]</span><br><span class="line"><span class="attr">addopts</span> = <span class="string">&quot;-q&quot;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 本地开发 SOP：格式检查、静态检查、测试、构建</span></span><br><span class="line">python <span class="literal">-m</span> ruff check .</span><br><span class="line">python <span class="literal">-m</span> pytest</span><br><span class="line">python <span class="literal">-m</span> build</span><br></pre></td></tr></table></figure>
+
+<p>如果每个人都手动记忆命令，时间久了就会出现“甲运行了测试，乙只运行了格式化，丙直接打包”的差异。把命令写进脚本和 CI，SOP 才真正从“建议”变成“护栏”。</p>
+<blockquote>
+<p>【可选图片：GitHub Actions 或本地终端中展示 lint、测试、构建全部通过的截图】</p>
+</blockquote>
+<h2 id="发布-SOP：把风险控制在上线之前"><a href="#发布-SOP：把风险控制在上线之前" class="headerlink" title="发布 SOP：把风险控制在上线之前"></a>发布 SOP：把风险控制在上线之前</h2><p>一个最小的发布流程可以是：</p>
+<ol>
+<li>确认目标版本、变更范围和负责人。</li>
+<li>检查主分支状态，确认工作区没有未提交的临时改动。</li>
+<li>执行格式检查、静态检查、单元测试和构建。</li>
+<li>在测试环境验证核心流程和数据库迁移。</li>
+<li>创建带版本号的发布记录，保存构建产物校验值。</li>
+<li>采用小批量或灰度方式发布，观察错误率、延迟和关键业务指标。</li>
+<li>指标异常时按预先写好的步骤回滚，并保留故障时间线。</li>
+</ol>
+<p>“发布成功”不能只看命令返回 0。还要确认服务健康检查通过、日志没有持续错误、核心接口可以正常访问。对于数据库变更，发布 SOP 还应说明备份、迁移顺序和回滚限制。</p>
+<blockquote>
+<p>【可选图片：发布流水线、版本标签或回滚按钮的实际界面截图】</p>
+</blockquote>
+<h2 id="图三：故障处理不是“谁有空谁来改”"><a href="#图三：故障处理不是“谁有空谁来改”" class="headerlink" title="图三：故障处理不是“谁有空谁来改”"></a>图三：故障处理不是“谁有空谁来改”</h2><img src="/MyBlog/2026/10/27/sop-and-software-development/incident-review-loop.svg" class="" title="软件故障处理、回滚与 SOP 复盘闭环">
+
+<p>故障 SOP 的重点不是追责，而是让团队在压力下仍然按照顺序行动：先止损和恢复服务，再收集证据，最后分析根因并更新测试、监控和文档。没有复盘的故障处理，只是把同一个问题推迟到下一次发生。</p>
+<h3 id="故障记录至少包含什么"><a href="#故障记录至少包含什么" class="headerlink" title="故障记录至少包含什么"></a>故障记录至少包含什么</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">发生时间：2026-10-27 14:20</span><br><span class="line">影响范围：文件转换服务的共享目录同步延迟</span><br><span class="line">用户表现：部分文件在目标目录中缺失</span><br><span class="line">临时措施：暂停批量任务，保留源文件并人工核对失败列表</span><br><span class="line">证据：任务日志、网络错误、目标电脑在线状态、重试次数</span><br><span class="line">恢复时间：2026-10-27 14:48</span><br><span class="line">根因：目标目录暂时不可写，旧流程没有区分可重试错误和永久错误</span><br><span class="line">后续动作：增加退避重试、失败队列、告警和回归测试</span><br><span class="line">负责人：某某；截止日期：2026-10-30</span><br></pre></td></tr></table></figure>
+
+<p>这里的“根因”不应停留在“某人操作错误”。更有价值的追问是：为什么错误没有被程序发现？为什么没有阻止不安全操作？为什么文档、培训或监控没有覆盖它？</p>
+<blockquote>
+<p>【可选图片：监控告警、故障时间线或失败任务列表截图；请先遮盖账号、路径和业务敏感信息】</p>
+</blockquote>
+<h2 id="SOP-的边界：什么时候不能照本宣科"><a href="#SOP-的边界：什么时候不能照本宣科" class="headerlink" title="SOP 的边界：什么时候不能照本宣科"></a>SOP 的边界：什么时候不能照本宣科</h2><p>SOP 不能覆盖所有情况，也不应该把员工训练成只会点击固定按钮的人。以下情况需要保留人工判断：</p>
+<ul>
+<li>需求目标本身还不清楚，需要和业务方澄清；</li>
+<li>发生未定义的新故障，继续执行可能扩大损失；</li>
+<li>安全、隐私、合规或数据完整性存在风险；</li>
+<li>自动化结果和现实业务不一致，需要暂停并升级；</li>
+<li>规则发生变化，但旧 SOP 尚未完成评审和发布。</li>
+</ul>
+<p>好的 SOP 应该明确“停止条件”和“升级路径”，例如“连续重试 3 次仍失败就进入人工处理队列”，而不是要求员工无限重试。</p>
+<h2 id="怎样判断一份-SOP-是否真的有用"><a href="#怎样判断一份-SOP-是否真的有用" class="headerlink" title="怎样判断一份 SOP 是否真的有用"></a>怎样判断一份 SOP 是否真的有用</h2><p>我会用四个问题验证：</p>
+<ol>
+<li><strong>新人能否独立完成？</strong> 找一个没有参与编写的人按文档操作，记录卡住的地方。</li>
+<li><strong>结果能否被检查？</strong> 每一步是否有明确产物、日志或验收条件？</li>
+<li><strong>异常能否被处理？</strong> 文档是否说明失败、重试、回滚和升级？</li>
+<li><strong>流程是否持续更新？</strong> SOP 是否有版本、负责人、最后验证日期和变更记录？</li>
+</ol>
+<p>可以用 GRAI 做复盘：先回顾 Goal，再核对 Result，分析 Analysis，最后把 Insight 写回代码、测试、监控和 SOP。也可以用 PDCA 让流程持续循环：Plan 计划、Do 执行、Check 检查、Act 改进。SCQA 更适合写需求和故障报告：先说明情境，再描述冲突，提出问题，最后给出答案或行动方案。</p>
+<h2 id="我的结论"><a href="#我的结论" class="headerlink" title="我的结论"></a>我的结论</h2><p>SOP 的核心不是“把工作写得很长”，而是把可靠完成一件事所需的最小信息写完整：输入是什么，步骤如何执行，哪里必须检查，失败如何处理，结果如何留下记录。</p>
+<p>对软件开发来说，代码规范、测试、代码评审、CI、发布清单、监控和故障复盘并不是互相独立的管理动作，它们共同组成了一套工程 SOP。文档告诉人怎么做，代码和 CI 帮人自动检查，日志和指标告诉团队实际发生了什么，复盘则把经验再次写回流程。</p>
+<p>我更愿意把 SOP 看成团队的“可执行记忆”：它替团队记住那些不能依靠运气的步骤，同时给有经验的人留下改进空间。流程稳定之后，人才有精力把时间用在真正需要判断和创造的地方。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.runoob.com/">菜鸟教程：SOP 标准作业程序相关内容</a></li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/PDCA">PDCA 循环，Wikipedia</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/After-action_review">GRAI 复盘模型，Wikipedia</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.pytest.org/en/stable/">Python pytest 官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.astral.sh/ruff/">Ruff 官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://12factor.net/">The Twelve-Factor App</a>，参考配置、日志和部署的工程化原则。</li>
+</ul>
+<p>本文根据用户提供的 SOP 资料和公开工程实践重新组织，示例代码用于说明流程边界，实际项目应结合团队技术栈、权限和合规要求调整。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/%E6%B5%8B%E8%AF%95/" rel="tag"># 测试</a>
+              <a href="/MyBlog/tags/%E5%B7%A5%E7%A8%8B%E5%8C%96/" rel="tag"># 工程化</a>
+              <a href="/MyBlog/tags/SOP/" rel="tag"># SOP</a>
+              <a href="/MyBlog/tags/%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/" rel="tag"># 软件开发</a>
+              <a href="/MyBlog/tags/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/" rel="tag"># 代码规范</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/23/langgraph-quick-start/" rel="prev" title="LangGraph 快速入门：用状态图构建可控的 Agent 工作流">
+                  <i class="fa fa-angle-left"></i> LangGraph 快速入门：用状态图构建可控的 Agent 工作流
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

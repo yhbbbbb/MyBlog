@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="用名称、数字、字符串和列表快速认识 Python 的基本数据操作，并通过一个小例子串起常用写法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="02｜Python 速览：变量、字符串与列表">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/17/python-introduction/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="用名称、数字、字符串和列表快速认识 Python 的基本数据操作，并通过一个小例子串起常用写法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-17T01:10:00.000Z">
+<meta property="article:modified_time" content="2026-10-17T01:10:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Python 教程">
+<meta property="article:tag" content="列表">
+<meta property="article:tag" content="字符串">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/17/python-introduction/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/17/python-introduction/","path":"2026/10/17/python-introduction/","title":"02｜Python 速览：变量、字符串与列表"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>02｜Python 速览：变量、字符串与列表 | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E4%B8%80%E7%BB%84%E5%BE%85%E5%A4%84%E7%90%86%E6%96%87%E4%BB%B6%E5%BC%80%E5%A7%8B"><span class="nav-number">1.</span> <span class="nav-text">从一组待处理文件开始</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8D%E7%A7%B0%E6%8C%87%E5%90%91%E5%AF%B9%E8%B1%A1"><span class="nav-number">2.</span> <span class="nav-text">名称指向对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%98%AF%E4%B8%8D%E5%8F%AF%E5%8F%98%E7%9A%84%E6%96%87%E6%9C%AC%E5%BA%8F%E5%88%97"><span class="nav-number">3.</span> <span class="nav-text">字符串是不可变的文本序列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E4%BF%9D%E5%AD%98%E6%9C%89%E9%A1%BA%E5%BA%8F%E7%9A%84%E4%B8%80%E7%BB%84%E5%AF%B9%E8%B1%A1"><span class="nav-number">4.</span> <span class="nav-text">列表保存有顺序的一组对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%8A%E6%93%8D%E4%BD%9C%E7%BB%84%E5%90%88%E8%B5%B7%E6%9D%A5"><span class="nav-number">5.</span> <span class="nav-text">把操作组合起来</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="nav-number">6.</span> <span class="nav-text">常见误区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E7%AD%9B%E9%80%89%E5%B9%B6%E6%A0%BC%E5%BC%8F%E5%8C%96%E6%96%87%E4%BB%B6%E5%88%97%E8%A1%A8"><span class="nav-number">7.</span> <span class="nav-text">练习：筛选并格式化文件列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="nav-number">8.</span> <span class="nav-text">下一步</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/17/python-introduction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="02｜Python 速览：变量、字符串与列表 | WantBeing">
+      <meta itemprop="description" content="用名称、数字、字符串和列表快速认识 Python 的基本数据操作，并通过一个小例子串起常用写法。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          02｜Python 速览：变量、字符串与列表
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-17 09:10:00" itemprop="dateCreated datePublished" datetime="2026-10-17T09:10:00+08:00">2026-10-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">用名称、数字、字符串和列表快速认识 Python 的基本数据操作，并通过一个小例子串起常用写法。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>Python 变量更像贴在对象上的标签，而不是装数据的盒子。理解这一点，能少踩不少复制和修改的坑。</p>
+</blockquote>
+<h2 id="从一组待处理文件开始"><a href="#从一组待处理文件开始" class="headerlink" title="从一组待处理文件开始"></a>从一组待处理文件开始</h2><p>假设我们有三份文件名，需要取出扩展名、筛选目标文件并统计数量。这个小任务会用到名称、字符串和列表，正好可以观察 Python 的基本表达方式。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">files = [<span class="string">&quot;日报.csv&quot;</span>, <span class="string">&quot;临时.tmp&quot;</span>, <span class="string">&quot;订单.csv&quot;</span>]</span><br><span class="line">csv_files = [name <span class="keyword">for</span> name <span class="keyword">in</span> files <span class="keyword">if</span> name.endswith(<span class="string">&quot;.csv&quot;</span>)]</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(csv_files)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;待处理 <span class="subst">&#123;<span class="built_in">len</span>(csv_files)&#125;</span> 个文件&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>输出是 <code>[&#39;日报.csv&#39;, &#39;订单.csv&#39;]</code> 和 <code>待处理 2 个文件</code>。接下来逐步拆开这些语句。</p>
+<h2 id="名称指向对象"><a href="#名称指向对象" class="headerlink" title="名称指向对象"></a>名称指向对象</h2><p>在 <code>files = [...]</code> 中，<code>files</code> 是名称（name），列表是对象（object）。赋值不会把列表塞进一个固定类型的变量盒子；它让名称 <code>files</code> 指向这个列表对象。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">count = <span class="number">3</span></span><br><span class="line">count = <span class="string">&quot;三份&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>第二次赋值后，<code>count</code> 指向字符串对象。Python 是动态类型语言，类型属于对象，名称可以在不同时间指向不同类型的对象。实际编程中仍建议让一个名称长期表达同一类含义，否则代码难读。</p>
+<p>常用数字包括整数和浮点数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">items = <span class="number">7</span></span><br><span class="line">unit_price = <span class="number">2.5</span></span><br><span class="line">subtotal = items * unit_price</span><br><span class="line"><span class="built_in">print</span>(subtotal)  <span class="comment"># 17.5</span></span><br></pre></td></tr></table></figure>
+
+<p>除法 <code>/</code> 总会产生浮点结果；<code>//</code> 是向下取整除法；<code>%</code> 得到余数。比如 <code>7 // 3</code> 是 <code>2</code>，<code>7 % 3</code> 是 <code>1</code>。判断奇偶数时，余数运算就很直接。</p>
+<h2 id="字符串是不可变的文本序列"><a href="#字符串是不可变的文本序列" class="headerlink" title="字符串是不可变的文本序列"></a>字符串是不可变的文本序列</h2><p>字符串可以用单引号或双引号创建。需要在字符串里包含引号时，可以换一种引号，或使用反斜杠转义：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">message = <span class="string">&quot;It&#x27;s Python&quot;</span></span><br><span class="line">quoted = <span class="string">&#x27;她说：&quot;开始处理&quot;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>字符串支持索引和切片。索引从 <code>0</code> 开始，负数从末尾倒数；切片的结束位置不包含在结果中：</p>
+<figure class="highlight pycon"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python">name = <span class="string">&quot;python&quot;</span></span></span><br><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python">name[<span class="number">0</span>]</span></span><br><span class="line">&#x27;p&#x27;</span><br><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python">name[-<span class="number">1</span>]</span></span><br><span class="line">&#x27;n&#x27;</span><br><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python">name[<span class="number">1</span>:<span class="number">4</span>]</span></span><br><span class="line">&#x27;yth&#x27;</span><br><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python">name[:<span class="number">2</span>]</span></span><br><span class="line">&#x27;py&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>字符串不能原地修改。<code>name[0] = &quot;P&quot;</code> 会报错；如果要得到新字符串，可以拼接或调用方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">name = <span class="string">&quot;Python&quot;</span></span><br><span class="line">upper_name = name.upper()</span><br><span class="line"><span class="built_in">print</span>(upper_name)  <span class="comment"># PYTHON</span></span><br></pre></td></tr></table></figure>
+
+<p>格式化输出优先考虑 f-string：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">filename = <span class="string">&quot;report.csv&quot;</span></span><br><span class="line">size_kb = <span class="number">18.236</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;filename&#125;</span>：<span class="subst">&#123;size_kb:<span class="number">.1</span>f&#125;</span> KB&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>它会把花括号中的表达式求值，<code>:.1f</code> 这样的格式说明可以控制数字显示方式，例如保留一位小数。</p>
+<h2 id="列表保存有顺序的一组对象"><a href="#列表保存有顺序的一组对象" class="headerlink" title="列表保存有顺序的一组对象"></a>列表保存有顺序的一组对象</h2><p>列表（list）用方括号表示，可以增删元素：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">files = [<span class="string">&quot;日报.csv&quot;</span>, <span class="string">&quot;临时.tmp&quot;</span>, <span class="string">&quot;订单.csv&quot;</span>]</span><br><span class="line">files.append(<span class="string">&quot;汇总.csv&quot;</span>)</span><br><span class="line">files.remove(<span class="string">&quot;临时.tmp&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(files)</span><br></pre></td></tr></table></figure>
+
+<p>列表是可变对象（mutable object）。两个名称可以指向同一个列表：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">source = [<span class="string">&quot;a.csv&quot;</span>]</span><br><span class="line">alias = source</span><br><span class="line">alias.append(<span class="string">&quot;b.csv&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(source)  <span class="comment"># [&#x27;a.csv&#x27;, &#x27;b.csv&#x27;]</span></span><br></pre></td></tr></table></figure>
+
+<p>修改 <code>alias</code> 看到的内容，也会通过 <code>source</code> 看到，因为它们指向同一对象。如果希望得到浅拷贝，可以用 <code>source.copy()</code> 或 <code>source[:]</code>。</p>
+<p>列表切片会创建一个新列表：</p>
+<figure class="highlight pycon"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python">numbers = [<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>]</span></span><br><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python">numbers[<span class="number">1</span>:<span class="number">3</span>]</span></span><br><span class="line">[20, 30]</span><br><span class="line"><span class="meta prompt_">&gt;&gt;&gt;</span> <span class="language-python">numbers[:<span class="number">2</span>] + [<span class="number">99</span>]</span></span><br><span class="line">[10, 20, 99]</span><br></pre></td></tr></table></figure>
+
+<p>切片复制的是列表容器本身，不会递归复制其中更深层的可变对象。这个区别在嵌套列表中很重要，后续可以通过 <code>copy</code> 模块学习深拷贝。</p>
+<h2 id="把操作组合起来"><a href="#把操作组合起来" class="headerlink" title="把操作组合起来"></a>把操作组合起来</h2><p>回到文件名例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">files = [<span class="string">&quot;日报.csv&quot;</span>, <span class="string">&quot;临时.tmp&quot;</span>, <span class="string">&quot;订单.csv&quot;</span>]</span><br><span class="line">csv_files = [name <span class="keyword">for</span> name <span class="keyword">in</span> files <span class="keyword">if</span> name.endswith(<span class="string">&quot;.csv&quot;</span>)]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> name <span class="keyword">in</span> csv_files:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;准备处理：<span class="subst">&#123;name&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;共 <span class="subst">&#123;<span class="built_in">len</span>(csv_files)&#125;</span> 个 CSV 文件&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这里的列表推导式（list comprehension）从 <code>files</code> 中依次取出名称，只保留 <code>endswith(&quot;.csv&quot;)</code> 为真的元素，生成新列表。它不会改变原来的 <code>files</code>。</p>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+    A[&quot;🔵 原始列表&lt;br&gt;全部文件名&quot;] --&gt; B{&quot;🟡 后缀是 CSV？&quot;}
+    B --&gt;|是| C[&quot;🟢 放入结果列表&quot;]
+    B --&gt;|否| D[&quot;🍑 跳过当前项&quot;]
+    C --&gt; E[&quot;🟣 格式化输出&lt;br&gt;文件名与数量&quot;]
+    D --&gt; E
+    style A fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style B fill:#FFF9C4,stroke:#F9A825,color:#333
+    style C fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style D fill:#FFDAB9,stroke:#FFAB76,color:#333
+    style E fill:#E8D5F5,stroke:#CE93D8,color:#333
+</code>
+</pre>
+
+<h2 id="常见误区"><a href="#常见误区" class="headerlink" title="常见误区"></a>常见误区</h2><table>
+<thead>
+<tr>
+<th>写法或想法</th>
+<th>实际情况</th>
+<th>更稳妥的处理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>text[0] = &quot;A&quot;</code></td>
+<td>字符串不可变，不能通过索引改写</td>
+<td>创建新字符串，例如 <code>&quot;A&quot; + text[1:]</code></td>
+</tr>
+<tr>
+<td><code>b = a</code> 就是复制列表</td>
+<td>两个名称指向同一个列表</td>
+<td>使用 <code>a.copy()</code> 创建浅拷贝</td>
+</tr>
+<tr>
+<td><code>a[1:3]</code> 包含索引 3</td>
+<td>切片右端不包含</td>
+<td>把结束位置理解为“边界”</td>
+</tr>
+<tr>
+<td><code>3 / 2</code> 得到整数</td>
+<td><code>/</code> 返回浮点数 <code>1.5</code></td>
+<td>需要整除时使用 <code>//</code></td>
+</tr>
+</tbody></table>
+<h2 id="练习：筛选并格式化文件列表"><a href="#练习：筛选并格式化文件列表" class="headerlink" title="练习：筛选并格式化文件列表"></a>练习：筛选并格式化文件列表</h2><p>写一个列表，包含 <code>.csv</code>、<code>.txt</code> 和 <code>.tmp</code> 文件名；生成只包含 <code>.csv</code> 的新列表；最后逐项打印文件名，并打印总数。</p>
+<p>检查两点：原列表是否保持不变？把某个文件名改成大写扩展名后，<code>endswith(&quot;.csv&quot;)</code> 是否仍匹配？可以查阅字符串方法的 <code>casefold()</code> 或 <code>lower()</code>，决定要不要忽略大小写。</p>
+<h2 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h2><p>名称、字符串和列表构成了很多脚本的基础。下一篇将给程序加入分支、循环和函数，让相同的数据可以根据规则自动处理。</p>
+<p><strong>官方资料</strong>：<a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3.14/tutorial/introduction.html">Python 速览</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/Python-%E6%95%99%E7%A8%8B/" rel="tag"># Python 教程</a>
+              <a href="/MyBlog/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/" rel="tag"># 字符串</a>
+              <a href="/MyBlog/tags/%E5%88%97%E8%A1%A8/" rel="tag"># 列表</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/17/python-interpreter/" rel="prev" title="01｜从交互解释器开始：运行你的第一段 Python">
+                  <i class="fa fa-angle-left"></i> 01｜从交互解释器开始：运行你的第一段 Python
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/17/python-control-flow/" rel="next" title="03｜条件、循环与函数：让代码按规则运行">
+                  03｜条件、循环与函数：让代码按规则运行 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="区分语法错误与运行时异常，学习捕获、抛出和自定义异常，并用 finally 与 with 确保资源清理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="07｜异常处理：让失败有明确结果">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/19/python-errors/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="区分语法错误与运行时异常，学习捕获、抛出和自定义异常，并用 finally 与 with 确保资源清理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-19T02:10:00.000Z">
+<meta property="article:modified_time" content="2026-10-19T02:10:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Python 教程">
+<meta property="article:tag" content="异常处理">
+<meta property="article:tag" content="调试">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/19/python-errors/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/19/python-errors/","path":"2026/10/19/python-errors/","title":"07｜异常处理：让失败有明确结果"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>07｜异常处理：让失败有明确结果 | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E5%8F%91%E7%94%9F%E6%97%B6%EF%BC%8C%E7%A8%8B%E5%BA%8F%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">错误发生时，程序可以做什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8-try-except-%E5%A4%84%E7%90%86%E5%8F%AF%E9%A2%84%E6%9C%9F%E5%A4%B1%E8%B4%A5"><span class="nav-number">2.</span> <span class="nav-text">用 try&#x2F;except 处理可预期失败</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AC%E6%8D%A2%E5%BC%82%E5%B8%B8%EF%BC%8C%E8%A1%A5%E5%85%85%E4%B8%9A%E5%8A%A1%E5%90%AB%E4%B9%89"><span class="nav-number">3.</span> <span class="nav-text">转换异常，补充业务含义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%85%E7%90%86%E8%B5%84%E6%BA%90%EF%BC%9Afinally-%E5%92%8C-with"><span class="nav-number">4.</span> <span class="nav-text">清理资源：finally 和 with</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E6%97%B6%E6%8A%A5%E5%91%8A%E5%A4%9A%E4%B8%AA%E7%8B%AC%E7%AB%8B%E9%94%99%E8%AF%AF"><span class="nav-number">5.</span> <span class="nav-text">同时报告多个独立错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E5%A4%84%E7%90%86%E8%BE%B9%E7%95%8C"><span class="nav-number">6.</span> <span class="nav-text">选择处理边界</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="nav-number">7.</span> <span class="nav-text">常见误区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E6%89%B9%E9%87%8F%E6%A3%80%E6%9F%A5%E9%85%8D%E7%BD%AE"><span class="nav-number">8.</span> <span class="nav-text">练习：批量检查配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="nav-number">9.</span> <span class="nav-text">下一步</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/19/python-errors/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="07｜异常处理：让失败有明确结果 | WantBeing">
+      <meta itemprop="description" content="区分语法错误与运行时异常，学习捕获、抛出和自定义异常，并用 finally 与 with 确保资源清理。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          07｜异常处理：让失败有明确结果
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-19 10:10:00" itemprop="dateCreated datePublished" datetime="2026-10-19T10:10:00+08:00">2026-10-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">区分语法错误与运行时异常，学习捕获、抛出和自定义异常，并用 finally 与 with 确保资源清理。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>可靠程序不是永远不出错，而是能区分哪些错误可以恢复、哪些必须停止，并把原因留给人检查。</p>
+</blockquote>
+<h2 id="错误发生时，程序可以做什么"><a href="#错误发生时，程序可以做什么" class="headerlink" title="错误发生时，程序可以做什么"></a>错误发生时，程序可以做什么</h2><p>尝试读取不存在的文件会产生异常；漏掉冒号则是语法错误。二者发生的时机不同：语法错误在代码运行前阻止程序解析，异常则通常在程序执行过程中出现。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&quot;hello&quot;</span>  <span class="comment"># 缺少右括号，属于 SyntaxError</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">number = <span class="built_in">int</span>(<span class="string">&quot;not-a-number&quot;</span>)  <span class="comment"># 语法正确，运行时触发 ValueError</span></span><br></pre></td></tr></table></figure>
+
+<p>异常（exception）不是需要一概消灭的东西。它是 Python 告诉程序“当前操作无法按预期完成”的机制。重点是只在能采取明确措施的位置处理它。</p>
+<h2 id="用-try-except-处理可预期失败"><a href="#用-try-except-处理可预期失败" class="headerlink" title="用 try&#x2F;except 处理可预期失败"></a>用 try&#x2F;except 处理可预期失败</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path</span><br><span class="line"></span><br><span class="line">path = Path(<span class="string">&quot;settings.json&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    text = path.read_text(encoding=<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line"><span class="keyword">except</span> FileNotFoundError:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;配置文件不存在，使用默认设置&quot;</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;读取了 <span class="subst">&#123;<span class="built_in">len</span>(text)&#125;</span> 个字符&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>except</code> 捕获指定异常；<code>else</code> 只在没有异常时运行。捕获具体异常比裸写 <code>except:</code> 更安全，因为后者可能把程序退出信号等也吞掉。</p>
+<p>如果需要记录错误并继续抛出，可以使用 <code>raise</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    config = load_config(path)</span><br><span class="line"><span class="keyword">except</span> OSError <span class="keyword">as</span> error:</span><br><span class="line">    logger.error(<span class="string">&quot;读取配置失败：%s&quot;</span>, error)</span><br><span class="line">    <span class="keyword">raise</span></span><br></pre></td></tr></table></figure>
+
+<p>这里记录上下文后继续抛出，让上层决定是否终止。不要只记录错误然后返回伪造的成功结果。</p>
+<h2 id="转换异常，补充业务含义"><a href="#转换异常，补充业务含义" class="headerlink" title="转换异常，补充业务含义"></a>转换异常，补充业务含义</h2><p>底层异常有时无法说明业务上发生了什么。可以捕获后抛出更有意义的异常，并通过 <code>from</code> 保留原因链：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">InvalidConfigError</span>(<span class="title class_ inherited__">Exception</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;配置内容缺少必需字段。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">require_source</span>(<span class="params">config: <span class="built_in">dict</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">return</span> config[<span class="string">&quot;source&quot;</span>]</span><br><span class="line">    <span class="keyword">except</span> KeyError <span class="keyword">as</span> error:</span><br><span class="line">        <span class="keyword">raise</span> InvalidConfigError(<span class="string">&quot;配置必须包含 source 路径&quot;</span>) <span class="keyword">from</span> error</span><br></pre></td></tr></table></figure>
+
+<p>调用者看到 <code>InvalidConfigError</code>，维护人员仍可从 traceback 追踪原始 <code>KeyError</code>。自定义异常通常继承 <code>Exception</code>，并按模块或业务领域命名。</p>
+<p>异常继承有层级关系。捕获父类会匹配它的子类，因此多个 <code>except</code> 子句应从具体到一般排列：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    data = <span class="built_in">int</span>(user_text)</span><br><span class="line"><span class="keyword">except</span> ValueError:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;请输入整数&quot;</span>)</span><br><span class="line"><span class="keyword">except</span> Exception:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;发生了其他未预期错误&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>如果未预期错误没有合理恢复办法，通常应该让它继续暴露，而不是显示一个模糊提示后假装成功。</p>
+<h2 id="清理资源：finally-和-with"><a href="#清理资源：finally-和-with" class="headerlink" title="清理资源：finally 和 with"></a>清理资源：finally 和 with</h2><p><code>finally</code> 中的代码无论是否发生异常都会执行，适合释放必须手动管理的资源：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">resource = acquire_resource()</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    use_resource(resource)</span><br><span class="line"><span class="keyword">finally</span>:</span><br><span class="line">    resource.close()</span><br></pre></td></tr></table></figure>
+
+<p>更常见的文件场景应使用 <code>with</code>。上下文管理器会在离开代码块时完成清理：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;report.txt&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>) <span class="keyword">as</span> file:</span><br><span class="line">    content = file.read()</span><br></pre></td></tr></table></figure>
+
+<p><code>with</code> 背后使用上下文管理协议。像文件、锁和临时目录这样的对象，通常都提供了这种自动清理方式。</p>
+<h2 id="同时报告多个独立错误"><a href="#同时报告多个独立错误" class="headerlink" title="同时报告多个独立错误"></a>同时报告多个独立错误</h2><p>有时一批输入中多个项目都失败，停止在第一个错误会让使用者反复修正、重跑。Python 3.11 起提供 <code>ExceptionGroup</code> 和 <code>except*</code>，用于分组并分别处理多个异常：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">errors = [ValueError(<span class="string">&quot;数量无效&quot;</span>), TypeError(<span class="string">&quot;名称类型错误&quot;</span>)]</span><br><span class="line"><span class="keyword">raise</span> ExceptionGroup(<span class="string">&quot;输入校验失败&quot;</span>, errors)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    validate_batch()</span><br><span class="line"><span class="keyword">except</span>* ValueError <span class="keyword">as</span> group:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;有 <span class="subst">&#123;<span class="built_in">len</span>(group.exceptions)&#125;</span> 个值错误&quot;</span>)</span><br><span class="line"><span class="keyword">except</span>* TypeError <span class="keyword">as</span> group:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;有 <span class="subst">&#123;<span class="built_in">len</span>(group.exceptions)&#125;</span> 个类型错误&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>except*</code> 不是普通 <code>except</code> 的通用替代品。只有操作确实会汇集多个并行错误时才需要它；普通单个失败仍用常规异常处理。</p>
+<p>异常也可以通过 <code>add_note()</code> 添加诊断说明，而不覆盖原始错误类型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    process_file(path)</span><br><span class="line"><span class="keyword">except</span> OSError <span class="keyword">as</span> error:</span><br><span class="line">    error.add_note(<span class="string">f&quot;处理的输入文件：<span class="subst">&#123;path&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">raise</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="选择处理边界"><a href="#选择处理边界" class="headerlink" title="选择处理边界"></a>选择处理边界</h2><pre>
+<code class="mermaid">
+
+flowchart TD
+    Start[&quot;🔵 执行操作&quot;] --&gt; Check{&quot;🟡 是否预期可能失败？&quot;}
+    Check --&gt;|是| Catch[&quot;🟣 捕获具体异常&quot;]
+    Check --&gt;|否| Raise[&quot;🍑 让未预期错误暴露&quot;]
+    Catch --&gt; Recover{&quot;🟡 有明确恢复策略？&quot;}
+    Recover --&gt;|有| Continue[&quot;🟢 恢复并记录结果&quot;]
+    Recover --&gt;|没有| Context[&quot;🌸 添加上下文后重新抛出&quot;]
+    style Start fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style Check fill:#FFF9C4,stroke:#F9A825,color:#333
+    style Catch fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style Raise fill:#FFDAB9,stroke:#FFAB76,color:#333
+    style Recover fill:#FFF9C4,stroke:#F9A825,color:#333
+    style Continue fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style Context fill:#FFB3C6,stroke:#F48FB1,color:#333
+</code>
+</pre>
+
+<h2 id="常见误区"><a href="#常见误区" class="headerlink" title="常见误区"></a>常见误区</h2><table>
+<thead>
+<tr>
+<th>写法</th>
+<th>风险</th>
+<th>更好的做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>except:</code></td>
+<td>可能吞掉退出信号和程序错误</td>
+<td>捕获具体异常类型</td>
+</tr>
+<tr>
+<td>捕获后什么也不做</td>
+<td>错误消失，调用者误以为成功</td>
+<td>记录并恢复，或重新抛出</td>
+</tr>
+<tr>
+<td>用异常代替普通条件判断</td>
+<td>控制流不清晰</td>
+<td>可预期的正常分支用 <code>if</code></td>
+</tr>
+<tr>
+<td>在底层模块显示 GUI 提示框</td>
+<td>业务逻辑被界面绑住</td>
+<td>抛出有意义异常，由界面层决定如何展示</td>
+</tr>
+</tbody></table>
+<h2 id="练习：批量检查配置"><a href="#练习：批量检查配置" class="headerlink" title="练习：批量检查配置"></a>练习：批量检查配置</h2><p>编写函数读取 JSON 配置并检查 <code>source</code> 字段。文件缺失时返回默认配置；JSON 格式错误时抛出自定义 <code>InvalidConfigError</code>，并保留原始异常原因。用 <code>with</code> 打开文件，确保清理由上下文管理器完成。</p>
+<h2 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h2><p>异常定义失败时的边界，类则可以把状态和相关行为放在一起。下一篇将从对象和命名空间开始，认识类、实例、继承与生成器。</p>
+<p><strong>官方资料</strong>：<a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3.14/tutorial/errors.html">错误和异常</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/Python-%E6%95%99%E7%A8%8B/" rel="tag"># Python 教程</a>
+              <a href="/MyBlog/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag"># 异常处理</a>
+              <a href="/MyBlog/tags/%E8%B0%83%E8%AF%95/" rel="tag"># 调试</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/19/python-input-output/" rel="prev" title="06｜文件读写与数据格式化">
+                  <i class="fa fa-angle-left"></i> 06｜文件读写与数据格式化
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/19/python-classes/" rel="next" title="08｜Python 类：从对象到生成器">
+                  08｜Python 类：从对象到生成器 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

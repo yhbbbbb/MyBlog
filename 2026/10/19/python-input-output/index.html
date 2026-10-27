@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="学习 Python 字符串格式化、文本文件读写和 JSON 序列化，完成一份可重复保存与读取的任务清单。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="06｜文件读写与数据格式化">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/19/python-input-output/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="学习 Python 字符串格式化、文本文件读写和 JSON 序列化，完成一份可重复保存与读取的任务清单。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-19T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-19T02:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="JSON">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Python 教程">
+<meta property="article:tag" content="文件读写">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/19/python-input-output/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/19/python-input-output/","path":"2026/10/19/python-input-output/","title":"06｜文件读写与数据格式化"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>06｜文件读写与数据格式化 | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%88%E6%8A%8A%E7%BB%93%E6%9E%9C%E5%86%99%E8%BF%9B%E6%96%87%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">先把结果写进文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%90%E8%A1%8C%E8%AF%BB%E5%8F%96%E5%92%8C%E6%95%B4%E4%BB%BD%E8%AF%BB%E5%8F%96"><span class="nav-number">2.</span> <span class="nav-text">逐行读取和整份读取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8-f-string-%E6%A0%BC%E5%BC%8F%E5%8C%96%E8%BE%93%E5%87%BA"><span class="nav-number">3.</span> <span class="nav-text">用 f-string 格式化输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8-JSON-%E4%BF%9D%E5%AD%98%E7%BB%93%E6%9E%84%E5%8C%96%E6%95%B0%E6%8D%AE"><span class="nav-number">4.</span> <span class="nav-text">用 JSON 保存结构化数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E6%A0%BC%E5%BC%8F%E5%8C%96%E6%96%B9%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">其他格式化方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="nav-number">6.</span> <span class="nav-text">常见误区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E4%BF%9D%E5%AD%98%E5%A4%84%E7%90%86%E6%91%98%E8%A6%81"><span class="nav-number">7.</span> <span class="nav-text">练习：保存处理摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="nav-number">8.</span> <span class="nav-text">下一步</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/19/python-input-output/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="06｜文件读写与数据格式化 | WantBeing">
+      <meta itemprop="description" content="学习 Python 字符串格式化、文本文件读写和 JSON 序列化，完成一份可重复保存与读取的任务清单。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          06｜文件读写与数据格式化
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-19 10:00:00" itemprop="dateCreated datePublished" datetime="2026-10-19T10:00:00+08:00">2026-10-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">学习 Python 字符串格式化、文本文件读写和 JSON 序列化，完成一份可重复保存与读取的任务清单。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>文件写入成功，不代表数据就可靠。编码、覆盖模式和文件关闭方式，都会影响程序能否正确保存结果。</p>
+</blockquote>
+<h2 id="先把结果写进文件"><a href="#先把结果写进文件" class="headerlink" title="先把结果写进文件"></a>先把结果写进文件</h2><p>上一章的分类器可以在终端打印处理结果，但终端内容关闭后就消失了。要让结果能被其他程序读取或留作记录，就需要把数据写入文件。</p>
+<p>Python 用 <code>open()</code> 打开文件。文本文件应明确指定编码，并优先使用 <code>with</code> 管理文件对象：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path</span><br><span class="line"></span><br><span class="line">report_path = Path(<span class="string">&quot;reports&quot;</span>) / <span class="string">&quot;summary.txt&quot;</span></span><br><span class="line">report_path.parent.mkdir(exist_ok=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> report_path.<span class="built_in">open</span>(<span class="string">&quot;w&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>) <span class="keyword">as</span> file:</span><br><span class="line">    file.write(<span class="string">&quot;今日处理完成\n&quot;</span>)</span><br><span class="line">    file.write(<span class="string">&quot;成功：12\n&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>with</code> 代码块结束时会自动关闭文件，即使中间发生异常也会执行清理。<code>&quot;w&quot;</code> 是写入模式，会覆盖同名文件；如果要在末尾追加，使用 <code>&quot;a&quot;</code>。要读取文本，使用 <code>&quot;r&quot;</code>。</p>
+<h2 id="逐行读取和整份读取"><a href="#逐行读取和整份读取" class="headerlink" title="逐行读取和整份读取"></a>逐行读取和整份读取</h2><p>小文件可以一次读入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> report_path.<span class="built_in">open</span>(<span class="string">&quot;r&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>) <span class="keyword">as</span> file:</span><br><span class="line">    content = file.read()</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(content)</span><br></pre></td></tr></table></figure>
+
+<p>处理较大文件时，逐行遍历通常更节省内存：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> report_path.<span class="built_in">open</span>(<span class="string">&quot;r&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>) <span class="keyword">as</span> file:</span><br><span class="line">    <span class="keyword">for</span> line_number, line <span class="keyword">in</span> <span class="built_in">enumerate</span>(file, start=<span class="number">1</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;line_number&#125;</span>: <span class="subst">&#123;line.rstrip()&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>文件对象本身是可迭代对象。<code>rstrip()</code> 在这里去掉行尾换行符，不会误删行首空格。</p>
+<p>Windows 上文件可能来自不同软件，编码不一定统一。UTF-8 是新项目常用的选择；如果遇到 <code>UnicodeDecodeError</code>，应先确认文件的真实编码，而不是直接用 <code>errors=&quot;ignore&quot;</code> 丢弃无法解码的内容。</p>
+<h2 id="用-f-string-格式化输出"><a href="#用-f-string-格式化输出" class="headerlink" title="用 f-string 格式化输出"></a>用 f-string 格式化输出</h2><p>日志、报表和提示信息经常需要把变量嵌入文本。格式化字符串字面值（formatted string literal，简称 f-string）适合这种用途：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">filename = <span class="string">&quot;订单.csv&quot;</span></span><br><span class="line">size_bytes = <span class="number">1536</span></span><br><span class="line">ratio = <span class="number">0.875</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;filename&#125;</span>: <span class="subst">&#123;size_bytes:,&#125;</span> bytes, 完成率 <span class="subst">&#123;ratio:<span class="number">.1</span>%&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>输出中的 <code>:,</code> 加千位分隔符，<code>:.1%</code> 将比例转成百分数并保留一位小数。f-string 的花括号里可以放表达式，但复杂计算更适合先赋值给有意义的名称。</p>
+<p>较新的 Python 版本允许在 f-string 表达式中使用更多引号和反斜杠形式；为了兼容不同版本并保持易读，示例仍避免把复杂表达式塞进花括号。</p>
+<h2 id="用-JSON-保存结构化数据"><a href="#用-JSON-保存结构化数据" class="headerlink" title="用 JSON 保存结构化数据"></a>用 JSON 保存结构化数据</h2><p>如果只把数据写成普通文本，之后还要自己拆分字段。JSON（JavaScript Object Notation）是一种常见的文本数据格式，能保存对象、列表、字符串、数字、布尔值和空值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line">settings = &#123;</span><br><span class="line">    <span class="string">&quot;source&quot;</span>: <span class="string">&quot;incoming&quot;</span>,</span><br><span class="line">    <span class="string">&quot;extensions&quot;</span>: [<span class="string">&quot;.txt&quot;</span>, <span class="string">&quot;.cut&quot;</span>, <span class="string">&quot;.nc&quot;</span>],</span><br><span class="line">    <span class="string">&quot;retry&quot;</span>: <span class="literal">True</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> Path(<span class="string">&quot;settings.json&quot;</span>).<span class="built_in">open</span>(<span class="string">&quot;w&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>) <span class="keyword">as</span> file:</span><br><span class="line">    json.dump(settings, file, ensure_ascii=<span class="literal">False</span>, indent=<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>ensure_ascii=False</code> 让中文直接以可读字符保存，<code>indent=2</code> 则让文件更容易检查。读取时使用 <code>json.load()</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> Path(<span class="string">&quot;settings.json&quot;</span>).<span class="built_in">open</span>(<span class="string">&quot;r&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>) <span class="keyword">as</span> file:</span><br><span class="line">    loaded_settings = json.load(file)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(loaded_settings[<span class="string">&quot;extensions&quot;</span>])</span><br></pre></td></tr></table></figure>
+
+<p>JSON 不支持 Python 的所有对象，例如 <code>Path</code>、集合和自定义类实例。保存之前要把它们转换成 JSON 支持的基本类型；载入外部 JSON 时，也应验证字段和类型，不能假设数据一定完整。</p>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+    Data[&quot;🔵 Python 数据&quot;] --&gt; Convert[&quot;🟡 json.dump&lt;br&gt;序列化&quot;]
+    Convert --&gt; Text[&quot;🟣 UTF-8 JSON 文件&quot;]
+    Text --&gt; Parse[&quot;🍑 json.load&lt;br&gt;反序列化&quot;]
+    Parse --&gt; Result[&quot;🟢 Python 字典或列表&quot;]
+    Text -.-&gt;|格式错误| Error[&quot;🌸 捕获 JSONDecodeError&quot;]
+    style Data fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style Convert fill:#FFF9C4,stroke:#F9A825,color:#333
+    style Text fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style Parse fill:#FFDAB9,stroke:#FFAB76,color:#333
+    style Result fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style Error fill:#FFB3C6,stroke:#F48FB1,color:#333
+</code>
+</pre>
+
+<h2 id="其他格式化方式"><a href="#其他格式化方式" class="headerlink" title="其他格式化方式"></a>其他格式化方式</h2><p>字符串的 <code>format()</code> 方法适合模板与数据分离的场景：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">template = <span class="string">&quot;文件 &#123;name&#125; 处理了 &#123;count&#125; 次&quot;</span></span><br><span class="line">message = template.<span class="built_in">format</span>(name=<span class="string">&quot;订单.csv&quot;</span>, count=<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<p>手动格式化可以使用 <code>string.Template</code>；旧式 <code>%</code> 格式仍会在遗留代码中看到，但新代码通常优先采用 f-string 或 <code>format()</code>。选一种团队易读的方式并保持一致即可。</p>
+<h2 id="常见误区"><a href="#常见误区" class="headerlink" title="常见误区"></a>常见误区</h2><table>
+<thead>
+<tr>
+<th>误区</th>
+<th>后果</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>忘记指定 <code>encoding</code></td>
+<td>不同系统默认编码不同，可能乱码</td>
+<td>文本文件明确使用实际编码，通常从 UTF-8 开始</td>
+</tr>
+<tr>
+<td>用 <code>&quot;w&quot;</code> 只是想“打开”文件</td>
+<td>原内容会立刻被清空</td>
+<td>读取用 <code>&quot;r&quot;</code>，追加用 <code>&quot;a&quot;</code></td>
+</tr>
+<tr>
+<td>用 <code>read()</code> 处理任意大小文件</td>
+<td>文件很大时占用大量内存</td>
+<td>大文件逐行遍历</td>
+</tr>
+<tr>
+<td>把 JSON 当成任意 Python 对象存储</td>
+<td>不支持的对象会触发 <code>TypeError</code></td>
+<td>显式转换为 JSON 基本类型</td>
+</tr>
+</tbody></table>
+<h2 id="练习：保存处理摘要"><a href="#练习：保存处理摘要" class="headerlink" title="练习：保存处理摘要"></a>练习：保存处理摘要</h2><p>创建一个字典，包含运行日期、成功文件名列表和失败数量；用 JSON 写入 <code>summary.json</code>，再读回来并打印成功文件数。尝试把文件内容改成无效 JSON，观察解码错误会是什么。</p>
+<h2 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h2><p>文件读写把程序和外部数据连接起来，也带来了文件不存在、权限不足和内容损坏等失败情况。下一篇会学习如何捕获异常，让错误有明确、可控的处理方式。</p>
+<p><strong>官方资料</strong>：<a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3.14/tutorial/inputoutput.html">输入与输出</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/Python-%E6%95%99%E7%A8%8B/" rel="tag"># Python 教程</a>
+              <a href="/MyBlog/tags/%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99/" rel="tag"># 文件读写</a>
+              <a href="/MyBlog/tags/JSON/" rel="tag"># JSON</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/17/python-modules/" rel="prev" title="05｜模块与包：把 Python 代码拆开复用">
+                  <i class="fa fa-angle-left"></i> 05｜模块与包：把 Python 代码拆开复用
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/19/python-errors/" rel="next" title="07｜异常处理：让失败有明确结果">
+                  07｜异常处理：让失败有明确结果 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

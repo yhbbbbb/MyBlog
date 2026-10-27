@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="复盘 YY 面料数据串联看板 Demo：如何整理多来源业务数据、定义可解释的链路指标，并用轻量 Python 服务实现局域网分析与角色权限。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从表格到看板：YY 面料数据串联项目复盘">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/10/19/yy-fabric-dashboard/index.html">
+<meta property="og:site_name" content="WantBeing">
+<meta property="og:description" content="复盘 YY 面料数据串联看板 Demo：如何整理多来源业务数据、定义可解释的链路指标，并用轻量 Python 服务实现局域网分析与角色权限。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-19T10:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-19T10:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="SQLite">
+<meta property="article:tag" content="数据看板">
+<meta property="article:tag" content="数据质量">
+<meta property="article:tag" content="权限控制">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/10/19/yy-fabric-dashboard/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/10/19/yy-fabric-dashboard/","path":"2026/10/19/yy-fabric-dashboard/","title":"从表格到看板：YY 面料数据串联项目复盘"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>从表格到看板：YY 面料数据串联项目复盘 | WantBeing</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">WantBeing</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF%EF%BC%9A%E6%8A%8A%E5%88%86%E6%95%A3%E7%9A%84%E6%95%B0%E6%8D%AE%E6%94%BE%E8%BF%9B%E5%90%8C%E4%B8%80%E6%9D%A1%E4%B8%9A%E5%8A%A1%E9%93%BE"><span class="nav-number">1.</span> <span class="nav-text">项目背景：把分散的数据放进同一条业务链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A6%82%E4%BD%95%E5%8F%98%E6%88%90%E5%8F%AF%E6%9F%A5%E8%AF%A2%E7%9A%84%E7%9C%8B%E6%9D%BF"><span class="nav-number">2.</span> <span class="nav-text">数据如何变成可查询的看板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E5%85%B3%E9%94%AE%E8%AE%BE%E8%AE%A1%E5%8F%96%E8%88%8D"><span class="nav-number">3.</span> <span class="nav-text">几个关键设计取舍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%88%E5%AE%9A%E7%BB%9F%E8%AE%A1%E5%8F%A3%E5%BE%84%EF%BC%8C%E5%86%8D%E5%81%9A%E5%9B%BE%E8%A1%A8"><span class="nav-number">3.1.</span> <span class="nav-text">先定统计口径，再做图表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A9%E5%BC%82%E5%B8%B8%E6%88%90%E4%B8%BA%E5%8F%AF%E8%A7%81%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="nav-number">3.2.</span> <span class="nav-text">让异常成为可见的数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%83%E9%99%90%E8%A6%81%E5%9C%A8%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%94%9F%E6%95%88"><span class="nav-number">3.3.</span> <span class="nav-text">权限要在服务端生效</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E6%A0%88%E4%B8%BA%E4%BD%95%E4%BF%9D%E6%8C%81%E8%BD%BB%E9%87%8F"><span class="nav-number">4.</span> <span class="nav-text">技术栈为何保持轻量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E8%B7%B5%E4%B8%AD%E6%9A%B4%E9%9C%B2%E7%9A%84%E8%BE%B9%E7%95%8C"><span class="nav-number">5.</span> <span class="nav-text">实践中暴露的边界</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E4%BB%8E%E8%BF%99%E4%B8%AA%E9%A1%B9%E7%9B%AE%E5%BE%97%E5%88%B0%E7%9A%84%E7%BB%8F%E9%AA%8C"><span class="nav-number">6.</span> <span class="nav-text">我从这个项目得到的经验</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/10/19/yy-fabric-dashboard/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WantBeing">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="从表格到看板：YY 面料数据串联项目复盘 | WantBeing">
+      <meta itemprop="description" content="复盘 YY 面料数据串联看板 Demo：如何整理多来源业务数据、定义可解释的链路指标，并用轻量 Python 服务实现局域网分析与角色权限。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从表格到看板：YY 面料数据串联项目复盘
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-19 18:00:00" itemprop="dateCreated datePublished" datetime="2026-10-19T18:00:00+08:00">2026-10-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E9%A1%B9%E7%9B%AE%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">项目笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">复盘 YY 面料数据串联看板 Demo：如何整理多来源业务数据、定义可解释的链路指标，并用轻量 Python 服务实现局域网分析与角色权限。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>一个看板最先要解决的不是“画什么图”，而是“这个数字到底代表什么”。</p>
+</blockquote>
+<h2 id="项目背景：把分散的数据放进同一条业务链"><a href="#项目背景：把分散的数据放进同一条业务链" class="headerlink" title="项目背景：把分散的数据放进同一条业务链"></a>项目背景：把分散的数据放进同一条业务链</h2><p>这个项目是一个面向 YY 面料业务的可运行看板 Demo。数据来自不同阶段的表格和已有链路匹配结果，目标是把 QUO、PPO 与 Bulk 的订单信息放在同一处查看，并支持按客户、面料来源、链路状态、交付日期等条件筛选。</p>
+<p>项目代码：<a target="_blank" rel="noopener" href="https://github.com/yhbbbbb/yy-fabric-dashboard">yy-fabric-dashboard</a>。文章只讨论代码结构和设计取舍，不包含仓库中的业务数据库或原始数据。</p>
+<p>除了总览，项目还包含订单下钻、链路分析、Delivery Date 数据质量检查和用户权限管理。它解决的是“如何把现有数据整理成能查询、能追溯的演示工具”，不是实时生产系统，也不代表所有业务指标都已经具备可靠数据来源。</p>
+<p>这里有一条必须坚持的原则：<strong>字段缺失就显示待接入或未知，不把缺失值伪装成 0。</strong> 如果原始数据没有可靠的 YY、损耗或利用率字段，图表再完整也只会让错误更像事实。</p>
+<h2 id="数据如何变成可查询的看板"><a href="#数据如何变成可查询的看板" class="headerlink" title="数据如何变成可查询的看板"></a>数据如何变成可查询的看板</h2><p>项目把离线整理与在线查询拆开。<code>scripts/build_demo_db.py</code> 使用 pandas 和 openpyxl 读取 Excel，进行字段规整、日期和数值转换、订单聚合、链路关联及数据质量审计，最后写入 <code>data/dashboard.sqlite</code>。后端查询时将业务库设为只读；登录、角色、页面权限和会话则放在独立的 <code>data/admin.sqlite</code>。</p>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+    X[&quot;📄 业务 Excel&lt;br&gt;Workflow 与 Bulk&quot;] --&gt; T[&quot;🧹 离线整理&lt;br&gt;字段、日期、数值&quot;]
+    L[&quot;🗄️ 既有链路库&quot;] --&gt; T
+    T --&gt; D[&quot;📦 dashboard.sqlite&lt;br&gt;聚合、链路、质量记录&quot;]
+    D --&gt; Q[&quot;🔎 Python HTTP API&lt;br&gt;只读查询与筛选&quot;]
+    A[&quot;🔐 admin.sqlite&lt;br&gt;用户、角色、会话&quot;] --&gt; Q
+    Q --&gt; U[&quot;📊 原生前端&lt;br&gt;看板、下钻、管理&quot;]
+    T -.-&gt;|异常与缺失| C[&quot;📝 数据质量检查&quot;]
+    style X fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style L fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style T fill:#FFDAB9,stroke:#FFAB76,color:#333
+    style D fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style A fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style Q fill:#FFF9C4,stroke:#F9A825,color:#333
+    style U fill:#FFB3C6,stroke:#F48FB1,color:#333
+    style C fill:#F5F5F5,stroke:#BDBDBD,color:#333
+</code>
+</pre>
+
+<p>这种拆分让职责比较清楚：构建脚本负责把来源数据变成稳定的查询模型，HTTP 服务负责筛选和返回结果，前端负责呈现与交互。业务库可以只读访问，管理操作不会直接改写分析数据。</p>
+<h2 id="几个关键设计取舍"><a href="#几个关键设计取舍" class="headerlink" title="几个关键设计取舍"></a>几个关键设计取舍</h2><h3 id="先定统计口径，再做图表"><a href="#先定统计口径，再做图表" class="headerlink" title="先定统计口径，再做图表"></a>先定统计口径，再做图表</h3><p>项目分别处理 QUO、PPO、Bulk 的阶段统计，以及 Bulk→PPO、Full chain 的链路统计。单阶段指标不应因为订单没有进入完整链路就被排除；而跨阶段比较则需要严格限定在关联完整、所需字段有效的样本中。两类口径混在一起，会让分母变化而用户无从察觉。</p>
+<p>这也是为什么看板需要同时展示链路状态和数据范围。一个数字必须能回答三个问题：<strong>统计了哪些记录、排除了哪些记录、使用了什么关联条件。</strong></p>
+<h3 id="让异常成为可见的数据"><a href="#让异常成为可见的数据" class="headerlink" title="让异常成为可见的数据"></a>让异常成为可见的数据</h3><p>构建脚本会记录无法关联 PPO 的订单、完整链路里缺失或越界的 YY 值等问题，并给出字段和处理建议。与其静默丢弃异常行，不如把异常整理成质量页面：业务人员能看到问题规模，开发人员也能定位原始字段。</p>
+<p>数据质量页面并不能自动修复来源数据。它的作用是让错误有迹可循，再由熟悉业务规则的人判断修正方式。</p>
+<h3 id="权限要在服务端生效"><a href="#权限要在服务端生效" class="headerlink" title="权限要在服务端生效"></a>权限要在服务端生效</h3><p>前端隐藏一个导航项，只能改善界面，不能阻止用户直接请求 API。项目将 API 路由映射到 <code>overview</code>、<code>analytics</code>、<code>orders</code> 等页面权限；服务端验证登录会话和对应权限，无会话返回 <code>401</code>，已登录但未授权返回 <code>403</code>。</p>
+<p>角色权限保存在管理库中，用户可绑定多个角色，实际权限由有效角色授权的页面权限组成。密码使用带随机盐的 PBKDF2-HMAC-SHA256 哈希保存，会话令牌通过 HttpOnly Cookie 传递。分析库只读、管理库独立，也减少了账号管理对业务查询数据的影响。</p>
+<h2 id="技术栈为何保持轻量"><a href="#技术栈为何保持轻量" class="headerlink" title="技术栈为何保持轻量"></a>技术栈为何保持轻量</h2><p>后端使用 Python 标准库的 <code>http.server</code>、<code>sqlite3</code> 和 <code>ThreadingHTTPServer</code>；前端使用原生 HTML、CSS 与 JavaScript，没有引入完整 Web 框架。对局域网演示型工具来说，这让安装和部署路径短，排查问题时也容易沿着请求链定位。</p>
+<table>
+<thead>
+<tr>
+<th>需求</th>
+<th>当前实现</th>
+<th>这样做的原因与代价</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>离线整理 Excel</td>
+<td>pandas、openpyxl 构建 SQLite</td>
+<td>适合批量规整；运行构建脚本仍需安装相关 Python 依赖</td>
+</tr>
+<tr>
+<td>业务查询</td>
+<td>标准库 HTTP 服务、SQLite</td>
+<td>部署轻；复杂 API、并发写入和长期运维能力有限</td>
+</tr>
+<tr>
+<td>页面交互</td>
+<td>原生 HTML&#x2F;CSS&#x2F;JavaScript</td>
+<td>无前端构建步骤；组件复用和自动化 UI 测试需要自行维护</td>
+</tr>
+<tr>
+<td>用户与页面权限</td>
+<td>独立 SQLite 管理库、Cookie 会话</td>
+<td>适合 Demo 的同源局域网访问；不等同于企业身份认证方案</td>
+</tr>
+</tbody></table>
+<h2 id="实践中暴露的边界"><a href="#实践中暴露的边界" class="headerlink" title="实践中暴露的边界"></a>实践中暴露的边界</h2><p>第一，数据源路径不能假定每台电脑目录结构相同。当前构建脚本会从项目相邻目录寻找 Excel 文件，这对原始工作目录方便，但换机器或目录后容易选错来源。下一步应把输入路径改为明确配置或命令行参数，并在构建前输出实际读取的文件清单。</p>
+<p>第二，构建过程会替换已有的看板数据库。这个行为适合从原始数据重新生成 Demo，但在正式使用前应增加备份、临时文件构建和校验成功后原子替换，避免中途失败留下不可用数据库。</p>
+<p>第三，<code>0.0.0.0</code> 监听和普通 HTTP 只适用于受控网络中的演示。项目使用会话 Cookie，但当前没有 HTTPS、完整 CSRF 防护、操作审计和数据范围权限；这些都不能靠“页面上有登录框”来弥补。部署前至少要更换默认管理员口令、限制网络访问、避免把真实业务数据库或原始表格提交到公开仓库，并在需要长期使用时放到 HTTPS 反向代理后。</p>
+<p>第四，项目当前没有 YY、损耗、利用率等全部指标的可靠来源，也没有按客户或工厂进行数据范围隔离。界面必须继续标注待接入，不应把占位指标包装成已验证的经营结论。</p>
+<h2 id="我从这个项目得到的经验"><a href="#我从这个项目得到的经验" class="headerlink" title="我从这个项目得到的经验"></a>我从这个项目得到的经验</h2><p>做数据看板时，最耗时的工作常常不是写查询，而是确认字段定义、去重粒度、匹配规则和缺失值含义。把这些规则沉淀到可重复运行的构建脚本、索引和质量检查中，后续的图表才有可信的基础。</p>
+<p>第二个经验是，Demo 可以轻量，但边界必须讲清楚。SQLite 和标准库服务能让原型很快跑起来；只要涉及真实业务数据、多人访问或账号管理，就要重新评估备份、传输加密、并发、审计和权限模型。</p>
+<p>接下来最值得做的不是增加更多图表，而是固定数据输入契约、为构建结果增加校验和备份，再用脱敏样本验证统计口径。<strong>先让每个数字可解释、每次构建可恢复，再扩大看板的使用范围。</strong></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/SQLite/" rel="tag"># SQLite</a>
+              <a href="/MyBlog/tags/%E6%95%B0%E6%8D%AE%E7%9C%8B%E6%9D%BF/" rel="tag"># 数据看板</a>
+              <a href="/MyBlog/tags/%E6%95%B0%E6%8D%AE%E8%B4%A8%E9%87%8F/" rel="tag"># 数据质量</a>
+              <a href="/MyBlog/tags/%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6/" rel="tag"># 权限控制</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/19/python-stdlib-advanced/" rel="prev" title="10｜Python 标准库实用工具（二）">
+                  <i class="fa fa-angle-left"></i> 10｜Python 标准库实用工具（二）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/19/ai-productivity-reflection/" rel="next" title="AI 生成之后：从代码幻觉到真实生产力">
+                  AI 生成之后：从代码幻觉到真实生产力 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

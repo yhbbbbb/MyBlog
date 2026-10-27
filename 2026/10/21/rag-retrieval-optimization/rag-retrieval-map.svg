@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" role="img" aria-labelledby="title desc">
+  <title id="title">RAG 检索失败诊断与优化方法</title>
+  <desc id="desc">按照文档切块、召回、排序、上下文和多知识源路由等故障位置选择优化手段。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1 1 Q5 4 10 6 Q5 8 1 11" fill="none" stroke="#4d5555" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <filter id="pencil"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="1" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.2"/></filter>
+    <style>
+      .label{font:600 19px 'Segoe Print','Comic Sans MS',sans-serif;fill:#303b3b;text-anchor:middle}
+      .small{font:16px 'Segoe Print','Comic Sans MS',sans-serif;fill:#536060;text-anchor:middle}
+      .head{font:700 23px 'Segoe Print','Comic Sans MS',sans-serif;fill:#374141}
+      .box{stroke:#435051;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;filter:url(#pencil)}
+      .arrow{fill:none;stroke:#4d5555;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="600" rx="18" fill="#fffdf8"/>
+  <text x="55" y="48" class="head">先沿着证据流定位，再只优化出错的环节</text>
+  <path class="box" fill="#C7CEEA" d="M70 103 Q78 96 87 100 L272 98 Q281 102 279 113 L282 193 Q278 203 268 200 L80 204 Q72 200 74 190 Z"/>
+  <text x="176" y="143" class="label">📚 文档缺失或过期</text><text x="176" y="172" class="small">补数据、版本和权限元数据</text>
+  <path class="arrow" d="M285 151 Q314 147 342 151"/>
+  <path class="box" fill="#FFDAB9" d="M350 103 Q358 96 367 100 L552 98 Q561 102 559 113 L562 193 Q558 203 548 200 L360 204 Q352 200 354 190 Z"/>
+  <text x="456" y="143" class="label">✂️ 片段切分不合适</text><text x="456" y="172" class="small">结构切块、父子块、邻近上下文</text>
+  <path class="arrow" d="M565 151 Q594 147 622 151"/>
+  <path class="box" fill="#FFF9C4" d="M630 103 Q638 96 647 100 L832 98 Q841 102 839 113 L842 193 Q838 203 828 200 L640 204 Q632 200 634 190 Z"/>
+  <text x="736" y="143" class="label">🔎 正确段落未召回</text><text x="736" y="172" class="small">关键词 + 向量混合检索</text>
+  <path class="arrow" d="M845 151 Q874 147 902 151"/>
+  <path class="box" fill="#E8D5F5" d="M910 103 Q918 96 927 100 L1112 98 Q1121 102 1119 113 L1122 193 Q1118 203 1108 200 L920 204 Q912 200 914 190 Z"/>
+  <text x="1016" y="143" class="label">📊 候选排序不佳</text><text x="1016" y="172" class="small">扩大候选后再重排序</text>
+  <path d="M77 249 Q601 235 1124 249" fill="none" stroke="#d9d4c7" stroke-width="2" stroke-dasharray="6 8"/>
+  <text x="55" y="294" class="head">需要更复杂的上下文处理时</text>
+  <path class="box" fill="#FFB3C6" d="M95 347 Q103 340 112 344 L338 342 Q347 346 345 357 L348 449 Q344 459 334 456 L105 460 Q97 456 99 446 Z"/>
+  <text x="221" y="390" class="label">🧩 查询表达不清</text><text x="221" y="420" class="small">补全、多查询、问题拆分</text>
+  <path class="box" fill="#B5EAD7" d="M378 347 Q386 340 395 344 L621 342 Q630 346 628 357 L631 449 Q627 459 617 456 L388 460 Q380 456 382 446 Z"/>
+  <text x="504" y="390" class="label">🗜️ 噪声上下文过多</text><text x="504" y="420" class="small">过滤、压缩，并检查信息损失</text>
+  <path class="box" fill="#FFDAB9" d="M661 347 Q669 340 678 344 L904 342 Q913 346 911 357 L914 449 Q910 459 900 456 L671 460 Q663 456 665 446 Z"/>
+  <text x="787" y="390" class="label">🗃️ 知识源不止一个</text><text x="787" y="420" class="small">元数据过滤或语义路由</text>
+  <path class="box" fill="#F5F5F5" d="M944 347 Q952 340 961 344 L1086 342 Q1095 346 1093 357 L1096 449 Q1092 459 1082 456 L954 460 Q946 456 948 446 Z"/>
+  <text x="1020" y="390" class="label">🤖 多步调查</text><text x="1020" y="420" class="small">再考虑 Agentic RAG</text>
+  <path class="arrow" d="M221 472 Q400 535 586 492"/><path class="arrow" d="M504 472 Q590 511 682 492"/><path class="arrow" d="M787 472 Q710 512 682 492"/><path class="arrow" d="M1020 472 Q845 544 682 492"/>
+  <path class="box" fill="#FFF9C4" d="M468 493 Q476 486 485 490 L878 488 Q887 492 885 503 L888 556 Q884 566 874 563 L478 567 Q470 563 472 553 Z"/>
+  <text x="680" y="531" class="label">🧪 固定评估集验证收益、延迟与成本</text>
+</svg>
