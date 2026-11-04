@@ -17,7 +17,7 @@ layout: page
 - 编程语言：C/C++, Python, JavaScript
 - 操作系统：Linux
 - 开发工具：Git, VSCode
-- 其他：
+- 其他：还在学
 
 ## 座右铭
 

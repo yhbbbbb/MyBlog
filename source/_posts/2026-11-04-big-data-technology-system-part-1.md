@@ -46,7 +46,6 @@ description: 从数据规模、速度和价值出发，梳理大数据存储与�
 
 这张图将技术按“数据进入平台后的处理顺序”分层：底部是数据源和存储，中间是批流计算与治理，上层是数仓、数据湖和数据服务，最上面才是报表、模型和业务应用。
 
-可编辑源文件：[下载 big-data-overview.excalidraw](/MyBlog/2026/11/04/big-data-technology-system-part-1/big-data-overview.excalidraw)。
 
 ## 第一阶段：从单机文件到 HDFS
 
@@ -191,8 +190,6 @@ events.keyBy(Event::userId)
 {% asset_img storage-compute-evolution.svg 存储与计算技术演进图 %}
 
 演进并不是新技术完全替代旧技术，而是不同场景形成组合：对象存储可以作为数据湖底座，Spark 负责批处理，Flink 负责实时流，数据库负责事务和服务查询。
-
-可编辑源文件：[下载 storage-compute-evolution.excalidraw](/MyBlog/2026/11/04/big-data-technology-system-part-1/storage-compute-evolution.excalidraw)。
 
 ## 怎样选择计算引擎
 

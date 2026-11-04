@@ -142,7 +142,6 @@ Iceberg、Delta Lake 和 Hudi 等表格式就是为了解决对象存储上“�
 
 这条链路中，数据库承担在线交易，消息和日志承担事件采集，对象存储/数据湖保存原始与明细数据，Spark/Flink 负责批流计算，数仓和数据服务面向最终使用者。治理能力贯穿所有层，而不是只在最后增加一张权限表。
 
-可编辑源文件：[下载 data-to-value-pipeline.excalidraw](/MyBlog/2026/11/04/big-data-technology-system-part-2/data-to-value-pipeline.excalidraw)。
 
 ## 数据治理：让数据可用、可信、可控
 
@@ -179,7 +178,6 @@ WHERE dt = CURRENT_DATE AND order_time > CURRENT_TIMESTAMP;
 
 “管”这一层用虚线贯穿存储、计算和应用，表示治理不是某个孤立系统，而是每层都要执行的约束。没有治理的数据湖会变成数据沼泽，没有服务层的数据仓库则容易停留在报表项目。
 
-可编辑源文件：[下载 data-store-compute-govern-use.excalidraw](/MyBlog/2026/11/04/big-data-technology-system-part-2/data-store-compute-govern-use.excalidraw)。
 
 ## 数据如何产生业务价值
 
@@ -238,6 +236,19 @@ def user_profile(user_id, repository):
 每次技术演进都对应一个新的问题：容量不够，所以需要分布式存储；批处理太慢，所以出现 DAG 和内存计算；业务需要实时响应，所以发展流处理；数据重复和口径混乱，所以需要数仓建模、治理和中台；数据有了却没人使用，所以需要数据服务和业务闭环。
 
 真正成熟的大数据平台不是组件清单，而是一套能让数据可靠流动、被正确解释、受到适当保护，并最终改善业务决策的系统。
+
+---
+
+综上，我对几个名词的粗浅的归纳为：
+
+**数据库：** 当下的在线交易
+
+**数据湖：** 所有的历史数据
+
+**大数据：** 怎么从数据中挖出/算出价值
+
+**数据中台：** 怎么把价值变成可复用的服务
+
 
 ## 参考资料
 
