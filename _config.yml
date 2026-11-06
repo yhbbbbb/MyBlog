@@ -17,6 +17,14 @@ pretty_urls:
   trailing_html: true
 
 theme: next
+# 覆盖 NexT 主题配置：启用文章 Front Matter 中 mathjax: true 的公式渲染
+theme_config:
+  math:
+    every_page: false
+    mathjax:
+      enable: true
+      tags: none
+      display_overflow: scroll
 # 新文章文件名：日期-项目 slug.md
 new_post_name: :year-:month-:day-:title.md
 # 只使用 Front Matter 的 updated，避免 CI 检出时间被误认为文章更新时间
