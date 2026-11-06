@@ -116,8 +116,7 @@ print(bigram_probability("agent", "learns"))  # 0.5
 
 例如输入形状为 `(batch_size, seq_len)`，嵌入层输出形状通常是 `(batch_size, seq_len, d_model)`。`d_model` 可以理解为每个词元的表示宽度。
 
-<img src="2026-11-06-hello-agents-chapter3-1\neural-language-model.png" style="width:70%;" alt="神经网络语言模型架构示意图（图 3.2）" />
-
+{% asset_img neural-language-model.png 神经网络语言模型架构示意图（图 3.2） %}
 
 训练时，Embedding 矩阵本身也是参数。模型会为了提高下一个词的预测概率，逐渐把具有相似用法的词映射到更有区分度的向量位置。向量之间可以用余弦相似度衡量：
 
@@ -138,7 +137,27 @@ $$h_t=\tanh(W_xx_t+W_hh_{t-1}+b)$$
 - **计算依赖串行**：必须先算 `h_(t-1)`，才能算 `h_t`，难以在 GPU 上充分并行；
 - **长距离依赖不稳定**：反向传播经过很多时间步后，梯度可能消失或爆炸。
 
+一个常见的 RNN 单元计算可以写成：
+
+```python
+def rnn_step(x_t, h_prev, input_linear, hidden_linear, bias):
+    """处理单个时间步；x_t 和 h_prev 的最后一维分别为输入/隐藏维度。"""
+    # 当前输入和上一步隐藏状态共同决定新的状态
+    h_t = torch.tanh(input_linear(x_t) + hidden_linear(h_prev) + bias)
+    return h_t
+```
+
 LSTM 用细胞状态和门控机制改善记忆传递：遗忘门决定丢弃什么，输入门决定写入什么，输出门决定暴露什么。它解决了一部分长依赖问题，却仍然保留了循环带来的串行限制。
+
+以一个时间步为例，LSTM 的核心门控可写为：
+
+$$f_t=\sigma(W_f[x_t,h_{t-1}]+b_f),\quad i_t=\sigma(W_i[x_t,h_{t-1}]+b_i)$$
+
+$$\tilde{c}_t=\tanh(W_c[x_t,h_{t-1}]+b_c),\quad c_t=f_t\odot c_{t-1}+i_t\odot\tilde{c}_t$$
+
+$$o_t=\sigma(W_o[x_t,h_{t-1}]+b_o),\quad h_t=o_t\odot\tanh(c_t)$$
+
+其中 `f_t` 控制保留旧记忆的比例，`i_t` 控制写入新候选信息的比例，`o_t` 控制输出多少细胞状态。
 
 这就引出了 Transformer：能不能不按时间步循环，而是一次性让序列中的每个位置互相查看？
 
@@ -181,20 +200,9 @@ RNN 的 `last_hidden` 可以看作最后一个时间步的摘要；LSTM 的 `cel
 3. 解码器除了自己的掩码自注意力，还通过交叉注意力读取编码器输出；
 4. 最后一层 Linear + Softmax 把隐藏向量映射成目标词表上的概率。
 
-{% mermaid %}
-flowchart LR
-    A[源句词元] --> B[Embedding + 位置编码]
-    B --> C[编码器堆叠]
-    C --> D[上下文表示]
-    E[已生成目标词元] --> F[Embedding + 位置编码]
-    F --> G[掩码自注意力]
-    D --> H[交叉注意力]
-    G --> H
-    H --> I[前馈网络与 Add Norm]
-    I --> J[Linear + Softmax]
-    J --> K[下一个词元]
-    K -. 自回归追加 .-> E
-{% endmermaid %}
+{% asset_img transformer-architecture.svg Transformer 编码器—解码器架构图 %}
+
+这张图使用 Excalidraw 结构绘制，并导出为 SVG 放入文章资源目录。网页中可以直接缩放 SVG，查看每个模块的输入输出形状；对应的可编辑源文件是同目录下的 `transformer-architecture.excalidraw`。
 
 ### 一个最小的 Transformer 层骨架
 
@@ -312,6 +320,75 @@ class MultiHeadAttention(nn.Module):
         return y, weights
 ```
 
+### 手写多头注意力：对应课程代码的完整版本
+
+为了把公式和张量形状对应起来，下面不直接调用 `nn.MultiheadAttention`，而是展开 Q、K、V 投影、拆头、缩放点积注意力和合并多头的过程。设输入形状为 `(batch_size, seq_len, d_model)`，若有 `num_heads` 个头，则每个头的维度是 `head_dim = d_model / num_heads`。
+
+```python
+import math
+import torch
+import torch.nn as nn
+
+
+class MultiHeadAttentionManual(nn.Module):
+    """手写多头注意力，便于对照公式学习。"""
+
+    def __init__(self, d_model: int, num_heads: int):
+        super().__init__()
+        if d_model % num_heads != 0:
+            raise ValueError("d_model 必须能被 num_heads 整除")
+
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.head_dim = d_model // num_heads
+
+        # 四个线性层分别完成 Q、K、V 投影和多头结果的最终融合
+        self.query_linear = nn.Linear(d_model, d_model)
+        self.key_linear = nn.Linear(d_model, d_model)
+        self.value_linear = nn.Linear(d_model, d_model)
+        self.out_linear = nn.Linear(d_model, d_model)
+
+    def split_heads(self, x: torch.Tensor) -> torch.Tensor:
+        """(batch, seq_len, d_model) → (batch, heads, seq_len, head_dim)。"""
+        batch_size, seq_len, _ = x.shape
+        x = x.view(batch_size, seq_len, self.num_heads, self.head_dim)
+        return x.transpose(1, 2)
+
+    def combine_heads(self, x: torch.Tensor) -> torch.Tensor:
+        """(batch, heads, seq_len, head_dim) → (batch, seq_len, d_model)。"""
+        batch_size, _, seq_len, _ = x.shape
+        x = x.transpose(1, 2).contiguous()
+        return x.view(batch_size, seq_len, self.d_model)
+
+    def scaled_dot_product_attention(self, q, k, v, mask=None):
+        # q @ k^T 的形状为 (batch, heads, query_len, key_len)
+        scores = q @ k.transpose(-2, -1)
+        scores = scores / math.sqrt(self.head_dim)
+
+        if mask is not None:
+            # False 表示禁止关注；极小值经过 softmax 后接近 0
+            scores = scores.masked_fill(~mask, torch.finfo(scores.dtype).min)
+
+        weights = torch.softmax(scores, dim=-1)
+        # (batch, heads, query_len, key_len)
+        # × (batch, heads, key_len, head_dim)
+        # = (batch, heads, query_len, head_dim)
+        return weights @ v, weights
+
+    def forward(self, query, key, value, mask=None):
+        # 交叉注意力中 query 和 key/value 可以来自不同序列；
+        # 自注意力中三者都来自同一个序列。
+        q = self.split_heads(self.query_linear(query))
+        k = self.split_heads(self.key_linear(key))
+        v = self.split_heads(self.value_linear(value))
+
+        attended, weights = self.scaled_dot_product_attention(q, k, v, mask)
+        output = self.out_linear(self.combine_heads(attended))
+        return output, weights
+```
+
+这里特意使用 `query_linear`、`key_linear`、`value_linear` 和 `out_linear` 一致命名，避免把构造函数中的属性写成 `W_q`、`W_k` 后又在 `forward` 中调用另一套名称。
+
 ### DecoderLayer 与因果掩码
 
 解码器的第一层自注意力必须遮住未来位置。例如目标序列长度为 4 时，第 2 个位置只能看到第 1、2 个位置，不能提前看到第 3、4 个位置。下面的上三角矩阵就是一个常见的因果掩码：
@@ -398,6 +475,25 @@ optimizer.zero_grad()
 $$FFN(x)=max(0,xW_1+b_1)W_2+b_2$$
 
 通常先把维度从 `d_model` 扩大到 `d_ff`，经过激活函数，再压回 `d_model`。它对序列中的每个位置使用相同的参数，因此可以并行计算。
+
+```python
+class PositionwiseFeedForward(nn.Module):
+    """对每个位置独立处理，但所有位置共享参数。"""
+
+    def __init__(self, d_model: int, d_ff: int, dropout: float = 0.1):
+        super().__init__()
+        self.linear1 = nn.Linear(d_model, d_ff)
+        self.linear2 = nn.Linear(d_ff, d_model)
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # 输入和输出都保持 (batch, seq_len, d_model)
+        x = self.linear1(x)       # 扩大表示空间，提取更多特征
+        x = self.relu(x)          # 引入非线性
+        x = self.dropout(x)       # 训练时随机失活，降低过拟合
+        return self.linear2(x)    # 映射回 d_model，便于残差相加
+```
 
 ### 2. 残差连接（Add）
 
