@@ -1,6 +1,7 @@
 ---
 title: Hello-Agents 第二章学习笔记：智能体发展史
-date: 2026-11-05 11:00:00
+date: 2026-11-05 11:00
+updated: 2026-11-06 11:00
 categories:
   - AI Agent
 tags:
