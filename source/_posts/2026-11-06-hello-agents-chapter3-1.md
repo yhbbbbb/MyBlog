@@ -1,7 +1,7 @@
 ---
 title: Hello-Agents 第三章 3.1 学习笔记：语言模型与 Transformer 架构
 date: 2026-11-06 10:00:00
-updated: 2026-11-06 10:00:00
+updated: 2026-11-07 10:00:00
 categories:
   - AI Agent
 tags:
@@ -19,7 +19,7 @@ mathjax: true
 
 ## 一、先回答一个问题：语言模型在做什么
 
-语言模型（Language Model，LM）要解决的问题可以概括为：给定前面的词元，估计下一个词元出现的概率。一个句子由 `w_1, w_2, ..., w_m` 组成时，它的概率可以用链式法则表示：
+语言模型（Language Model，LM）要解决的问题可以概括为：给定前面的词元，估计下一个词元出现的概率。一个句子由 $w_1, w_2, \ldots, w_m$ 组成时，它的概率可以用链式法则表示：
 
 $$
 P(w_1, w_2, \ldots, w_m)=\prod_{i=1}^{m}P(w_i\mid w_1,\ldots,w_{i-1})
