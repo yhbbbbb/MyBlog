@@ -78,6 +78,102 @@ graph LR
 - 重要代码行用注释标注用途
 - 超过 50 行的代码要分段，配文字说明
 
+### 2.4 文本块、行内标签与引用
+
+当前站点使用 NexT 8.29.0。技术文章不能连续堆叠普通段落，应根据内容作用使用不同的视觉块，帮助读者区分定义、重点、风险、结果和补充说明。
+
+#### Note 文本块
+
+适合放置防忘定义、重点结论、成功结果、提示和风险。每篇文章至少在一个核心概念或容易遗忘的地方使用 Note，但不要每段都使用。
+
+```markdown
+{% note info %}
+这里写概念解释或防忘内容。
+{% endnote %}
+
+{% note primary %}
+这里写文章的核心结论。
+{% endnote %}
+
+{% note success %}
+这里写构建、测试或验证结果。
+{% endnote %}
+
+{% note warning %}
+这里写容易踩坑的配置和边界条件。
+{% endnote %}
+
+{% note danger %}
+这里写删除、覆盖、权限和数据风险。
+{% endnote %}
+
+{% note info 点击展开详情 %}
+这里写需要读者按需展开的补充说明。
+{% endnote %}
+```
+
+NexT 支持的类型是 `default`、`primary`、`info`、`success`、`warning`、`danger` 和 `no-icon`。`simple`、`modern`、`flat` 是主题级 `note.style` 配置，不能当作单个 Note 的参数。
+
+#### 行内标签
+
+适合标注状态、版本、实验性功能和弃用信息，不能替代完整句子：
+
+```markdown
+{% label info @提示 %}
+{% label success @stable %}
+{% label warning @实验性 %}
+{% label danger @deprecated %}
+```
+
+行内标签应紧跟被标注的词，例如“接口状态为 {% label success @stable %}”，不要单独堆放一排彩色标签。
+
+#### 居中引用
+
+适合放置文章中的一句判断、结论或记忆句。引用内容应短，不要把整段分析放进居中引用：
+
+```markdown
+{% centerquote %}
+提示负责表达任务，程序负责验证边界。
+{% endcenterquote %}
+```
+
+`cq` 是 `centerquote` 的别名。普通资料引用仍使用 Markdown `>`，不要为了装饰把所有引用都居中。
+
+#### 标签页与图片组
+
+多语言代码、多个实现方案或同一概念的不同版本使用 `tabs`；相关截图或对比图片使用 `grouppicture` / `gp`：
+
+```markdown
+{% tabs example-code %}
+<!-- tab Python -->
+```python
+print("hello")
+```
+<!-- endtab -->
+<!-- tab JavaScript -->
+```javascript
+console.log("hello")
+```
+<!-- endtab -->
+{% endtabs %}
+```
+
+```markdown
+{% grouppicture 2-1 %}
+![图片一](/MyBlog/images/example-1.png)
+![图片二](/MyBlog/images/example-2.png)
+{% endgrouppicture %}
+```
+
+图片必须有实际内容和说明，不能用装饰图填充页面。
+
+#### 使用边界
+
+- 一个段落只承担一种作用，重点结论用 `note primary`，风险用 `note warning` 或 `note danger`，测试结果用 `note success`。
+- 文本块应服务于信息层级，不能为了颜色把普通段落全部包起来。
+- 当前 NexT 未注册 `folding`、`cb` / `checkbox`、`timeline`、`gallery`，不要从 Butterfly 或 Fluid 文章中直接复制这些标签。
+- 标签开始和结束必须单独占行；嵌套 Markdown、代码块和表格后要本地构建确认。
+
 ---
 
 ## 三、文章模板库
@@ -229,6 +325,11 @@ description: [≤100字摘要，无双引号]
 - [ ] 流程/架构类内容使用了 Mermaid 图
 - [ ] Mermaid 节点颜色使用马卡龙色系
 - [ ] 对比类内容使用了表格
+- [ ] 重点定义、风险、测试结果至少使用一次合适的 Note 文本块
+- [ ] 需要强调单个状态时使用行内 label，避免整段文字只靠颜色区分
+- [ ] 文章有关键结论时使用短的居中引用，但不把普通段落全部装饰化
+- [ ] 多语言或多方案代码使用 tabs，相关截图对比使用 grouppicture
+- [ ] 只使用当前 NexT 已注册的标签，并确认开始/结束标签成对
 - [ ] 没有使用禁止措辞
 - [ ] 结尾有明确结论或行动建议
 - [ ] Front Matter 完整（title/date/categories/tags）
@@ -355,7 +456,7 @@ sequenceDiagram
 
 ---
 
-*最后更新：2026-10-19 | 维护者：yhbbbbb*
+*最后更新：2026-11-07 | 维护者：yhbbbbb*
 
 
 ---
@@ -367,3 +468,4 @@ sequenceDiagram
 - **2026-10-16**：新增文章文件命名规则 `YYYY-MM-DD-project-slug.md`，并同步配置 Hexo 新文章文件名。
 - **2026-10-16**：将 Hexo `updated_option` 设为 `date`，要求实质性更新显式填写 `updated`，避免 GitHub Actions 检出时间造成虚假的更新时间。
 - **2026-10-19**：修正 Mermaid 节点换行写法，统一使用 `<br>`；文章中的 Mermaid 图表已同步检查，移除字面量 `\n`。
+- **2026-11-07**：新增 NexT 文本块规范，补充 note、label、centerquote、tabs、grouppicture 的使用场景、示例和边界；明确 folding、cb、timeline、gallery 等其他主题标签不能直接用于当前 NexT。
