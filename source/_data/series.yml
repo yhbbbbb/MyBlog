@@ -28,3 +28,9 @@
   icon: 🔎
   category: 技术科普
   order: 5
+- id: hello-agents
+  name: Hello-Agents 学习笔记
+  description: 按 Datawhale Hello-Agents 课程记录大语言模型、智能体架构和工程实践中的关键知识点。
+  icon: 🧠
+  category: 技术科普
+  order: 6
