@@ -151,11 +151,17 @@ LSTM 用细胞状态和门控机制改善记忆传递：遗忘门决定丢弃什
 
 以一个时间步为例，LSTM 的核心门控可写为：
 
-$$f_t=\sigma(W_f[x_t,h_{t-1}]+b_f),\quad i_t=\sigma(W_i[x_t,h_{t-1}]+b_i)$$
+$$
+f_t=\sigma(W_f[x_t,h_{t-1}]+b_f),\quad i_t=\sigma(W_i[x_t,h_{t-1}]+b_i)
+$$
 
-$$\tilde{c}_t=\tanh(W_c[x_t,h_{t-1}]+b_c),\quad c_t=f_t\odot c_{t-1}+i_t\odot\tilde{c}_t$$
+$$
+\tilde{c}\_{t}=\tanh(W\_{c}[x\_{t},h\_{t-1}]+b\_{c}),\quad c\_{t}=f\_{t}\odot c\_{t-1}+i\_{t}\odot\tilde{c}\_{t}
+$$
 
-$$o_t=\sigma(W_o[x_t,h_{t-1}]+b_o),\quad h_t=o_t\odot\tanh(c_t)$$
+$$
+o_t=\sigma(W_o[x_t,h_{t-1}]+b_o),\quad h_t=o_t\odot\tanh(c_t)
+$$
 
 其中 `f_t` 控制保留旧记忆的比例，`i_t` 控制写入新候选信息的比例，`o_t` 控制输出多少细胞状态。
 
@@ -193,7 +199,7 @@ RNN 的 `last_hidden` 可以看作最后一个时间步的摘要；LSTM 的 `cel
 
 {% asset_img transformer-overview.png Transformer 整体架构图（图 3.4） %}
 
-阅读这张图时，我建议沿着下面的路径看：
+阅读这张图时，可以沿着下面的路径看：
 
 1. 输入词元先经过 Embedding，并加上 Positional Encoding；
 2. 编码器重复堆叠“多头自注意力 → Add & Norm → 前馈网络 → Add & Norm”；
@@ -201,8 +207,6 @@ RNN 的 `last_hidden` 可以看作最后一个时间步的摘要；LSTM 的 `cel
 4. 最后一层 Linear + Softmax 把隐藏向量映射成目标词表上的概率。
 
 {% asset_img transformer-architecture.svg Transformer 编码器—解码器架构图 %}
-
-这张图使用 Excalidraw 结构绘制，并导出为 SVG 放入文章资源目录。网页中可以直接缩放 SVG，查看每个模块的输入输出形状；对应的可编辑源文件是同目录下的 `transformer-architecture.excalidraw`。
 
 ### 一个最小的 Transformer 层骨架
 
