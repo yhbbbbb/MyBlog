@@ -143,7 +143,7 @@ NexT 支持的类型是 `default`、`primary`、`info`、`success`、`warning`�
 
 多语言代码、多个实现方案或同一概念的不同版本使用 `tabs`；相关截图或对比图片使用 `grouppicture` / `gp`：
 
-```markdown
+````markdown
 {% tabs example-code %}
 <!-- tab Python -->
 ```python
@@ -156,7 +156,7 @@ console.log("hello")
 ```
 <!-- endtab -->
 {% endtabs %}
-```
+````
 
 ```markdown
 {% grouppicture 2-1 %}
