@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="学习 Datawhale Hello-Agents 第二章后，整理从符号主义、专家系统、神经网络到大语言模型和现代 Agent 的发展脉络，方便后续复习。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hello-Agents 第二章学习笔记：智能体发展史">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/11/05/hello-agents-chapter2/index.html">
+<meta property="og:site_name" content="yhbbbbb">
+<meta property="og:description" content="学习 Datawhale Hello-Agents 第二章后，整理从符号主义、专家系统、神经网络到大语言模型和现代 Agent 的发展脉络，方便后续复习。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yhbbbbb.github.io/MyBlog/2026/11/05/hello-agents-chapter2/agent-history-timeline.svg">
+<meta property="og:image" content="https://yhbbbbb.github.io/MyBlog/2026/11/05/hello-agents-chapter2/agent-evolution-stack.svg">
+<meta property="article:published_time" content="2026-11-05T03:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-06T03:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="Hello-Agents">
+<meta property="article:tag" content="大语言模型">
+<meta property="article:tag" content="学习笔记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yhbbbbb.github.io/MyBlog/2026/11/05/hello-agents-chapter2/agent-history-timeline.svg">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/11/05/hello-agents-chapter2/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/11/05/hello-agents-chapter2/","path":"2026/11/05/hello-agents-chapter2/","title":"Hello-Agents 第二章学习笔记：智能体发展史"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Hello-Agents 第二章学习笔记：智能体发展史 | yhbbbbb</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","display_overflow":"scroll","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-mml-chtml.js","integrity":"sha256-ihPtDDm7pTmSF9ViEsItlvsrBTsNkz0MOXMchzOwCQw="}}</script>
+<script src="/MyBlog/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">yhbbbbb</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%AD%A6%E4%B9%A0%E5%8F%91%E5%B1%95%E5%8F%B2"><span class="nav-number">1.</span> <span class="nav-text">一、为什么要学习发展史</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%99%BA%E8%83%BD%E4%BD%93%E5%8F%91%E5%B1%95%E7%9A%84%E4%B8%BB%E7%BA%BF"><span class="nav-number">2.</span> <span class="nav-text">二、智能体发展的主线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5%EF%BC%9A%E7%AC%A6%E5%8F%B7%E4%B8%BB%E4%B9%89%E4%B8%8E%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">三、第一阶段：符号主义与逻辑推理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5%EF%BC%9A%E4%B8%93%E5%AE%B6%E7%B3%BB%E7%BB%9F"><span class="nav-number">4.</span> <span class="nav-text">四、第二阶段：专家系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%93%E5%AE%B6%E7%B3%BB%E7%BB%9F%E5%B8%A6%E6%9D%A5%E7%9A%84%E5%90%AF%E5%8F%91"><span class="nav-number">4.1.</span> <span class="nav-text">专家系统带来的启发</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%AC%AC%E4%B8%89%E9%98%B6%E6%AE%B5%EF%BC%9A%E8%BF%9E%E6%8E%A5%E4%B8%BB%E4%B9%89%E4%B8%8E%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">5.</span> <span class="nav-text">五、第三阶段：连接主义与神经网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E7%AC%AC%E5%9B%9B%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0"><span class="nav-number">6.</span> <span class="nav-text">六、第四阶段：机器学习与强化学习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%91%E5%AF%B9%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E7%9A%84%E8%AE%B0%E5%BF%86%E6%96%B9%E5%BC%8F"><span class="nav-number">6.1.</span> <span class="nav-text">我对强化学习的记忆方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E7%AC%AC%E4%BA%94%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%92%8C%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0"><span class="nav-number">7.</span> <span class="nav-text">七、第五阶段：深度学习和表示学习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E7%AC%AC%E5%85%AD%E9%98%B6%E6%AE%B5%EF%BC%9ATransformer-%E4%B8%8E%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B"><span class="nav-number">8.</span> <span class="nav-text">八、第六阶段：Transformer 与大语言模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0%E7%8E%B0%E4%BB%A3-Agent"><span class="nav-number">9.</span> <span class="nav-text">九、从语言模型到现代 Agent</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E3%80%81%E5%87%A0%E4%B8%AA%E5%AE%B9%E6%98%93%E6%B7%B7%E6%B7%86%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">10.</span> <span class="nav-text">十、几个容易混淆的概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Agent-%E4%B8%8D%E7%AD%89%E4%BA%8E%E8%81%8A%E5%A4%A9%E6%9C%BA%E5%99%A8%E4%BA%BA"><span class="nav-number">10.1.</span> <span class="nav-text">Agent 不等于聊天机器人</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Agent-%E4%B8%8D%E7%AD%89%E4%BA%8E%E8%87%AA%E5%8A%A8%E5%8C%96%E8%84%9A%E6%9C%AC"><span class="nav-number">10.2.</span> <span class="nav-text">Agent 不等于自动化脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A-Agent-%E4%B8%8D%E4%B8%80%E5%AE%9A%E4%BC%98%E4%BA%8E%E5%8D%95-Agent"><span class="nav-number">10.3.</span> <span class="nav-text">多 Agent 不一定优于单 Agent</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E8%BF%99%E6%AE%B5%E5%8E%86%E5%8F%B2%E5%AF%B9%E6%88%91%E6%9C%89%E4%BB%80%E4%B9%88%E5%90%AF%E5%8F%91"><span class="nav-number">11.</span> <span class="nav-text">十一、这段历史对我有什么启发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%A1%AE%E5%AE%9A%E6%80%A7%E5%92%8C%E4%B8%8D%E7%A1%AE%E5%AE%9A%E6%80%A7%E5%BA%94%E8%AF%A5%E5%88%86%E5%BC%80"><span class="nav-number">11.1.</span> <span class="nav-text">1. 确定性和不确定性应该分开</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%A7%A3%E9%87%8A%E8%83%BD%E5%8A%9B%E9%9C%80%E8%A6%81%E7%B3%BB%E7%BB%9F%E9%85%8D%E5%90%88"><span class="nav-number">11.2.</span> <span class="nav-text">2. 解释能力需要系统配合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%AF%8F%E4%B8%80%E6%AC%A1%E6%8A%80%E6%9C%AF%E5%8D%87%E7%BA%A7%E9%83%BD%E6%B2%A1%E6%9C%89%E6%B6%88%E7%81%AD%E6%97%A7%E9%97%AE%E9%A2%98"><span class="nav-number">11.3.</span> <span class="nav-text">3. 每一次技术升级都没有消灭旧问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E5%A4%8D%E4%B9%A0%E6%8F%90%E7%BA%B2"><span class="nav-number">12.</span> <span class="nav-text">十二、复习提纲</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">13.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">14.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">79</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/11/05/hello-agents-chapter2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yhbbbbb">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Hello-Agents 第二章学习笔记：智能体发展史 | yhbbbbb">
+      <meta itemprop="description" content="学习 Datawhale Hello-Agents 第二章后，整理从符号主义、专家系统、神经网络到大语言模型和现代 Agent 的发展脉络，方便后续复习。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hello-Agents 第二章学习笔记：智能体发展史
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-11-05 11:00:00" itemprop="dateCreated datePublished" datetime="2026-11-05T11:00:00+08:00">2026-11-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-11-06 11:00:00" itemprop="dateModified" datetime="2026-11-06T11:00:00+08:00">2026-11-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/AI-Agent/" itemprop="url" rel="index"><span itemprop="name">AI Agent</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">学习 Datawhale Hello-Agents 第二章后，整理从符号主义、专家系统、神经网络到大语言模型和现代 Agent 的发展脉络，方便后续复习。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>第一章让我理解了 Agent 是什么，第二章让我开始理解：今天的 Agent 并不是突然出现的，它是人工智能几十年里“知识表示、学习、决策和行动”几条路线逐渐汇合的结果。</p>
+</blockquote>
+<h2 id="一、为什么要学习发展史"><a href="#一、为什么要学习发展史" class="headerlink" title="一、为什么要学习发展史"></a>一、为什么要学习发展史</h2><p>只记住“现在流行什么框架”，很容易把技术名词和产品营销混在一起。学习发展史的作用，是看到每一代方法在解决什么问题，又为什么会遇到新的瓶颈。</p>
+<p>我用四个问题来记忆每个阶段：</p>
+<ol>
+<li>当时系统主要依靠什么表示知识？</li>
+<li>它如何做出判断或选择动作？</li>
+<li>它解决了上一阶段的什么问题？</li>
+<li>它又留下了什么限制？</li>
+</ol>
+<h2 id="二、智能体发展的主线"><a href="#二、智能体发展的主线" class="headerlink" title="二、智能体发展的主线"></a>二、智能体发展的主线</h2><img src="/MyBlog/2026/11/05/hello-agents-chapter2/agent-history-timeline.svg" class="" title="智能体技术发展时间线">
+
+<p>这条时间线不是严格的单线替代关系。符号规则、机器学习、强化学习、神经网络和大语言模型今天仍然可以组合使用，只是系统的核心能力从“人写规则”逐步转向“模型从数据中学习，再通过工具与环境交互”。</p>
+<h2 id="三、第一阶段：符号主义与逻辑推理"><a href="#三、第一阶段：符号主义与逻辑推理" class="headerlink" title="三、第一阶段：符号主义与逻辑推理"></a>三、第一阶段：符号主义与逻辑推理</h2><p>早期人工智能研究倾向于把智能理解为符号操作：世界可以被表示为概念、事实、规则和逻辑关系，程序根据这些符号进行推理。</p>
+<p>例如，系统可以把知识写成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">事实：小王是员工</span><br><span class="line">规则：员工可以申请报销</span><br><span class="line">问题：小王能否申请报销？</span><br><span class="line">推理：可以</span><br></pre></td></tr></table></figure>
+
+<p>这种方法的优点是过程比较清楚：规则是什么、为什么得到结论，都可以被人检查。它适合规则稳定、边界清晰的领域，例如简单的专家诊断、配置检查和流程审批。</p>
+<p>但现实世界很难全部写成规则。自然语言存在歧义，知识会不断变化，异常情况数量也会快速增长。规则越多，维护成本越高，规则之间还可能相互冲突。系统能够处理“已经写进规则的世界”，却很难从开放环境中自行获得新知识。</p>
+<h2 id="四、第二阶段：专家系统"><a href="#四、第二阶段：专家系统" class="headerlink" title="四、第二阶段：专家系统"></a>四、第二阶段：专家系统</h2><p>专家系统把符号主义进一步工程化，通常包含知识库、推理机、工作记忆和解释模块。它试图把领域专家的经验整理成规则，让普通用户可以通过系统获得类似专家的建议。</p>
+<p>一个简化的专家系统可以这样理解：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">rules = [</span><br><span class="line">    &#123;<span class="string">&quot;when&quot;</span>: &#123;<span class="string">&quot;temperature&quot;</span>: <span class="string">&quot;high&quot;</span>, <span class="string">&quot;fan&quot;</span>: <span class="string">&quot;stopped&quot;</span>&#125;, <span class="string">&quot;then&quot;</span>: <span class="string">&quot;check_power&quot;</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;when&quot;</span>: &#123;<span class="string">&quot;temperature&quot;</span>: <span class="string">&quot;normal&quot;</span>, <span class="string">&quot;fan&quot;</span>: <span class="string">&quot;running&quot;</span>&#125;, <span class="string">&quot;then&quot;</span>: <span class="string">&quot;system_ok&quot;</span>&#125;,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">infer</span>(<span class="params">facts: <span class="built_in">dict</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="keyword">for</span> rule <span class="keyword">in</span> rules:</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">all</span>(facts.get(key) == value <span class="keyword">for</span> key, value <span class="keyword">in</span> rule[<span class="string">&quot;when&quot;</span>].items()):</span><br><span class="line">            <span class="keyword">return</span> rule[<span class="string">&quot;then&quot;</span>]</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;need_more_information&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>它已经有了 Agent 的一些雏形：读取环境事实，根据规则选择动作或结论。不过它的“智能”主要来自人工编写的知识，面对没有覆盖的情况时只能返回未知。</p>
+<h3 id="专家系统带来的启发"><a href="#专家系统带来的启发" class="headerlink" title="专家系统带来的启发"></a>专家系统带来的启发</h3><ul>
+<li>知识和执行程序可以分离；</li>
+<li>决策过程需要能够解释；</li>
+<li>不确定时应该请求更多信息，而不是强行给答案；</li>
+<li>规则系统适合承担确定性约束，不能把所有开放问题都交给规则。</li>
+</ul>
+<p>这些原则在今天仍然有用。现在的 Agent 也需要工具白名单、权限规则、停止条件和人工审批，这些部分仍然接近传统专家系统的确定性控制。</p>
+<h2 id="五、第三阶段：连接主义与神经网络"><a href="#五、第三阶段：连接主义与神经网络" class="headerlink" title="五、第三阶段：连接主义与神经网络"></a>五、第三阶段：连接主义与神经网络</h2><p>连接主义把智能看成大量简单单元连接后产生的整体能力。神经网络不再要求工程师为每种输入手写规则，而是通过训练数据调整参数，学习输入与输出之间的关系。</p>
+<p>这解决了规则系统难以覆盖感知和语言变化的问题。图像识别、语音识别和自然语言处理都可以从数据中学习模式，而不是把每个像素、音素和句子变成手工规则。</p>
+<p>但神经网络也有明显限制：需要大量高质量数据，训练过程可能不稳定，模型内部难以解释，训练好的模型对分布外输入也可能表现很差。它擅长从数据中提取模式，却不天然知道目标、权限、工具和现实世界的后果。</p>
+<h2 id="六、第四阶段：机器学习与强化学习"><a href="#六、第四阶段：机器学习与强化学习" class="headerlink" title="六、第四阶段：机器学习与强化学习"></a>六、第四阶段：机器学习与强化学习</h2><p>监督学习通常从带标签的数据中学习预测；无监督或自监督学习从数据本身发现表示；强化学习则把问题写成“智能体在环境中观察状态、选择动作、获得奖励、更新策略”。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">状态 s_t</span><br><span class="line">   ↓ 选择动作 a_t</span><br><span class="line">环境执行并返回奖励 r_t、下一状态 s_(t+1)</span><br><span class="line">   ↓</span><br><span class="line">策略根据经验改进</span><br></pre></td></tr></table></figure>
+
+<p>强化学习和 Agent 的关系尤其重要，因为它直接讨论“如何行动”。游戏、机器人和资源调度等任务都可以用这种交互形式建模。</p>
+<p>不过奖励函数很难完整表达真实目标。如果奖励设计不当，系统可能找到投机策略：表面上提高分数，却没有完成我们真正想要的事情。训练成本、探索风险和环境模拟质量也会限制强化学习在开放业务中的使用。</p>
+<h3 id="我对强化学习的记忆方式"><a href="#我对强化学习的记忆方式" class="headerlink" title="我对强化学习的记忆方式"></a>我对强化学习的记忆方式</h3><p>我把它记成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">不是只问“答案对不对”，而是让系统在环境里行动，</span><br><span class="line">根据结果判断这次行动有没有带来更好的长期收益。</span><br></pre></td></tr></table></figure>
+
+<p>现代 Agent 的工具调用、任务规划和多步执行，也常常带有这种“行动—反馈—再行动”的结构，只是很多系统并没有在线训练策略，而是让语言模型在运行时做决策。</p>
+<h2 id="七、第五阶段：深度学习和表示学习"><a href="#七、第五阶段：深度学习和表示学习" class="headerlink" title="七、第五阶段：深度学习和表示学习"></a>七、第五阶段：深度学习和表示学习</h2><p>深度学习通过更多层的神经网络学习更复杂的表示。卷积网络推动了视觉任务，循环网络和注意力机制推动了序列建模，之后 Transformer 逐渐成为语言模型的核心架构。</p>
+<p>表示学习的重要变化是：工程师不必为每个任务手工设计全部特征，模型可以从大规模数据中学习更通用的表示。预训练模型先学习语言或世界中的统计规律，再通过微调、提示词或上下文适配具体任务。</p>
+<p>这为后来的大语言模型奠定了基础，但“会生成文本”仍然不等于“能可靠完成任务”。模型还需要外部知识、工具、状态和验证机制，才能从语言生成器变成应用中的 Agent。</p>
+<h2 id="八、第六阶段：Transformer-与大语言模型"><a href="#八、第六阶段：Transformer-与大语言模型" class="headerlink" title="八、第六阶段：Transformer 与大语言模型"></a>八、第六阶段：Transformer 与大语言模型</h2><p>Transformer 使用注意力机制处理序列中不同位置之间的关系，适合大规模并行训练。随着数据、算力和模型规模增长，大语言模型逐渐表现出文本理解、代码生成、总结、规划和工具调用等能力。</p>
+<p>大语言模型给 Agent 带来了三个关键变化：</p>
+<ol>
+<li><strong>自然语言成为通用接口</strong>：用户不必学习严格的命令格式；</li>
+<li><strong>模型可以承担开放式决策</strong>：根据目标和上下文选择下一步动作；</li>
+<li><strong>同一个模型可以连接不同工具</strong>：搜索、数据库、代码、文件和业务 API 都能成为动作空间的一部分。</li>
+</ol>
+<p>但大语言模型的知识主要存在参数和上下文中，可能过时、错误或缺少来源。它生成的工具参数也可能不符合要求。因此，现代 Agent 不是“只接一个模型”，而是把模型放在一个可控的系统里。</p>
+<h2 id="九、从语言模型到现代-Agent"><a href="#九、从语言模型到现代-Agent" class="headerlink" title="九、从语言模型到现代 Agent"></a>九、从语言模型到现代 Agent</h2><img src="/MyBlog/2026/11/05/hello-agents-chapter2/agent-evolution-stack.svg" class="" title="从模型到现代 Agent 的能力叠加">
+
+<p>可以把现代 Agent 看成逐层叠加，而不是一个神秘的新物种：</p>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>增加的能力</th>
+<th>主要解决的问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LLM</td>
+<td>语言理解和生成</td>
+<td>能听懂并组织自然语言</td>
+</tr>
+<tr>
+<td>结构化输出</td>
+<td>JSON、函数参数和固定格式</td>
+<td>让程序能够校验模型结果</td>
+</tr>
+<tr>
+<td>工具调用</td>
+<td>API、数据库、搜索、代码执行</td>
+<td>连接外部世界和实时数据</td>
+</tr>
+<tr>
+<td>RAG</td>
+<td>检索文档和引用来源</td>
+<td>缓解知识过时和事实缺失</td>
+</tr>
+<tr>
+<td>记忆</td>
+<td>保存用户和任务状态</td>
+<td>支持跨轮次和长期任务</td>
+</tr>
+<tr>
+<td>工作流</td>
+<td>节点、条件、重试和审批</td>
+<td>让流程可观察、可测试、可恢复</td>
+</tr>
+<tr>
+<td>多 Agent</td>
+<td>多个角色分工协作</td>
+<td>拆分复杂任务和专业职责</td>
+</tr>
+</tbody></table>
+<p>每增加一层能力，也增加一类风险。工具调用增加权限风险，RAG 增加数据和引用问题，记忆增加隐私与错误累积问题，多 Agent 增加通信、成本和调试复杂度。</p>
+<h2 id="十、几个容易混淆的概念"><a href="#十、几个容易混淆的概念" class="headerlink" title="十、几个容易混淆的概念"></a>十、几个容易混淆的概念</h2><h3 id="Agent-不等于聊天机器人"><a href="#Agent-不等于聊天机器人" class="headerlink" title="Agent 不等于聊天机器人"></a>Agent 不等于聊天机器人</h3><p>聊天机器人可以只回答问题；Agent 需要围绕目标执行动作。客服问答如果只是检索并回答，可能不需要复杂 Agent；如果还要查询订单、修改地址、创建工单，就需要工具、权限和状态管理。</p>
+<h3 id="Agent-不等于自动化脚本"><a href="#Agent-不等于自动化脚本" class="headerlink" title="Agent 不等于自动化脚本"></a>Agent 不等于自动化脚本</h3><p>脚本的流程通常由程序员提前固定；Agent 可以根据输入和中间结果选择路径。二者可以组合：固定的安全边界和数据库写入用代码控制，开放式的意图理解和路径选择交给模型。</p>
+<h3 id="多-Agent-不一定优于单-Agent"><a href="#多-Agent-不一定优于单-Agent" class="headerlink" title="多 Agent 不一定优于单 Agent"></a>多 Agent 不一定优于单 Agent</h3><p>多个角色会带来分工和复核能力，但也会产生更多调用和通信成本。只有当任务确实存在清晰的角色边界，或者单个 Agent 的上下文和工具空间已经过于复杂时，才值得拆分。</p>
+<h2 id="十一、这段历史对我有什么启发"><a href="#十一、这段历史对我有什么启发" class="headerlink" title="十一、这段历史对我有什么启发"></a>十一、这段历史对我有什么启发</h2><h3 id="1-确定性和不确定性应该分开"><a href="#1-确定性和不确定性应该分开" class="headerlink" title="1. 确定性和不确定性应该分开"></a>1. 确定性和不确定性应该分开</h3><p>权限、金额上限、字段格式、最大循环次数和删除操作确认，适合用代码和规则控制。理解用户意图、归纳资料和提出候选方案，可以交给模型。把所有事情都交给模型，或者把所有事情都写成规则，都会失去一部分可靠性或灵活性。</p>
+<h3 id="2-解释能力需要系统配合"><a href="#2-解释能力需要系统配合" class="headerlink" title="2. 解释能力需要系统配合"></a>2. 解释能力需要系统配合</h3><p>专家系统的规则可以解释，大模型的内部推理却不容易直接验证。现代系统可以通过工具调用日志、检索来源、结构化决策、状态快照和评估集，建立“可追踪的解释证据”。解释不是让模型输出一大段思考过程，而是让系统留下可检查的事实。</p>
+<h3 id="3-每一次技术升级都没有消灭旧问题"><a href="#3-每一次技术升级都没有消灭旧问题" class="headerlink" title="3. 每一次技术升级都没有消灭旧问题"></a>3. 每一次技术升级都没有消灭旧问题</h3><p>神经网络减少了手写规则，却带来了数据和可解释性问题；大模型减少了专用模型开发，却带来了幻觉、成本和权限问题；Agent 增加了行动能力，却必须增加安全边界和可恢复机制。</p>
+<h2 id="十二、复习提纲"><a href="#十二、复习提纲" class="headerlink" title="十二、复习提纲"></a>十二、复习提纲</h2><p>可以用下面这条链路回忆第二章：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">符号与规则：人写知识</span><br><span class="line">    → 专家系统：知识库 + 推理机</span><br><span class="line">    → 神经网络：从数据学习表示</span><br><span class="line">    → 强化学习：在环境中行动并根据奖励改进</span><br><span class="line">    → Transformer / LLM：通用语言理解与生成</span><br><span class="line">    → Agent：模型 + 工具 + 状态 + 记忆 + 执行边界</span><br></pre></td></tr></table></figure>
+
+<p>复习时可以自己尝试回答下面四个问题：</p>
+<ol>
+<li>为什么规则系统在开放世界中难以扩展？</li>
+<li>强化学习为什么必须关注奖励函数和环境反馈？</li>
+<li>大语言模型为什么需要 RAG、工具和结构化输出？</li>
+<li>为什么现代 Agent 必须有权限、停止条件、日志和评估？</li>
+</ol>
+<p>如果能回答这四个问题，基本就抓住了发展史和现代 Agent 之间的联系。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>智能体的发展不是从“没有智能”突然跳到“自主 Agent”，而是经历了知识表示、规则推理、数据学习、环境交互、语言建模和工具编排等多次积累。</p>
+<p>今天的大语言模型提供了很强的语言理解和决策接口，但它仍然需要传统软件工程提供状态、权限、工具、日志、测试和回滚。理解这段历史后，我对 Agent 的期待也更具体了：它不是替代所有程序的万能大脑，而是一个把模型能力和确定性系统组合起来的执行系统。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://datawhalechina.github.io/hello-agents/#/">Datawhale Hello-Agents</a>，本文学习主线。</li>
+<li><a target="_blank" rel="noopener" href="https://datawhalechina.github.io/hello-agents/#/./chapter2/%E7%AC%AC%E4%BA%8C%E7%AB%A0%20%E6%99%BA%E8%83%BD%E4%BD%93%E5%8F%91%E5%B1%95%E5%8F%B2">Hello-Agents 第二章：智能体发展史</a>。</li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a>。</li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2210.03629">ReAct: Synergizing Reasoning and Acting in Language Models</a>。</li>
+<li><a target="_blank" rel="noopener" href="https://hai.stanford.edu/ai-index/2025-ai-index-report">A Brief History of Artificial Intelligence</a>。</li>
+</ul>
+<p>本文是个人学习笔记，按章节主题重新组织知识点，具体技术细节以原课程和相关论文为准。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/MyBlog/tags/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/" rel="tag"># 大语言模型</a>
+              <a href="/MyBlog/tags/Hello-Agents/" rel="tag"># Hello-Agents</a>
+              <a href="/MyBlog/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"># 学习笔记</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/05/hello-agents-chapter1/" rel="prev" title="Hello-Agents 第一章学习笔记：初识智能体">
+                  <i class="fa fa-angle-left"></i> Hello-Agents 第一章学习笔记：初识智能体
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/06/hello-agents-chapter3-1/" rel="next" title="Hello-Agents 第三章 3.1 学习笔记：语言模型与 Transformer 架构">
+                  Hello-Agents 第三章 3.1 学习笔记：语言模型与 Transformer 架构 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

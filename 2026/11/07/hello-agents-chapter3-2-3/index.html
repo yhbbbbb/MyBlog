@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="记录 Hello-Agents 第三章 3.2 与大语言模型交互、3.3 缩放法则与局限性，并连接到 Agent 的提示设计、成本控制和可靠性工程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hello-Agents 第三章 3.2-3.3 学习笔记：提示工程、缩放法则与模型边界">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/11/07/hello-agents-chapter3-2-3/index.html">
+<meta property="og:site_name" content="yhbbbbb">
+<meta property="og:description" content="记录 Hello-Agents 第三章 3.2 与大语言模型交互、3.3 缩放法则与局限性，并连接到 Agent 的提示设计、成本控制和可靠性工程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-11-07T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-07T02:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="Prompt">
+<meta property="article:tag" content="Token">
+<meta property="article:tag" content="大语言模型">
+<meta property="article:tag" content="学习笔记">
+<meta property="article:tag" content="缩放法则">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/11/07/hello-agents-chapter3-2-3/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/11/07/hello-agents-chapter3-2-3/","path":"2026/11/07/hello-agents-chapter3-2-3/","title":"Hello-Agents 第三章 3.2-3.3 学习笔记：提示工程、缩放法则与模型边界"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Hello-Agents 第三章 3.2-3.3 学习笔记：提示工程、缩放法则与模型边界 | yhbbbbb</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","display_overflow":"scroll","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-mml-chtml.js","integrity":"sha256-ihPtDDm7pTmSF9ViEsItlvsrBTsNkz0MOXMchzOwCQw="}}</script>
+<script src="/MyBlog/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">yhbbbbb</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E7%AF%87%EF%BC%9A%E5%90%8C%E4%B8%80%E4%B8%AA%E6%A8%A1%E5%9E%8B%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89%E4%BA%BA%E7%94%A8%E5%BE%97%E5%A5%BD%EF%BC%8C%E6%9C%89%E4%BA%BA%E7%94%A8%E4%B8%8D%E5%A5%BD%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">开篇：同一个模型，为什么有人用得好，有人用不好？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A8%A1%E5%9E%8B%E5%8F%AA%E6%98%AF%E4%BA%A4%E4%BA%92%E7%B3%BB%E7%BB%9F%E4%B8%AD%E7%9A%84%E4%B8%80%E4%B8%AA%E8%8A%82%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">一、模型只是交互系统中的一个节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8F%90%E7%A4%BA%E5%B7%A5%E7%A8%8B%EF%BC%9A%E6%8A%8A%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%86%99%E6%88%90%E4%BB%BB%E5%8A%A1%E6%8E%A5%E5%8F%A3"><span class="nav-number">3.</span> <span class="nav-text">二、提示工程：把自然语言写成任务接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Zero-shot%E3%80%81One-shot-%E4%B8%8E-Few-shot"><span class="nav-number">3.1.</span> <span class="nav-text">Zero-shot、One-shot 与 Few-shot</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E5%8C%96%E8%BE%93%E5%87%BA%E4%B8%8E%E5%8F%AF%E9%AA%8C%E8%AF%81%E6%AD%A5%E9%AA%A4"><span class="nav-number">3.2.</span> <span class="nav-text">结构化输出与可验证步骤</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E9%87%87%E6%A0%B7%E5%8F%82%E6%95%B0%EF%BC%9A%E6%94%B9%E5%8F%98%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%EF%BC%8C%E4%B8%8D%E6%98%AF%E5%A2%9E%E5%8A%A0%E7%9F%A5%E8%AF%86"><span class="nav-number">4.</span> <span class="nav-text">三、采样参数：改变概率分布，不是增加知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Temperature"><span class="nav-number">4.1.</span> <span class="nav-text">Temperature</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Top-k-%E4%B8%8E-Top-p"><span class="nav-number">4.2.</span> <span class="nav-text">Top-k 与 Top-p</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Tokenization%EF%BC%9A%E6%A8%A1%E5%9E%8B%E7%9C%8B%E5%88%B0%E7%9A%84%E4%B8%8D%E6%98%AF%E2%80%9C%E5%AD%97%E2%80%9D"><span class="nav-number">5.</span> <span class="nav-text">四、Tokenization：模型看到的不是“字”</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%BC%80%E6%BA%90%E6%A8%A1%E5%9E%8B%E8%B0%83%E7%94%A8%EF%BC%9A%E4%BB%8E%E6%96%87%E6%9C%AC%E5%88%B0%E5%9B%9E%E7%AD%94"><span class="nav-number">6.</span> <span class="nav-text">五、开源模型调用：从文本到回答</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BE%E7%A8%8B%E7%89%88%E5%AE%8C%E6%95%B4%E8%BF%90%E8%A1%8C%E4%BB%A3%E7%A0%81%E4%B8%8E%E6%B3%A8%E9%87%8A"><span class="nav-number">6.1.</span> <span class="nav-text">课程版完整运行代码与注释</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%EF%BC%9A%E4%B8%8D%E8%A6%81%E5%8F%AA%E7%9C%8B%E6%8E%92%E8%A1%8C%E6%A6%9C"><span class="nav-number">7.</span> <span class="nav-text">六、模型选型：不要只看排行榜</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E7%BC%A9%E6%94%BE%E6%B3%95%E5%88%99%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E5%A2%9E%E5%8A%A0%E8%B5%84%E6%BA%90%E9%80%9A%E5%B8%B8%E8%83%BD%E6%8F%90%E5%8D%87%E8%83%BD%E5%8A%9B"><span class="nav-number">8.</span> <span class="nav-text">七、缩放法则：为什么增加资源通常能提升能力</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E8%83%BD%E5%8A%9B%E6%B6%8C%E7%8E%B0%EF%BC%9A%E7%AA%81%E7%84%B6%E5%87%BA%E7%8E%B0%EF%BC%8C%E8%BF%98%E6%98%AF%E8%BF%9E%E7%BB%AD%E7%A7%AF%E7%B4%AF%EF%BC%9F"><span class="nav-number">9.</span> <span class="nav-text">八、能力涌现：突然出现，还是连续积累？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E5%B1%80%E9%99%90%E6%80%A7%EF%BC%9A%E6%A8%A1%E5%9E%8B%E5%8F%98%E5%BC%BA%E5%90%8E%EF%BC%8C%E9%97%AE%E9%A2%98%E4%BB%8D%E7%84%B6%E5%AD%98%E5%9C%A8"><span class="nav-number">10.</span> <span class="nav-text">九、局限性：模型变强后，问题仍然存在</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E3%80%81%E6%8A%8A%E4%B8%A4%E8%8A%82%E5%86%85%E5%AE%B9%E8%BF%9E%E6%88%90-Agent-%E5%B7%A5%E7%A8%8B%E6%96%B9%E6%B3%95"><span class="nav-number">11.</span> <span class="nav-text">十、把两节内容连成 Agent 工程方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E5%A4%8D%E4%B9%A0%E6%8F%90%E7%BA%B2"><span class="nav-number">12.</span> <span class="nav-text">十一、复习提纲</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">13.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">79</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/11/07/hello-agents-chapter3-2-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yhbbbbb">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Hello-Agents 第三章 3.2-3.3 学习笔记：提示工程、缩放法则与模型边界 | yhbbbbb">
+      <meta itemprop="description" content="记录 Hello-Agents 第三章 3.2 与大语言模型交互、3.3 缩放法则与局限性，并连接到 Agent 的提示设计、成本控制和可靠性工程。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hello-Agents 第三章 3.2-3.3 学习笔记：提示工程、缩放法则与模型边界
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-11-07 10:00:00" itemprop="dateCreated datePublished" datetime="2026-11-07T10:00:00+08:00">2026-11-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">记录 Hello-Agents 第三章 3.2 与大语言模型交互、3.3 缩放法则与局限性，并连接到 Agent 的提示设计、成本控制和可靠性工程。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p><strong>大模型的能力不是“问一句就自动出现”，而是由提示、上下文、采样策略、模型规模和验证机制共同塑造的。</strong></p>
+</blockquote>
+<h2 id="开篇：同一个模型，为什么有人用得好，有人用不好？"><a href="#开篇：同一个模型，为什么有人用得好，有人用不好？" class="headerlink" title="开篇：同一个模型，为什么有人用得好，有人用不好？"></a>开篇：同一个模型，为什么有人用得好，有人用不好？</h2><p>同一个模型面对“帮我处理这批数据”和“按指定 JSON 找出重复订单”时，输出质量可能完全不同。后一个请求把角色、目标、输入、输出协议和异常边界都说清楚了。提示不是咒语，而是一份给模型阅读的任务接口说明。</p>
+<p>这篇笔记整理了两条线：3.2 的提示工程、采样、分词、本地调用与模型选型；3.3 的缩放法则、数据与算力配比、能力涌现和幻觉。</p>
+<h2 id="一、模型只是交互系统中的一个节点"><a href="#一、模型只是交互系统中的一个节点" class="headerlink" title="一、模型只是交互系统中的一个节点"></a>一、模型只是交互系统中的一个节点</h2><p>大语言模型（Large Language Model，LLM）接收 token 序列，经过网络计算，再生成下一个 token。应用真正可控制的对象还包括上下文、采样参数、工具和输出校验。</p>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+    U["🔵 用户目标&lt;br&gt;自然语言请求"] --&gt; P["🟣 Prompt 组装&lt;br&gt;角色、任务、上下文"]
+    P --&gt; T["🟡 Tokenizer&lt;br&gt;文本转 token"]
+    T --&gt; M["🟣 LLM 推理&lt;br&gt;预测下一个 token"]
+    M --&gt; S["🍑 采样策略&lt;br&gt;Temperature / Top-k / Top-p"]
+    S --&gt; O["🟢 输出解析&lt;br&gt;文本或结构化 JSON"]
+    O --&gt; V{"🟡 校验通过？"}
+    V --&gt;|"是"| R["🟢 返回结果或执行工具"]
+    V --&gt;|"否"| F["🍓 重试、修复或人工介入"]
+    F --&gt; P
+    style U fill:#C7CEEA,stroke:#9FA8DA,stroke-width:2px,color:#333
+    style P fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
+    style T fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
+    style M fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
+    style S fill:#FFDAB9,stroke:#FFAB76,stroke-width:2px,color:#333
+    style O fill:#B5EAD7,stroke:#80CBC4,stroke-width:2px,color:#333
+    style V fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
+    style R fill:#B5EAD7,stroke:#80CBC4,stroke-width:2px,color:#333
+    style F fill:#FFB3C6,stroke:#F48FB1,stroke-width:2px,color:#333
+</code>
+</pre>
+
+<p><strong>模型生成结果不应直接等同于业务动作。</strong> 删除文件、转账、修改数据库等意图必须经过权限检查、参数校验、预览和确认。</p>
+<h2 id="二、提示工程：把自然语言写成任务接口"><a href="#二、提示工程：把自然语言写成任务接口" class="headerlink" title="二、提示工程：把自然语言写成任务接口"></a>二、提示工程：把自然语言写成任务接口</h2><p>提示工程（Prompt Engineering）不是去找一句万能提示词，而是把任务拆成模型能够稳定执行的约束。我们可以把把生产提示拆成下面这六个部分：</p>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>要回答的问题</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>角色</td>
+<td>以什么视角工作？</td>
+<td>Python 代码审查员</td>
+</tr>
+<tr>
+<td>目标</td>
+<td>最终完成什么？</td>
+<td>找出异常处理缺口</td>
+</tr>
+<tr>
+<td>输入</td>
+<td>可以使用哪些材料？</td>
+<td>代码、日志、配置</td>
+</tr>
+<tr>
+<td>约束</td>
+<td>哪些事情不能做？</td>
+<td>不猜测缺失信息</td>
+</tr>
+<tr>
+<td>输出</td>
+<td>结果如何被读取？</td>
+<td>表格或 JSON</td>
+</tr>
+<tr>
+<td>验收</td>
+<td>什么算完成？</td>
+<td>每个问题有行号和证据</td>
+</tr>
+</tbody></table>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">角色：你是 Python 代码审查员。</span><br><span class="line">目标：检查文件处理脚本是否会误删文件。</span><br><span class="line">输入：代码块和运行日志。</span><br><span class="line">约束：只根据给出的内容判断；不确定时标记“需要补充证据”。</span><br><span class="line">输出：先给结论，再用表格列出风险、证据、严重程度和建议。</span><br><span class="line">验收：每个风险都能定位到代码行或日志片段。</span><br></pre></td></tr></table></figure>
+
+<h3 id="Zero-shot、One-shot-与-Few-shot"><a href="#Zero-shot、One-shot-与-Few-shot" class="headerlink" title="Zero-shot、One-shot 与 Few-shot"></a>Zero-shot、One-shot 与 Few-shot</h3><table>
+<thead>
+<tr>
+<th>方式</th>
+<th align="right">示例数量</th>
+<th>优点</th>
+<th>局限</th>
+<th>适合场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Zero-shot</td>
+<td align="right">0</td>
+<td>简洁、成本低</td>
+<td>边界可能不稳定</td>
+<td>简单分类、常规问答</td>
+</tr>
+<tr>
+<td>One-shot</td>
+<td align="right">1</td>
+<td>快速示范格式</td>
+<td>一个例子可能有偏差</td>
+<td>固定格式任务</td>
+</tr>
+<tr>
+<td>Few-shot</td>
+<td align="right">多个</td>
+<td>展示边界和异常</td>
+<td>占用上下文</td>
+<td>抽取、分类、风格迁移</td>
+</tr>
+</tbody></table>
+<p>Few-shot 不是越多越好。示例应覆盖容易混淆的边界，格式保持一致；无关示例只会增加上下文和成本。</p>
+<p>下面是课程中的完整提示样例。它们不是 Python 程序，而是直接发送给模型的文本输入。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># Zero-shot：不给示例，直接描述任务</span><br><span class="line">文本：Datawhale 的 AI Agent 课程非常棒！</span><br><span class="line">情感：</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># One-shot：先提供一个完整的输入输出示例</span><br><span class="line">文本：这家餐厅的服务太慢了。</span><br><span class="line">情感：负面</span><br><span class="line"></span><br><span class="line">文本：Datawhale 的 AI Agent 课程非常棒！</span><br><span class="line">情感：</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># Few-shot：用多个示例展示分类边界</span><br><span class="line">文本：这家餐厅的服务太慢了。</span><br><span class="line">情感：负面</span><br><span class="line"></span><br><span class="line">文本：这部电影的情节很平淡。</span><br><span class="line">情感：中性</span><br><span class="line"></span><br><span class="line">文本：Datawhale 的 AI Agent 课程非常棒！</span><br><span class="line">情感：</span><br></pre></td></tr></table></figure>
+
+<p>指令调优模型可以直接理解任务指令；早期的文本补全模型则更依赖示例：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 文本补全式提示：用示例教模型翻译格式</span><br><span class="line">这是一段将英文翻译成中文的程序。</span><br><span class="line">英文：Hello</span><br><span class="line">中文：你好</span><br><span class="line">英文：How are you?</span><br><span class="line">中文：</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 指令调优式提示：直接下达任务</span><br><span class="line">请将下面的英文翻译成中文：</span><br><span class="line">How are you?</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 角色提示：约束解释角度和受众</span><br><span class="line">你现在是一位资深的 Python 编程专家。</span><br><span class="line">请解释 Python 中的 GIL（全局解释器锁），让初学者也能听懂。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 结构化抽取：先给出 JSON 格式示例，再提供新输入</span><br><span class="line">我需要你从产品评论中提取产品名称和用户情感。</span><br><span class="line">请严格按照下面的 JSON 格式输出。</span><br><span class="line"></span><br><span class="line">评论：这款“星尘”笔记本电脑的屏幕显示效果惊人，但我不太喜欢它的键盘手感。</span><br><span class="line">输出：{"product_name": "星尘笔记本电脑", "sentiment": "混合"}</span><br><span class="line"></span><br><span class="line">评论：我刚买的“声动”耳机音质很棒，续航也超出了我的预期！</span><br><span class="line">输出：</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 思维链提示：要求模型把复杂计算拆成可检查步骤</span><br><span class="line">一个篮球队在一个赛季的 80 场比赛中赢了 60%。</span><br><span class="line">在接下来的赛季中，他们打了 15 场比赛，赢了 12 场。</span><br><span class="line">两个赛季的总胜率是多少？</span><br><span class="line">请一步一步地思考并解答。</span><br></pre></td></tr></table></figure>
+
+<h3 id="结构化输出与可验证步骤"><a href="#结构化输出与可验证步骤" class="headerlink" title="结构化输出与可验证步骤"></a>结构化输出与可验证步骤</h3><p>角色提示不能赋予模型不存在的事实。“你是法律专家”不会自动产生法律效力，适用法域、资料来源和审查标准才是有效约束。</p>
+<p>结构化输出更接近软件接口：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">parse_result</span>(<span class="params">raw_text: <span class="built_in">str</span></span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">    <span class="string">"""只接受 JSON 对象，避免自然语言直接进入业务逻辑。"""</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        result = json.loads(raw_text)</span><br><span class="line">    <span class="keyword">except</span> json.JSONDecodeError <span class="keyword">as</span> exc:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">"模型没有返回合法 JSON"</span>) <span class="keyword">from</span> exc</span><br><span class="line"></span><br><span class="line">    required = {<span class="string">"status"</span>, <span class="string">"items"</span>}</span><br><span class="line">    missing = required - result.keys()</span><br><span class="line">    <span class="keyword">if</span> missing:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">f"缺少字段: <span class="subst">{<span class="built_in">sorted</span>(missing)}</span>"</span>)</span><br><span class="line">    <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
+
+<p>关键不是让模型永远不犯错，而是让错误尽早暴露在边界上。解析失败时可以重试、请求修复，或交给人工处理。</p>
+<h2 id="三、采样参数：改变概率分布，不是增加知识"><a href="#三、采样参数：改变概率分布，不是增加知识" class="headerlink" title="三、采样参数：改变概率分布，不是增加知识"></a>三、采样参数：改变概率分布，不是增加知识</h2><p>模型先为词表中的 token 计算分数，再通过 Softmax 得到概率：</p>
+<p><mjx-container class="MathJax" jax="SVG" overflow="overflow" display="true"><svg style="vertical-align: -3.073ex;" xmlns="http://www.w3.org/2000/svg" width="14.133ex" height="6.13ex" role="img" focusable="false" viewBox="0 -1351.5 6246.7 2709.6"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math" data-latex="
+p_i=\frac{e^{z_i}}{\sum_{j=1}^{k}e^{z_j}}
+"><g data-mml-node="msub" data-latex="p_i"><g data-mml-node="mi" data-latex="p"><path data-c="1D45D" d="M355 442C311 442 269 419 228 373C217 419 186 442 137 442C96 442 66 409 45 344C35 311 30 292 30 286C30 277 35 272 46 272C51 272 54 273 57 275C62 284 65 291 66 298C84 374 107 412 134 412C152 412 161 398 161 371C161 356 159 339 154 321L44-118C35-151 34-155-5-155C-23-155-32-163-32-178C-32-189-26-194-15-194C0-194 52-191 67-191C86-191 146-194 165-194C180-194 187-186 187-170C187-160 178-155 159-155C141-155 114-156 114-144C114-131 155 26 159 43C179 6 209-13 249-13C314-13 371 20 421 87C467 148 490 213 490 280C490 367 438 442 355 442M352 412C391 412 411 382 411 323C411 296 405 260 394 215C371 128 342 71 307 42C286 25 267 16 248 16C219 16 199 29 188 56C179 77 174 92 174 100L225 309C230 331 248 354 276 377C304 400 329 412 352 412Z"></path></g><g data-mml-node="mi" transform="translate(536,-150) scale(0.707)" data-latex="i"><path data-c="1D456" d="M284 621C284 648 271 661 244 661C216 661 188 633 188 605C188 578 202 565 229 565C257 565 284 593 284 621M259 138C237 59 205 19 164 19C151 19 144 28 144 47C144 64 173 150 232 306C240 329 244 347 244 360C244 409 210 445 161 445C118 445 84 420 59 369C39 328 29 301 29 288C29 279 34 275 45 275C58 275 60 281 64 295C87 375 118 415 158 415C171 415 178 406 178 387C178 373 175 357 168 338C145 275 121 208 101 155C86 115 78 88 78 74C78 25 114-11 162-11C205-11 239 14 264 64C283 103 293 130 293 145C293 154 288 159 277 159C274 159 259 150 259 138Z"></path></g></g><g data-mml-node="mo" data-latex="=" transform="translate(1107.7,0)"><path data-c="3D" d="M698 367L80 367C64 367 56 359 56 344C56 329 64 321 80 321L698 321C714 321 722 329 722 344C722 356 711 367 698 367M698 179L80 179C64 179 56 171 56 156C56 141 64 133 80 133L698 133C714 133 722 141 722 156C722 169 711 179 698 179Z"></path></g><g data-mml-node="mfrac" data-latex="\frac{e^{z_i}}{\sum_{j=1}^{k}e^{z_j}}" transform="translate(2163.5,0)"><g data-mml-node="msup" data-latex="e^{z_i}" transform="translate(1487.1,676)"><g data-mml-node="mi" data-latex="e"><path data-c="1D452" d="M124 129C124 153 129 186 139 227L188 227C253 227 303 235 339 250C372 264 394 284 405 309C412 326 415 342 415 355C415 410 363 442 307 442C268 442 229 432 190 412C113 372 46 281 46 171C46 69 105-11 204-11C257-11 304 2 345 27C379 48 404 69 420 90C427 99 430 106 430 109C430 120 425 126 414 126C409 126 404 122 398 114C365 70 324 42 277 30C246 22 223 18 206 18C149 18 124 72 124 129M375 355C375 289 311 256 182 256L147 256C166 322 194 366 232 387C262 404 287 413 307 413C343 413 375 391 375 355Z"></path></g><g data-mml-node="TeXAtom" transform="translate(499,363) scale(0.707)" data-latex="{z_i}" data-mjx-texclass="ORD"><g data-mml-node="msub" data-latex="z_i"><g data-mml-node="mi" data-latex="z"><path data-c="1D467" d="M162 92L145 90C193 137 230 171 255 194L351 283C374 304 398 330 421 359C452 397 467 420 467 428C467 437 462 442 452 442C445 442 439 438 434 429C409 388 386 368 364 368C342 368 326 386 317 398C293 427 269 442 246 442C220 442 193 430 165 404C137 378 123 352 123 326C123 316 128 311 139 311C146 311 152 316 156 325C167 354 194 368 235 368C249 368 269 363 296 354C320 345 343 340 364 339C308 284 265 244 234 217L145 134C130 119 111 99 90 74C59 35 43 12 43 3C43-6 48-11 59-11C65-11 71-6 78 4C103 43 130 63 158 63C174 63 192 51 212 26C232 1 255-11 278-11C312-11 346 7 382 42C418 77 436 111 436 144C436 153 431 158 420 158C413 158 407 153 402 143C387 100 344 63 288 63C264 63 186 92 162 92Z"></path></g><g data-mml-node="mi" transform="translate(498,-150) scale(0.707)" data-latex="i"><path data-c="1D456" d="M284 621C284 648 271 661 244 661C216 661 188 633 188 605C188 578 202 565 229 565C257 565 284 593 284 621M259 138C237 59 205 19 164 19C151 19 144 28 144 47C144 64 173 150 232 306C240 329 244 347 244 360C244 409 210 445 161 445C118 445 84 420 59 369C39 328 29 301 29 288C29 279 34 275 45 275C58 275 60 281 64 295C87 375 118 415 158 415C171 415 178 406 178 387C178 373 175 357 168 338C145 275 121 208 101 155C86 115 78 88 78 74C78 25 114-11 162-11C205-11 239 14 264 64C283 103 293 130 293 145C293 154 288 159 277 159C274 159 259 150 259 138Z"></path></g></g></g></g><g data-mml-node="mrow" data-latex="\sum_{j=1}^{k}e^{z_j}" transform="translate(220,-927.8)"><g data-mml-node="munderover" data-latex="\sum_{j=1}^{k}"><g data-mml-node="mo" data-latex="\sum"><path data-c="2211" d="M56 713L417 216L67-217C60-225 57-231 57-235C57-245 67-250 88-250L913-250L1001 5L967 5C954-33 933-66 902-95C825-166 719-188 565-188L152-188L490 232C497 240 500 246 500 250C500 254 498 259 493 266L175 702L560 702C682 702 764 691 854 644C907 616 944 571 967 510L1001 510L913 750L88 750C57 750 56 746 56 713Z"></path></g><g data-mml-node="TeXAtom" transform="translate(1089,477.1) scale(0.707)" data-latex="{k}" data-mjx-texclass="ORD"><g data-mml-node="mi" data-latex="k"><path data-c="1D458" d="M409 353C409 327 423 314 450 314C485 314 508 345 508 379C508 418 476 445 437 445C392 445 344 415 291 356C250 311 217 282 190 269L291 679C289 688 287 694 274 694C242 694 166 685 154 684C139 682 132 675 132 660C132 650 141 645 159 645C178 645 204 646 204 632L59 43C56 32 55 25 55 21C55 0 66-11 87-11C104-11 117-3 124 12C129 21 147 92 179 226C231 221 286 196 286 146C286 131 279 101 279 91C279 34 316-11 373-11C431-11 470 41 490 145C490 154 485 159 475 159C466 159 460 152 457 138C435 59 408 19 375 19C357 19 348 33 348 61C348 77 360 131 360 147C360 204 314 239 221 253C244 269 270 292 298 322C326 352 346 371 359 382C386 404 412 415 435 415C445 415 453 413 459 409C432 404 409 379 409 353Z"></path></g></g><g data-mml-node="TeXAtom" transform="translate(1089,-285.4) scale(0.707)" data-latex="{j=1}" data-mjx-texclass="ORD"><g data-mml-node="mi" data-latex="j"><path data-c="1D457" d="M397 621C397 648 383 661 356 661C328 661 300 633 300 605C300 578 313 565 340 565C368 565 397 593 397 621M267 444C214 444 169 404 147 369C120 326 107 299 107 287C107 278 112 274 122 274C127 274 130 275 133 276C138 284 141 291 144 296C176 375 216 414 264 414C282 414 291 400 291 373C291 358 289 341 284 323L192-46C178-104 138-175 75-175C66-175 57-174 48-171C73-161 85-143 85-118C85-92 71-79 44-79C12-79-13-108-13-140C-13-184 30-205 77-205C120-205 160-190 197-160C232-131 254-94 265-51L356 311C359 324 361 337 361 349C361 404 322 444 267 444Z"></path></g><g data-mml-node="mo" data-latex="=" transform="translate(412,0)"><path data-c="3D" d="M698 367L80 367C64 367 56 359 56 344C56 329 64 321 80 321L698 321C714 321 722 329 722 344C722 356 711 367 698 367M698 179L80 179C64 179 56 171 56 156C56 141 64 133 80 133L698 133C714 133 722 141 722 156C722 169 711 179 698 179Z"></path></g><g data-mml-node="mn" data-latex="1" transform="translate(1190,0)"><path data-c="31" d="M269 666C228 624 168 603 89 603L89 564C141 564 184 572 217 588L217 82C217 64 213 52 204 47C195 42 170 39 130 39L95 39L95 0C120 2 174 3 257 3C340 3 394 2 419 0L419 39L384 39C343 39 318 42 310 47C302 52 297 64 297 82L297 636C297 660 295 666 269 666Z"></path></g></g></g><g data-mml-node="msup" data-latex="e^{z_j}" transform="translate(2500.7,0)"><g data-mml-node="mi" data-latex="e"><path data-c="1D452" d="M124 129C124 153 129 186 139 227L188 227C253 227 303 235 339 250C372 264 394 284 405 309C412 326 415 342 415 355C415 410 363 442 307 442C268 442 229 432 190 412C113 372 46 281 46 171C46 69 105-11 204-11C257-11 304 2 345 27C379 48 404 69 420 90C427 99 430 106 430 109C430 120 425 126 414 126C409 126 404 122 398 114C365 70 324 42 277 30C246 22 223 18 206 18C149 18 124 72 124 129M375 355C375 289 311 256 182 256L147 256C166 322 194 366 232 387C262 404 287 413 307 413C343 413 375 391 375 355Z"></path></g><g data-mml-node="TeXAtom" transform="translate(499,319.1) scale(0.707)" data-latex="{z_j}" data-mjx-texclass="ORD"><g data-mml-node="msub" data-latex="z_j"><g data-mml-node="mi" data-latex="z"><path data-c="1D467" d="M162 92L145 90C193 137 230 171 255 194L351 283C374 304 398 330 421 359C452 397 467 420 467 428C467 437 462 442 452 442C445 442 439 438 434 429C409 388 386 368 364 368C342 368 326 386 317 398C293 427 269 442 246 442C220 442 193 430 165 404C137 378 123 352 123 326C123 316 128 311 139 311C146 311 152 316 156 325C167 354 194 368 235 368C249 368 269 363 296 354C320 345 343 340 364 339C308 284 265 244 234 217L145 134C130 119 111 99 90 74C59 35 43 12 43 3C43-6 48-11 59-11C65-11 71-6 78 4C103 43 130 63 158 63C174 63 192 51 212 26C232 1 255-11 278-11C312-11 346 7 382 42C418 77 436 111 436 144C436 153 431 158 420 158C413 158 407 153 402 143C387 100 344 63 288 63C264 63 186 92 162 92Z"></path></g><g data-mml-node="mi" transform="translate(498,-150) scale(0.707)" data-latex="j"><path data-c="1D457" d="M397 621C397 648 383 661 356 661C328 661 300 633 300 605C300 578 313 565 340 565C368 565 397 593 397 621M267 444C214 444 169 404 147 369C120 326 107 299 107 287C107 278 112 274 122 274C127 274 130 275 133 276C138 284 141 291 144 296C176 375 216 414 264 414C282 414 291 400 291 373C291 358 289 341 284 323L192-46C178-104 138-175 75-175C66-175 57-174 48-171C73-161 85-143 85-118C85-92 71-79 44-79C12-79-13-108-13-140C-13-184 30-205 77-205C120-205 160-190 197-160C232-131 254-94 265-51L356 311C359 324 361 337 361 349C361 404 322 444 267 444Z"></path></g></g></g></g></g><rect width="3843.2" height="60" x="120" y="220"></rect></g></g></g></svg></mjx-container></p>
+<p>Temperature、Top-k 和 Top-p 都是在这个分布上改变采样方式。</p>
+<h3 id="Temperature"><a href="#Temperature" class="headerlink" title="Temperature"></a>Temperature</h3><p>温度 T 改变分布的尖锐程度：</p>
+<p><mjx-container class="MathJax" jax="SVG" overflow="overflow" display="true"><svg style="vertical-align: -3.073ex;" xmlns="http://www.w3.org/2000/svg" width="26.887ex" height="6.623ex" role="img" focusable="false" viewBox="0 -1569.3 11884.2 2927.4"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math" data-latex="
+p_i^{(T)}=\frac{e^{z_i/T}}{\sum_{j=1}^{k}e^{z_j/T}},\quad T>0
+"><g data-mml-node="msubsup" data-latex="p_i^{(T)}"><g data-mml-node="mi" data-latex="p"><path data-c="1D45D" d="M355 442C311 442 269 419 228 373C217 419 186 442 137 442C96 442 66 409 45 344C35 311 30 292 30 286C30 277 35 272 46 272C51 272 54 273 57 275C62 284 65 291 66 298C84 374 107 412 134 412C152 412 161 398 161 371C161 356 159 339 154 321L44-118C35-151 34-155-5-155C-23-155-32-163-32-178C-32-189-26-194-15-194C0-194 52-191 67-191C86-191 146-194 165-194C180-194 187-186 187-170C187-160 178-155 159-155C141-155 114-156 114-144C114-131 155 26 159 43C179 6 209-13 249-13C314-13 371 20 421 87C467 148 490 213 490 280C490 367 438 442 355 442M352 412C391 412 411 382 411 323C411 296 405 260 394 215C371 128 342 71 307 42C286 25 267 16 248 16C219 16 199 29 188 56C179 77 174 92 174 100L225 309C230 331 248 354 276 377C304 400 329 412 352 412Z"></path></g><g data-mml-node="TeXAtom" transform="translate(536,529) scale(0.707)" data-latex="{(T)}" data-mjx-texclass="ORD"><g data-mml-node="mo" data-latex="("><path data-c="28" d="M318-248C327-248 332-243 332-234C332-231 330-227 327-223C275-183 233-117 202-26C175 53 161 131 161 208L161 292C161 369 175 447 202 526C233 617 275 683 327 723C330 726 332 730 332 734C332 743 327 748 318 748C317 748 314 747 311 745C251 699 201 631 160 540C121 453 101 371 101 292L101 208C101 129 121 47 160-40C201-131 251-199 311-245C314-247 317-248 318-248Z"></path></g><g data-mml-node="mi" data-latex="T" transform="translate(389,0)"><path data-c="1D447" d="M344 631C344 628 343 621 340 611L208 83C204 68 200 59 197 55C188 44 154 39 94 39C63 39 49 42 49 16C49 5 56 0 69 0C120 0 192 4 235 3L317 2C331 2 386 0 403 0C420 0 428 8 428 24C428 34 416 39 391 39C339 39 309 41 300 46C297 48 295 52 295 58L430 603C433 617 436 626 439 629C443 635 467 638 511 638C566 638 604 634 623 625C642 616 652 595 652 561C652 543 649 517 644 483C642 475 641 469 641 464C641 453 646 447 657 447C666 447 672 456 675 473L702 645C703 650 704 656 704 662C704 672 694 677 673 677L125 677C99 677 97 674 89 655L30 481C27 472 25 466 24 462C24 452 29 447 40 447C48 447 55 455 60 470C85 543 110 588 133 607C159 628 209 638 282 638L321 638C332 638 344 639 344 631Z"></path></g><g data-mml-node="mo" data-latex=")" transform="translate(1093,0)"><path data-c="29" d="M78-245C138-199 188-131 229-40C268 47 288 129 288 208L288 292C288 371 268 453 229 540C188 631 138 699 78 745C75 747 72 748 71 748C62 748 57 743 57 734C57 730 59 726 62 723C114 683 156 617 187 526C214 447 228 369 228 292L228 208C228 131 214 53 187-26C156-117 114-183 62-223C59-227 57-231 57-234C57-243 62-248 71-248C72-248 75-247 78-245Z"></path></g></g><g data-mml-node="mi" transform="translate(536,-293.8) scale(0.707)" data-latex="i"><path data-c="1D456" d="M284 621C284 648 271 661 244 661C216 661 188 633 188 605C188 578 202 565 229 565C257 565 284 593 284 621M259 138C237 59 205 19 164 19C151 19 144 28 144 47C144 64 173 150 232 306C240 329 244 347 244 360C244 409 210 445 161 445C118 445 84 420 59 369C39 328 29 301 29 288C29 279 34 275 45 275C58 275 60 281 64 295C87 375 118 415 158 415C171 415 178 406 178 387C178 373 175 357 168 338C145 275 121 208 101 155C86 115 78 88 78 74C78 25 114-11 162-11C205-11 239 14 264 64C283 103 293 130 293 145C293 154 288 159 277 159C274 159 259 150 259 138Z"></path></g></g><g data-mml-node="mo" data-latex="=" transform="translate(1911.7,0)"><path data-c="3D" d="M698 367L80 367C64 367 56 359 56 344C56 329 64 321 80 321L698 321C714 321 722 329 722 344C722 356 711 367 698 367M698 179L80 179C64 179 56 171 56 156C56 141 64 133 80 133L698 133C714 133 722 141 722 156C722 169 711 179 698 179Z"></path></g><g data-mml-node="mfrac" data-latex="\frac{e^{z_i/T}}{\sum_{j=1}^{k}e^{z_j/T}}" transform="translate(2967.5,0)"><g data-mml-node="msup" data-latex="e^{z_i/T}" transform="translate(1487.1,676)"><g data-mml-node="mi" data-latex="e"><path data-c="1D452" d="M124 129C124 153 129 186 139 227L188 227C253 227 303 235 339 250C372 264 394 284 405 309C412 326 415 342 415 355C415 410 363 442 307 442C268 442 229 432 190 412C113 372 46 281 46 171C46 69 105-11 204-11C257-11 304 2 345 27C379 48 404 69 420 90C427 99 430 106 430 109C430 120 425 126 414 126C409 126 404 122 398 114C365 70 324 42 277 30C246 22 223 18 206 18C149 18 124 72 124 129M375 355C375 289 311 256 182 256L147 256C166 322 194 366 232 387C262 404 287 413 307 413C343 413 375 391 375 355Z"></path></g><g data-mml-node="TeXAtom" transform="translate(499,363) scale(0.707)" data-latex="{z_i/T}" data-mjx-texclass="ORD"><g data-mml-node="msub" data-latex="z_i"><g data-mml-node="mi" data-latex="z"><path data-c="1D467" d="M162 92L145 90C193 137 230 171 255 194L351 283C374 304 398 330 421 359C452 397 467 420 467 428C467 437 462 442 452 442C445 442 439 438 434 429C409 388 386 368 364 368C342 368 326 386 317 398C293 427 269 442 246 442C220 442 193 430 165 404C137 378 123 352 123 326C123 316 128 311 139 311C146 311 152 316 156 325C167 354 194 368 235 368C249 368 269 363 296 354C320 345 343 340 364 339C308 284 265 244 234 217L145 134C130 119 111 99 90 74C59 35 43 12 43 3C43-6 48-11 59-11C65-11 71-6 78 4C103 43 130 63 158 63C174 63 192 51 212 26C232 1 255-11 278-11C312-11 346 7 382 42C418 77 436 111 436 144C436 153 431 158 420 158C413 158 407 153 402 143C387 100 344 63 288 63C264 63 186 92 162 92Z"></path></g><g data-mml-node="mi" transform="translate(498,-150) scale(0.707)" data-latex="i"><path data-c="1D456" d="M284 621C284 648 271 661 244 661C216 661 188 633 188 605C188 578 202 565 229 565C257 565 284 593 284 621M259 138C237 59 205 19 164 19C151 19 144 28 144 47C144 64 173 150 232 306C240 329 244 347 244 360C244 409 210 445 161 445C118 445 84 420 59 369C39 328 29 301 29 288C29 279 34 275 45 275C58 275 60 281 64 295C87 375 118 415 158 415C171 415 178 406 178 387C178 373 175 357 168 338C145 275 121 208 101 155C86 115 78 88 78 74C78 25 114-11 162-11C205-11 239 14 264 64C283 103 293 130 293 145C293 154 288 159 277 159C274 159 259 150 259 138Z"></path></g></g><g data-mml-node="mo" data-latex="/" transform="translate(792,0)"><path data-c="2F" d="M444 718C445 720 445 723 445 726C445 742 437 750 421 750C410 750 403 745 399 734L57-218C56-220 56-223 56-226C56-242 64-250 80-250C91-250 98-245 102-234Z"></path></g><g data-mml-node="mi" data-latex="T" transform="translate(1292,0)"><path data-c="1D447" d="M344 631C344 628 343 621 340 611L208 83C204 68 200 59 197 55C188 44 154 39 94 39C63 39 49 42 49 16C49 5 56 0 69 0C120 0 192 4 235 3L317 2C331 2 386 0 403 0C420 0 428 8 428 24C428 34 416 39 391 39C339 39 309 41 300 46C297 48 295 52 295 58L430 603C433 617 436 626 439 629C443 635 467 638 511 638C566 638 604 634 623 625C642 616 652 595 652 561C652 543 649 517 644 483C642 475 641 469 641 464C641 453 646 447 657 447C666 447 672 456 675 473L702 645C703 650 704 656 704 662C704 672 694 677 673 677L125 677C99 677 97 674 89 655L30 481C27 472 25 466 24 462C24 452 29 447 40 447C48 447 55 455 60 470C85 543 110 588 133 607C159 628 209 638 282 638L321 638C332 638 344 639 344 631Z"></path></g></g></g><g data-mml-node="mrow" data-latex="\sum_{j=1}^{k}e^{z_j/T}" transform="translate(220,-927.8)"><g data-mml-node="munderover" data-latex="\sum_{j=1}^{k}"><g data-mml-node="mo" data-latex="\sum"><path data-c="2211" d="M56 713L417 216L67-217C60-225 57-231 57-235C57-245 67-250 88-250L913-250L1001 5L967 5C954-33 933-66 902-95C825-166 719-188 565-188L152-188L490 232C497 240 500 246 500 250C500 254 498 259 493 266L175 702L560 702C682 702 764 691 854 644C907 616 944 571 967 510L1001 510L913 750L88 750C57 750 56 746 56 713Z"></path></g><g data-mml-node="TeXAtom" transform="translate(1089,477.1) scale(0.707)" data-latex="{k}" data-mjx-texclass="ORD"><g data-mml-node="mi" data-latex="k"><path data-c="1D458" d="M409 353C409 327 423 314 450 314C485 314 508 345 508 379C508 418 476 445 437 445C392 445 344 415 291 356C250 311 217 282 190 269L291 679C289 688 287 694 274 694C242 694 166 685 154 684C139 682 132 675 132 660C132 650 141 645 159 645C178 645 204 646 204 632L59 43C56 32 55 25 55 21C55 0 66-11 87-11C104-11 117-3 124 12C129 21 147 92 179 226C231 221 286 196 286 146C286 131 279 101 279 91C279 34 316-11 373-11C431-11 470 41 490 145C490 154 485 159 475 159C466 159 460 152 457 138C435 59 408 19 375 19C357 19 348 33 348 61C348 77 360 131 360 147C360 204 314 239 221 253C244 269 270 292 298 322C326 352 346 371 359 382C386 404 412 415 435 415C445 415 453 413 459 409C432 404 409 379 409 353Z"></path></g></g><g data-mml-node="TeXAtom" transform="translate(1089,-285.4) scale(0.707)" data-latex="{j=1}" data-mjx-texclass="ORD"><g data-mml-node="mi" data-latex="j"><path data-c="1D457" d="M397 621C397 648 383 661 356 661C328 661 300 633 300 605C300 578 313 565 340 565C368 565 397 593 397 621M267 444C214 444 169 404 147 369C120 326 107 299 107 287C107 278 112 274 122 274C127 274 130 275 133 276C138 284 141 291 144 296C176 375 216 414 264 414C282 414 291 400 291 373C291 358 289 341 284 323L192-46C178-104 138-175 75-175C66-175 57-174 48-171C73-161 85-143 85-118C85-92 71-79 44-79C12-79-13-108-13-140C-13-184 30-205 77-205C120-205 160-190 197-160C232-131 254-94 265-51L356 311C359 324 361 337 361 349C361 404 322 444 267 444Z"></path></g><g data-mml-node="mo" data-latex="=" transform="translate(412,0)"><path data-c="3D" d="M698 367L80 367C64 367 56 359 56 344C56 329 64 321 80 321L698 321C714 321 722 329 722 344C722 356 711 367 698 367M698 179L80 179C64 179 56 171 56 156C56 141 64 133 80 133L698 133C714 133 722 141 722 156C722 169 711 179 698 179Z"></path></g><g data-mml-node="mn" data-latex="1" transform="translate(1190,0)"><path data-c="31" d="M269 666C228 624 168 603 89 603L89 564C141 564 184 572 217 588L217 82C217 64 213 52 204 47C195 42 170 39 130 39L95 39L95 0C120 2 174 3 257 3C340 3 394 2 419 0L419 39L384 39C343 39 318 42 310 47C302 52 297 64 297 82L297 636C297 660 295 666 269 666Z"></path></g></g></g><g data-mml-node="msup" data-latex="e^{z_j/T}" transform="translate(2500.7,0)"><g data-mml-node="mi" data-latex="e"><path data-c="1D452" d="M124 129C124 153 129 186 139 227L188 227C253 227 303 235 339 250C372 264 394 284 405 309C412 326 415 342 415 355C415 410 363 442 307 442C268 442 229 432 190 412C113 372 46 281 46 171C46 69 105-11 204-11C257-11 304 2 345 27C379 48 404 69 420 90C427 99 430 106 430 109C430 120 425 126 414 126C409 126 404 122 398 114C365 70 324 42 277 30C246 22 223 18 206 18C149 18 124 72 124 129M375 355C375 289 311 256 182 256L147 256C166 322 194 366 232 387C262 404 287 413 307 413C343 413 375 391 375 355Z"></path></g><g data-mml-node="TeXAtom" transform="translate(499,319.1) scale(0.707)" data-latex="{z_j/T}" data-mjx-texclass="ORD"><g data-mml-node="msub" data-latex="z_j"><g data-mml-node="mi" data-latex="z"><path data-c="1D467" d="M162 92L145 90C193 137 230 171 255 194L351 283C374 304 398 330 421 359C452 397 467 420 467 428C467 437 462 442 452 442C445 442 439 438 434 429C409 388 386 368 364 368C342 368 326 386 317 398C293 427 269 442 246 442C220 442 193 430 165 404C137 378 123 352 123 326C123 316 128 311 139 311C146 311 152 316 156 325C167 354 194 368 235 368C249 368 269 363 296 354C320 345 343 340 364 339C308 284 265 244 234 217L145 134C130 119 111 99 90 74C59 35 43 12 43 3C43-6 48-11 59-11C65-11 71-6 78 4C103 43 130 63 158 63C174 63 192 51 212 26C232 1 255-11 278-11C312-11 346 7 382 42C418 77 436 111 436 144C436 153 431 158 420 158C413 158 407 153 402 143C387 100 344 63 288 63C264 63 186 92 162 92Z"></path></g><g data-mml-node="mi" transform="translate(498,-150) scale(0.707)" data-latex="j"><path data-c="1D457" d="M397 621C397 648 383 661 356 661C328 661 300 633 300 605C300 578 313 565 340 565C368 565 397 593 397 621M267 444C214 444 169 404 147 369C120 326 107 299 107 287C107 278 112 274 122 274C127 274 130 275 133 276C138 284 141 291 144 296C176 375 216 414 264 414C282 414 291 400 291 373C291 358 289 341 284 323L192-46C178-104 138-175 75-175C66-175 57-174 48-171C73-161 85-143 85-118C85-92 71-79 44-79C12-79-13-108-13-140C-13-184 30-205 77-205C120-205 160-190 197-160C232-131 254-94 265-51L356 311C359 324 361 337 361 349C361 404 322 444 267 444Z"></path></g></g><g data-mml-node="mo" data-latex="/" transform="translate(839.3,0)"><path data-c="2F" d="M444 718C445 720 445 723 445 726C445 742 437 750 421 750C410 750 403 745 399 734L57-218C56-220 56-223 56-226C56-242 64-250 80-250C91-250 98-245 102-234Z"></path></g><g data-mml-node="mi" data-latex="T" transform="translate(1339.3,0)"><path data-c="1D447" d="M344 631C344 628 343 621 340 611L208 83C204 68 200 59 197 55C188 44 154 39 94 39C63 39 49 42 49 16C49 5 56 0 69 0C120 0 192 4 235 3L317 2C331 2 386 0 403 0C420 0 428 8 428 24C428 34 416 39 391 39C339 39 309 41 300 46C297 48 295 52 295 58L430 603C433 617 436 626 439 629C443 635 467 638 511 638C566 638 604 634 623 625C642 616 652 595 652 561C652 543 649 517 644 483C642 475 641 469 641 464C641 453 646 447 657 447C666 447 672 456 675 473L702 645C703 650 704 656 704 662C704 672 694 677 673 677L125 677C99 677 97 674 89 655L30 481C27 472 25 466 24 462C24 452 29 447 40 447C48 447 55 455 60 470C85 543 110 588 133 607C159 628 209 638 282 638L321 638C332 638 344 639 344 631Z"></path></g></g></g></g><rect width="4694.5" height="60" x="120" y="220"></rect></g><g data-mml-node="mo" data-latex="," transform="translate(7902,0)"><path data-c="2C" d="M139 106C107 106 86 82 86 50C86 20 109-5 139-5C153-5 165-1 174 8L175 0C175-63 154-117 112-160C105-168 101-174 101-178C101-188 105-193 114-193C123-193 135-181 152-158C186-110 203-57 203 0C203 53 185 106 139 106Z"></path></g><g data-mml-node="mspace" data-latex="\quad" transform="translate(8180,0)"></g><g data-mml-node="mi" data-latex="T" transform="translate(9346.7,0)"><path data-c="1D447" d="M344 631C344 628 343 621 340 611L208 83C204 68 200 59 197 55C188 44 154 39 94 39C63 39 49 42 49 16C49 5 56 0 69 0C120 0 192 4 235 3L317 2C331 2 386 0 403 0C420 0 428 8 428 24C428 34 416 39 391 39C339 39 309 41 300 46C297 48 295 52 295 58L430 603C433 617 436 626 439 629C443 635 467 638 511 638C566 638 604 634 623 625C642 616 652 595 652 561C652 543 649 517 644 483C642 475 641 469 641 464C641 453 646 447 657 447C666 447 672 456 675 473L702 645C703 650 704 656 704 662C704 672 694 677 673 677L125 677C99 677 97 674 89 655L30 481C27 472 25 466 24 462C24 452 29 447 40 447C48 447 55 455 60 470C85 543 110 588 133 607C159 628 209 638 282 638L321 638C332 638 344 639 344 631Z"></path></g><g data-mml-node="mo" data-latex=">" transform="translate(10328.5,0)"><path data-c="3E" d="M686 227C696 232 701 239 701 250C701 261 696 268 686 273L112 545C109 546 105 547 101 547C85 547 77 539 77 522C77 513 82 506 91 502L625 250L91-2C82-6 77-13 77-22C77-39 85-47 101-47C105-47 109-46 112-45Z"></path></g><g data-mml-node="mn" data-latex="0" transform="translate(11384.2,0)"><path data-c="30" d="M249-22C390-22 460 92 460 320C460 473 428 575 365 625C330 652 291 666 250 666C109 666 39 551 39 320C39 136 88-22 249-22M361 524C368 489 371 425 371 332C371 240 367 172 360 128C347 48 310 8 249 8C226 8 203 17 182 34C155 57 139 104 132 176C129 201 128 253 128 332C128 419 131 480 136 513C145 568 163 603 191 618C213 630 232 636 249 636C314 636 350 583 361 524Z"></path></g></g></g></svg></mjx-container></p>
+<table>
+<thead>
+<tr>
+<th align="right">温度</th>
+<th>输出倾向</th>
+<th>常见用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">低</td>
+<td>更确定、更保守</td>
+<td>事实问答、代码、抽取</td>
+</tr>
+<tr>
+<td align="right">中</td>
+<td>稳定与多样性平衡</td>
+<td>客服、总结、普通写作</td>
+</tr>
+<tr>
+<td align="right">高</td>
+<td>更发散、更有创意</td>
+<td>头脑风暴、故事、文案</td>
+</tr>
+</tbody></table>
+<p>温度不是智力旋钮。降低温度不会修复错误知识，只会让模型更倾向于选择当前概率最高的 token。</p>
+<h3 id="Top-k-与-Top-p"><a href="#Top-k-与-Top-p" class="headerlink" title="Top-k 与 Top-p"></a>Top-k 与 Top-p</h3><p>Top-k 保留概率最高的 k 个候选；k=1 时基本退化为贪心选择。Top-p 按概率从高到低累加，直到累计概率达到阈值 p，候选数量会随分布变化。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>控制方式</th>
+<th>优点</th>
+<th>风险</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Temperature</td>
+<td>整体变尖或变平</td>
+<td>直观</td>
+<td>高温度可能发散</td>
+</tr>
+<tr>
+<td>Top-k</td>
+<td>固定候选数量</td>
+<td>容易理解</td>
+<td>不适应不同分布</td>
+</tr>
+<tr>
+<td>Top-p</td>
+<td>动态候选数量</td>
+<td>对长尾更灵活</td>
+<td>阈值过高会引入噪声</td>
+</tr>
+</tbody></table>
+<p>调参时先固定模型和提示，只改变一个参数，用同一组测试集比较事实正确率、格式通过率、重复率和成本。</p>
+<h2 id="四、Tokenization：模型看到的不是“字”"><a href="#四、Tokenization：模型看到的不是“字”" class="headerlink" title="四、Tokenization：模型看到的不是“字”"></a>四、Tokenization：模型看到的不是“字”</h2><p>分词（Tokenization）把文本转换成 token 序列，再映射为 token ID。现代模型通常采用子词分词（Subword Tokenization），在词表规模、未登录词和语义片段之间做折中。</p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>优点</th>
+<th>问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符</td>
+<td>词表小</td>
+<td>序列长，单字符语义弱</td>
+</tr>
+<tr>
+<td>单词</td>
+<td>常见词表达完整</td>
+<td>词表膨胀，难处理新词</td>
+</tr>
+<tr>
+<td>子词</td>
+<td>平衡词表和序列长度</td>
+<td>规则复杂，模型之间不可直接互换</td>
+</tr>
+</tbody></table>
+<p>字节对编码（Byte Pair Encoding，BPE）可以记成“反复合并最高频相邻片段”：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> collections</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_stats</span>(<span class="params">vocab: <span class="built_in">dict</span>[<span class="built_in">str</span>, <span class="built_in">int</span>]</span>) -&gt; <span class="built_in">dict</span>[<span class="built_in">tuple</span>[<span class="built_in">str</span>, <span class="built_in">str</span>], <span class="built_in">int</span>]:</span><br><span class="line">    <span class="string">"""统计词表中所有相邻 token 对的出现频率。"""</span></span><br><span class="line">    pairs = collections.defaultdict(<span class="built_in">int</span>)</span><br><span class="line">    <span class="keyword">for</span> word, frequency <span class="keyword">in</span> vocab.items():</span><br><span class="line">        symbols = word.split()</span><br><span class="line">        <span class="keyword">for</span> index <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(symbols) - <span class="number">1</span>):</span><br><span class="line">            pair = (symbols[index], symbols[index + <span class="number">1</span>])</span><br><span class="line">            pairs[pair] += frequency</span><br><span class="line">    <span class="keyword">return</span> pairs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">merge_vocab</span>(<span class="params"></span></span><br><span class="line"><span class="params">    pair: <span class="built_in">tuple</span>[<span class="built_in">str</span>, <span class="built_in">str</span>],</span></span><br><span class="line"><span class="params">    vocab: <span class="built_in">dict</span>[<span class="built_in">str</span>, <span class="built_in">int</span>],</span></span><br><span class="line"><span class="params"></span>) -&gt; <span class="built_in">dict</span>[<span class="built_in">str</span>, <span class="built_in">int</span>]:</span><br><span class="line">    <span class="string">"""把词表中所有出现的目标 token 对合并成一个 token。"""</span></span><br><span class="line">    output = {}</span><br><span class="line">    <span class="comment"># re.escape 防止 token 中的特殊字符被当成正则语法</span></span><br><span class="line">    bigram = re.escape(<span class="string">" "</span>.join(pair))</span><br><span class="line">    pattern = re.<span class="built_in">compile</span>(<span class="string">r"(?&lt;!\S)"</span> + bigram + <span class="string">r"(?!\S)"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> word, frequency <span class="keyword">in</span> vocab.items():</span><br><span class="line">        merged_word = pattern.sub(<span class="string">""</span>.join(pair), word)</span><br><span class="line">        output[merged_word] = frequency</span><br><span class="line">    <span class="keyword">return</span> output</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># &lt;/w&gt; 表示单词结束，空格用于分隔当前的基础 token</span></span><br><span class="line">vocab = {</span><br><span class="line">    <span class="string">"h u g &lt;/w&gt;"</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">"p u g &lt;/w&gt;"</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">"p u n &lt;/w&gt;"</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">"b u n &lt;/w&gt;"</span>: <span class="number">1</span>,</span><br><span class="line">}</span><br><span class="line">num_merges = <span class="number">4</span>  <span class="comment"># 只做 4 轮合并，便于观察过程</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> merge_index <span class="keyword">in</span> <span class="built_in">range</span>(num_merges):</span><br><span class="line">    pair_counts = get_stats(vocab)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> pair_counts:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 每一轮选择出现频率最高的相邻 token 对</span></span><br><span class="line">    best_pair = <span class="built_in">max</span>(pair_counts, key=pair_counts.get)</span><br><span class="line">    vocab = merge_vocab(best_pair, vocab)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(</span><br><span class="line">        <span class="string">f"第 <span class="subst">{merge_index + <span class="number">1</span>}</span> 次合并："</span></span><br><span class="line">        <span class="string">f"<span class="subst">{best_pair}</span> -&gt; <span class="subst">{<span class="string">''</span>.join(best_pair)}</span>"</span></span><br><span class="line">    )</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f"当前词表：<span class="subst">{<span class="built_in">list</span>(vocab.keys())}</span>"</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"-"</span> * <span class="number">20</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这段代码的完整运行结果如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">第 1 次合并：('u', 'g') -&gt; ug</span><br><span class="line">当前词表：['h ug &lt;/w&gt;', 'p ug &lt;/w&gt;', 'p u n &lt;/w&gt;', 'b u n &lt;/w&gt;']</span><br><span class="line">--------------------</span><br><span class="line">第 2 次合并：('ug', '&lt;/w&gt;') -&gt; ug&lt;/w&gt;</span><br><span class="line">当前词表：['h ug&lt;/w&gt;', 'p ug&lt;/w&gt;', 'p u n &lt;/w&gt;', 'b u n &lt;/w&gt;']</span><br><span class="line">--------------------</span><br><span class="line">第 3 次合并：('u', 'n') -&gt; un</span><br><span class="line">当前词表：['h ug&lt;/w&gt;', 'p ug&lt;/w&gt;', 'p un &lt;/w&gt;', 'b un &lt;/w&gt;']</span><br><span class="line">--------------------</span><br><span class="line">第 4 次合并：('un', '&lt;/w&gt;') -&gt; un&lt;/w&gt;</span><br><span class="line">当前词表：['h ug&lt;/w&gt;', 'p ug&lt;/w&gt;', 'p un&lt;/w&gt;', 'b un&lt;/w&gt;']</span><br><span class="line">--------------------</span><br></pre></td></tr></table></figure>
+
+<p>Token 对 Agent 的影响有三点：上下文窗口按 token 计算，API 通常按 token 计费，空格、大小写、数字和罕见字符串可能被切成不同片段。长文档系统不能只看字符数判断是否超出上下文。</p>
+<h2 id="五、开源模型调用：从文本到回答"><a href="#五、开源模型调用：从文本到回答" class="headerlink" title="五、开源模型调用：从文本到回答"></a>五、开源模型调用：从文本到回答</h2><p>课程用 Transformers 演示本地加载小型对话模型。核心链路是：加载 tokenizer 和模型、套用对话模板、编码 token、生成新 token、去掉输入部分并解码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForCausalLM, AutoTokenizer</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">model_id = <span class="string">"Qwen/Qwen1.5-0.5B-Chat"</span></span><br><span class="line">device = <span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">"cpu"</span></span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(model_id)</span><br><span class="line">model = AutoModelForCausalLM.from_pretrained(model_id).to(device)</span><br><span class="line"></span><br><span class="line">messages = [</span><br><span class="line">    {<span class="string">"role"</span>: <span class="string">"system"</span>, <span class="string">"content"</span>: <span class="string">"你是简洁的学习助手。"</span>},</span><br><span class="line">    {<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"用三句话解释 Token。"</span>},</span><br><span class="line">]</span><br><span class="line">prompt = tokenizer.apply_chat_template(</span><br><span class="line">    messages, tokenize=<span class="literal">False</span>, add_generation_prompt=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line">inputs = tokenizer([prompt], return_tensors=<span class="string">"pt"</span>).to(device)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    output_ids = model.generate(</span><br><span class="line">        **inputs, max_new_tokens=<span class="number">128</span>, temperature=<span class="number">0.3</span>, top_p=<span class="number">0.9</span></span><br><span class="line">    )</span><br><span class="line">new_ids = output_ids[:, inputs[<span class="string">"input_ids"</span>].shape[<span class="number">1</span>]:]</span><br><span class="line">answer = tokenizer.batch_decode(new_ids, skip_special_tokens=<span class="literal">True</span>)[<span class="number">0</span>]</span><br><span class="line"><span class="built_in">print</span>(answer)</span><br></pre></td></tr></table></figure>
+
+<h3 id="课程版完整运行代码与注释"><a href="#课程版完整运行代码与注释" class="headerlink" title="课程版完整运行代码与注释"></a>课程版完整运行代码与注释</h3><p>如果希望严格按课程的分步方式运行，可以使用下面四段代码。第一段负责加载模型：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install transformers torch</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForCausalLM, AutoTokenizer</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定模型 ID；首次运行会从模型仓库下载权重</span></span><br><span class="line">model_id = <span class="string">"Qwen/Qwen1.5-0.5B-Chat"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 有 NVIDIA GPU 时优先使用 CUDA，没有时使用 CPU</span></span><br><span class="line">device = <span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">"cpu"</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f"Using device: <span class="subst">{device}</span>"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 分词器负责把文本切成 token，并转换为 token ID</span></span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(model_id)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 因果语言模型根据前文预测后文，并移动到目标设备</span></span><br><span class="line">model = AutoModelForCausalLM.from_pretrained(model_id).to(device)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">"模型和分词器加载完成！"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>第二段准备对话输入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 准备符合 Chat 模型格式的多轮消息</span></span><br><span class="line">messages = [</span><br><span class="line">    {<span class="string">"role"</span>: <span class="string">"system"</span>, <span class="string">"content"</span>: <span class="string">"You are a helpful assistant."</span>},</span><br><span class="line">    {<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"你好，请介绍你自己。"</span>},</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用模型自己的对话模板，自动添加角色标记和生成提示</span></span><br><span class="line">text = tokenizer.apply_chat_template(</span><br><span class="line">    messages,</span><br><span class="line">    tokenize=<span class="literal">False</span>,</span><br><span class="line">    add_generation_prompt=<span class="literal">True</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把字符串编码成模型输入的 input_ids 和 attention_mask</span></span><br><span class="line">model_inputs = tokenizer([text], return_tensors=<span class="string">"pt"</span>).to(device)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">"编码后的输入文本："</span>)</span><br><span class="line"><span class="built_in">print</span>(model_inputs)</span><br></pre></td></tr></table></figure>
+
+<p>第三段调用 generate 生成回答：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># max_new_tokens 只限制新生成的 token 数量</span></span><br><span class="line">generated_ids = model.generate(</span><br><span class="line">    model_inputs.input_ids,</span><br><span class="line">    max_new_tokens=<span class="number">512</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>第四段去掉输入部分并解码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># generate 返回“输入 token + 新生成 token”</span></span><br><span class="line"><span class="comment"># 截取掉输入长度后，剩下的才是模型回答</span></span><br><span class="line">generated_ids = [</span><br><span class="line">    output_ids[<span class="built_in">len</span>(input_ids):]</span><br><span class="line">    <span class="keyword">for</span> input_ids, output_ids <span class="keyword">in</span> <span class="built_in">zip</span>(</span><br><span class="line">        model_inputs.input_ids,</span><br><span class="line">        generated_ids,</span><br><span class="line">    )</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把 token ID 还原成人类可读文本，并跳过特殊 token</span></span><br><span class="line">response = tokenizer.batch_decode(</span><br><span class="line">    generated_ids,</span><br><span class="line">    skip_special_tokens=<span class="literal">True</span>,</span><br><span class="line">)[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">"\n模型的回答："</span>)</span><br><span class="line"><span class="built_in">print</span>(response)</span><br></pre></td></tr></table></figure>
+
+<p>如果要观察随机采样的影响，可以在生成参数中显式加入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">generated_ids = model.generate(</span><br><span class="line">    model_inputs.input_ids,</span><br><span class="line">    max_new_tokens=<span class="number">128</span>,</span><br><span class="line">    do_sample=<span class="literal">True</span>,      <span class="comment"># 开启随机采样</span></span><br><span class="line">    temperature=<span class="number">0.3</span>,     <span class="comment"># 温度越低，输出通常越确定</span></span><br><span class="line">    top_p=<span class="number">0.9</span>,           <span class="comment"># 从累计概率达到 90% 的候选中采样</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>本地部署并不等于零成本。模型权重、显存、内存、量化、并发和版本维护都需要资源；它的主要价值是隐私、离线运行和模型自主可控。</p>
+<h2 id="六、模型选型：不要只看排行榜"><a href="#六、模型选型：不要只看排行榜" class="headerlink" title="六、模型选型：不要只看排行榜"></a>六、模型选型：不要只看排行榜</h2><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>闭源 API</th>
+<th>开源模型本地部署</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>上手速度</td>
+<td>✅ 快，接口成熟</td>
+<td>⚠️ 需要准备环境</td>
+</tr>
+<tr>
+<td>综合能力</td>
+<td>✅ 通常有前沿模型</td>
+<td>⚠️ 依模型和量化方案</td>
+</tr>
+<tr>
+<td>数据控制</td>
+<td>⚠️ 依赖服务商条款</td>
+<td>✅ 可在内网运行</td>
+</tr>
+<tr>
+<td>成本结构</td>
+<td>按 token 或请求计费</td>
+<td>GPU、机器和运维成本</td>
+</tr>
+<tr>
+<td>模型定制</td>
+<td>⚠️ 受平台能力限制</td>
+<td>✅ 可微调、量化和替换</td>
+</tr>
+<tr>
+<td>延迟与并发</td>
+<td>✅ 服务商负责扩容</td>
+<td>⚠️ 需要自行优化</td>
+</tr>
+</tbody></table>
+<p>选型顺序应该是：先定义任务验收集，再用最小可用模型测试准确率和格式通过率；只有当错误类型明确且确实需要时，才升级更大模型。</p>
+<h2 id="七、缩放法则：为什么增加资源通常能提升能力"><a href="#七、缩放法则：为什么增加资源通常能提升能力" class="headerlink" title="七、缩放法则：为什么增加资源通常能提升能力"></a>七、缩放法则：为什么增加资源通常能提升能力</h2><p>缩放法则（Scaling Laws）描述模型损失与参数量、训练数据量、计算量之间的可预测关系。常见抽象形式是：</p>
+<p><mjx-container class="MathJax" jax="SVG" overflow="overflow" display="true"><svg style="vertical-align: -0.561ex;" xmlns="http://www.w3.org/2000/svg" width="41.611ex" height="2.625ex" role="img" focusable="false" viewBox="0 -912.2 18392.3 1160.2"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math" data-latex="
+L(N,D,C)\approx L_{\infty}+aN^{-\alpha}+bD^{-\beta}+cC^{-\gamma}
+"><g data-mml-node="mi" data-latex="L"><path data-c="1D43F" d="M520 667C520 678 513 683 500 683L354 680L223 683C208 684 200 676 200 659C200 652 203 647 209 646C218 645 226 644 231 644C262 643 279 641 284 640C289 639 292 636 292 631C292 629 291 623 288 613L156 82C150 60 140 47 125 42C119 40 101 39 70 39C49 39 39 31 39 15C39 5 49 0 70 0L527 0C552 0 554 0 561 19L639 233C642 240 643 245 643 248C643 258 638 263 627 263C617 263 612 254 607 240C588 191 570 154 555 131C518 75 455 39 363 39L270 39C259 39 252 39 249 40C242 40 239 42 239 45C239 47 241 54 244 67L377 601C383 624 396 637 415 642C421 643 442 644 478 644C506 644 520 644 520 667Z"></path></g><g data-mml-node="mo" data-latex="(" transform="translate(681,0)"><path data-c="28" d="M318-248C327-248 332-243 332-234C332-231 330-227 327-223C275-183 233-117 202-26C175 53 161 131 161 208L161 292C161 369 175 447 202 526C233 617 275 683 327 723C330 726 332 730 332 734C332 743 327 748 318 748C317 748 314 747 311 745C251 699 201 631 160 540C121 453 101 371 101 292L101 208C101 129 121 47 160-40C201-131 251-199 311-245C314-247 317-248 318-248Z"></path></g><g data-mml-node="mi" data-latex="N" transform="translate(1070,0)"><path data-c="1D441" d="M864 683C845 683 783 680 764 680C745 680 682 683 663 683C648 683 641 675 641 659C641 650 648 645 663 644C705 644 726 631 726 605C726 599 725 592 724 585L616 157L401 662C393 681 391 683 366 683L233 683C209 683 200 681 200 659C200 649 211 644 232 644C274 644 295 643 296 640L163 110C154 71 131 49 95 42C69 39 39 43 39 15C39 5 45 0 56 0C74 0 136 3 155 3C174 3 238 0 257 0C272 0 279 8 279 24C279 33 271 38 255 39C214 40 194 53 194 78C194 83 195 90 197 100L326 611L576 21C582 7 590 0 599 0C608 0 614 8 618 24L757 574C770 625 798 643 860 644C874 645 881 653 881 669C878 678 877 683 864 683Z"></path></g><g data-mml-node="mo" data-latex="," transform="translate(1951,0)"><path data-c="2C" d="M139 106C107 106 86 82 86 50C86 20 109-5 139-5C153-5 165-1 174 8L175 0C175-63 154-117 112-160C105-168 101-174 101-178C101-188 105-193 114-193C123-193 135-181 152-158C186-110 203-57 203 0C203 53 185 106 139 106Z"></path></g><g data-mml-node="mi" data-latex="D" transform="translate(2395.7,0)"><path data-c="1D437" d="M567 683L235 683C212 683 201 682 201 660C201 649 212 644 234 644C254 644 294 647 294 631C294 629 293 623 290 613L158 82C153 60 143 47 128 42C121 40 103 39 72 39C50 39 40 37 40 16C40 5 51 0 72 0L399 0C467 0 532 20 595 61C702 130 804 265 804 429C804 577 713 683 567 683M710 466C710 353 659 216 607 149C550 76 475 39 381 39L270 39C259 39 252 39 248 40C242 40 239 42 239 45C239 47 241 54 244 67L379 610C388 643 387 644 429 644L535 644C647 644 710 578 710 466Z"></path></g><g data-mml-node="mo" data-latex="," transform="translate(3223.7,0)"><path data-c="2C" d="M139 106C107 106 86 82 86 50C86 20 109-5 139-5C153-5 165-1 174 8L175 0C175-63 154-117 112-160C105-168 101-174 101-178C101-188 105-193 114-193C123-193 135-181 152-158C186-110 203-57 203 0C203 53 185 106 139 106Z"></path></g><g data-mml-node="mi" data-latex="C" transform="translate(3668.3,0)"><path data-c="1D436" d="M148 218C148 346 204 476 267 548C318 607 406 666 505 666C609 666 660 587 660 479C660 470 657 438 657 429C657 420 663 415 676 415C681 415 685 416 688 417C693 424 696 431 698 438L760 691C760 700 755 705 745 705C741 705 735 701 727 692L662 619C623 676 568 705 497 705C442 705 388 692 333 667C222 615 141 533 89 421C63 366 50 310 50 253C50 173 75 108 126 56C177 4 242-22 322-22C401-22 473 7 538 64C565 87 588 115 607 146C634 191 648 222 648 241C648 250 643 255 632 255C623 255 618 251 616 242C595 177 562 125 517 88C460 41 400 17 338 17C218 17 148 98 148 218Z"></path></g><g data-mml-node="mo" data-latex=")" transform="translate(4428.3,0)"><path data-c="29" d="M78-245C138-199 188-131 229-40C268 47 288 129 288 208L288 292C288 371 268 453 229 540C188 631 138 699 78 745C75 747 72 748 71 748C62 748 57 743 57 734C57 730 59 726 62 723C114 683 156 617 187 526C214 447 228 369 228 292L228 208C228 131 214 53 187-26C156-117 114-183 62-223C59-227 57-231 57-234C57-243 62-248 71-248C72-248 75-247 78-245Z"></path></g><g data-mml-node="mo" data-latex="\approx" transform="translate(5095.1,0)"><path data-c="2248" d="M717 432L717 434C717 445 712 450 701 450C694 450 689 446 686 439C679 404 665 377 645 360C612 331 577 317 539 317C510 317 480 328 449 349C392 390 358 413 347 420C304 445 266 457 232 457C125 457 77 382 56 284L56 281C56 271 61 266 72 266C81 266 86 270 88 278C95 313 108 339 128 356C161 385 196 399 235 399C264 399 293 388 324 366C381 326 415 303 426 296C469 271 507 259 541 259C648 259 696 334 717 432M717 216L717 219C717 229 712 234 701 234C694 234 689 230 686 223C679 188 665 162 645 144C612 115 577 101 539 101C510 101 480 112 449 134C392 174 358 197 347 204C304 229 266 241 232 241C125 241 77 166 56 68L56 66C56 55 61 50 72 50C81 50 86 54 88 62C95 97 108 123 128 140C161 169 196 183 235 183C264 183 293 172 324 151C381 110 415 87 426 80C469 55 507 43 541 43C648 43 696 118 717 216Z"></path></g><g data-mml-node="msub" data-latex="L_{\infty}" transform="translate(6145.9,0)"><g data-mml-node="mi" data-latex="L"><path data-c="1D43F" d="M520 667C520 678 513 683 500 683L354 680L223 683C208 684 200 676 200 659C200 652 203 647 209 646C218 645 226 644 231 644C262 643 279 641 284 640C289 639 292 636 292 631C292 629 291 623 288 613L156 82C150 60 140 47 125 42C119 40 101 39 70 39C49 39 39 31 39 15C39 5 49 0 70 0L527 0C552 0 554 0 561 19L639 233C642 240 643 245 643 248C643 258 638 263 627 263C617 263 612 254 607 240C588 191 570 154 555 131C518 75 455 39 363 39L270 39C259 39 252 39 249 40C242 40 239 42 239 45C239 47 241 54 244 67L377 601C383 624 396 637 415 642C421 643 442 644 478 644C506 644 520 644 520 667Z"></path></g><g data-mml-node="TeXAtom" transform="translate(714,-150) scale(0.707)" data-latex="{\infty}" data-mjx-texclass="ORD"><g data-mml-node="mi" data-latex="\infty"><path data-c="221E" d="M749-11C807-11 855 13 892 60C926 104 943 156 943 216C943 275 926 327 893 371C856 418 809 442 752 442C684 442 625 416 576 364C547 332 524 303 507 278C464 329 435 361 421 373C367 419 310 442 250 442C192 442 144 418 107 371C73 327 56 275 56 215C56 156 73 104 106 60C143 13 190-11 247-11C315-11 374 15 423 67C452 99 475 128 492 153C535 102 564 70 578 58C632 12 689-11 749-11M913 216C913 188 911 168 908 156C903 137 890 117 869 94C840 61 805 44 765 44C722 44 680 67 637 113C592 168 559 209 538 237C601 348 675 403 759 403C852 403 913 314 913 216M86 215C86 260 100 299 128 334C156 369 191 387 234 387C277 387 319 364 362 318C407 263 440 222 461 194C398 83 324 28 240 28C147 28 86 117 86 215Z"></path></g></g></g><g data-mml-node="mo" data-latex="+" transform="translate(7839.2,0)"><path data-c="2B" d="M698 274L413 274L413 559C413 575 405 583 389 583C373 583 365 575 365 559L365 274L80 274C64 274 56 266 56 250C56 234 64 226 80 226L365 226L365-59C365-75 373-83 389-83C405-83 413-75 413-59L413 226L698 226C714 226 722 234 722 250C722 263 711 274 698 274Z"></path></g><g data-mml-node="mi" data-latex="a" transform="translate(8839.4,0)"><path data-c="1D44E" d="M498 144C498 153 493 158 482 158C474 158 468 151 465 137C445 58 421 18 394 18C377 18 368 32 368 60C368 73 372 97 381 132L438 357C443 376 445 387 445 392C445 412 434 422 412 422C391 422 377 410 370 387C349 424 319 442 281 442C216 442 159 409 109 343C63 281 40 217 40 150C40 63 91-11 175-11C218-11 260 12 300 58C311 20 345-11 392-11C461-11 482 70 498 144M341 374C350 353 355 339 355 330C355 326 354 321 353 314L304 122C301 111 294 99 285 87C248 41 212 18 177 18C138 18 118 48 118 107C118 131 124 167 136 215C157 300 187 357 224 388C244 405 263 413 282 413C309 413 329 400 341 374Z"></path></g><g data-mml-node="msup" data-latex="N^{-\alpha}" transform="translate(9368.4,0)"><g data-mml-node="mi" data-latex="N"><path data-c="1D441" d="M864 683C845 683 783 680 764 680C745 680 682 683 663 683C648 683 641 675 641 659C641 650 648 645 663 644C705 644 726 631 726 605C726 599 725 592 724 585L616 157L401 662C393 681 391 683 366 683L233 683C209 683 200 681 200 659C200 649 211 644 232 644C274 644 295 643 296 640L163 110C154 71 131 49 95 42C69 39 39 43 39 15C39 5 45 0 56 0C74 0 136 3 155 3C174 3 238 0 257 0C272 0 279 8 279 24C279 33 271 38 255 39C214 40 194 53 194 78C194 83 195 90 197 100L326 611L576 21C582 7 590 0 599 0C608 0 614 8 618 24L757 574C770 625 798 643 860 644C874 645 881 653 881 669C878 678 877 683 864 683Z"></path></g><g data-mml-node="TeXAtom" transform="translate(967.9,413) scale(0.707)" data-latex="{-\alpha}" data-mjx-texclass="ORD"><g data-mml-node="mo" data-latex="-"><path data-c="2212" d="M698 270L80 270C64 270 56 263 56 250C56 237 64 230 80 230L698 230C714 230 722 237 722 250C722 262 710 270 698 270Z"></path></g><g data-mml-node="mi" data-latex="\alpha" transform="translate(778,0)"><path data-c="1D6FC" d="M310 442C241 442 179 412 124 353C69 294 41 229 41 159C41 61 107-11 205-11C274-11 342 16 410 69C425 16 456-11 502-11C538-11 589 27 589 63C589 72 584 76 573 76C566 76 560 72 557 64C549 43 528 18 505 18C488 18 479 50 479 115C479 129 482 140 488 147C515 180 539 218 558 260C583 314 598 354 602 380L602 384C599 391 593 394 586 394C581 393 575 385 568 371C547 299 518 237 479 186L479 236C479 352 421 442 310 442M403 211C403 152 404 116 405 103C340 46 274 18 207 18C150 18 122 53 122 122C122 180 155 288 178 324C216 383 260 413 309 413C340 413 361 401 374 377C381 365 386 353 391 342C399 319 403 258 403 211Z"></path></g></g></g><g data-mml-node="mo" data-latex="+" transform="translate(11611.2,0)"><path data-c="2B" d="M698 274L413 274L413 559C413 575 405 583 389 583C373 583 365 575 365 559L365 274L80 274C64 274 56 266 56 250C56 234 64 226 80 226L365 226L365-59C365-75 373-83 389-83C405-83 413-75 413-59L413 226L698 226C714 226 722 234 722 250C722 263 711 274 698 274Z"></path></g><g data-mml-node="mi" data-latex="b" transform="translate(12611.5,0)"><path data-c="1D44F" d="M281 445C245 445 209 428 174 394L243 679C241 688 238 694 226 694C193 694 120 685 107 684C92 682 84 675 84 660C84 650 93 645 112 645C131 645 157 646 157 632C157 628 152 608 143 571L63 249C52 207 47 173 47 148C47 62 93-11 175-11C240-11 297 22 347 89C392 151 415 216 415 283C415 370 364 445 281 445M279 415C318 415 337 385 337 326C337 299 331 263 319 218C297 133 268 75 233 44C213 27 194 19 175 19C134 19 114 51 114 115C114 137 119 170 129 214L151 304C154 319 159 330 165 338C204 389 242 415 279 415Z"></path></g><g data-mml-node="msup" data-latex="D^{-\beta}" transform="translate(13040.5,0)"><g data-mml-node="mi" data-latex="D"><path data-c="1D437" d="M567 683L235 683C212 683 201 682 201 660C201 649 212 644 234 644C254 644 294 647 294 631C294 629 293 623 290 613L158 82C153 60 143 47 128 42C121 40 103 39 72 39C50 39 40 37 40 16C40 5 51 0 72 0L399 0C467 0 532 20 595 61C702 130 804 265 804 429C804 577 713 683 567 683M710 466C710 353 659 216 607 149C550 76 475 39 381 39L270 39C259 39 252 39 248 40C242 40 239 42 239 45C239 47 241 54 244 67L379 610C388 643 387 644 429 644L535 644C647 644 710 578 710 466Z"></path></g><g data-mml-node="TeXAtom" transform="translate(861,413) scale(0.707)" data-latex="{-\beta}" data-mjx-texclass="ORD"><g data-mml-node="mo" data-latex="-"><path data-c="2212" d="M698 270L80 270C64 270 56 263 56 250C56 237 64 230 80 230L698 230C714 230 722 237 722 250C722 262 710 270 698 270Z"></path></g><g data-mml-node="mi" data-latex="\beta" transform="translate(778,0)"><path data-c="1D6FD" d="M427 706C298 706 212 553 182 432L30-178C30-189 35-194 44-194L49-194C56-194 61-191 62-184L126 74C148 16 191-13 255-13C317-13 374 6 425 45C496 98 532 167 532 250C532 317 509 367 463 400C520 435 556 480 569 534C572 547 574 560 574 571C574 654 507 706 427 706M306 399C311 402 329 403 358 403C365 403 371 402 378 401C368 399 359 398 350 398L332 398C321 398 312 398 306 399M148 138C148 154 150 170 154 186L213 426C240 534 312 675 426 675C483 675 511 646 511 589C511 575 509 559 504 540C490 484 464 444 425 421C403 429 381 433 359 433C315 433 270 432 270 396C270 389 273 383 278 379C287 372 310 368 349 368C374 368 399 372 422 380C449 358 463 324 463 278C463 253 459 224 451 193C428 103 360 17 256 17C188 17 148 68 148 138Z"></path></g></g></g><g data-mml-node="mo" data-latex="+" transform="translate(15129.7,0)"><path data-c="2B" d="M698 274L413 274L413 559C413 575 405 583 389 583C373 583 365 575 365 559L365 274L80 274C64 274 56 266 56 250C56 234 64 226 80 226L365 226L365-59C365-75 373-83 389-83C405-83 413-75 413-59L413 226L698 226C714 226 722 234 722 250C722 263 711 274 698 274Z"></path></g><g data-mml-node="mi" data-latex="c" transform="translate(16129.9,0)"><path data-c="1D450" d="M328 325C328 300 341 287 368 287C404 287 427 318 427 354C427 410 368 442 308 442C239 442 176 412 122 353C68 294 41 229 41 159C41 61 106-11 204-11C257-11 304 2 345 27C379 48 404 69 420 90C427 99 430 106 430 109C430 120 425 126 414 126C409 126 404 122 398 114C365 70 324 42 277 30C246 22 223 18 206 18C149 18 121 53 121 122C121 184 150 274 174 317C198 361 249 413 308 413C346 413 372 402 386 381C355 378 328 358 328 325Z"></path></g><g data-mml-node="msup" data-latex="C^{-\gamma}" transform="translate(16562.9,0)"><g data-mml-node="mi" data-latex="C"><path data-c="1D436" d="M148 218C148 346 204 476 267 548C318 607 406 666 505 666C609 666 660 587 660 479C660 470 657 438 657 429C657 420 663 415 676 415C681 415 685 416 688 417C693 424 696 431 698 438L760 691C760 700 755 705 745 705C741 705 735 701 727 692L662 619C623 676 568 705 497 705C442 705 388 692 333 667C222 615 141 533 89 421C63 366 50 310 50 253C50 173 75 108 126 56C177 4 242-22 322-22C401-22 473 7 538 64C565 87 588 115 607 146C634 191 648 222 648 241C648 250 643 255 632 255C623 255 618 251 616 242C595 177 562 125 517 88C460 41 400 17 338 17C218 17 148 98 148 218Z"></path></g><g data-mml-node="TeXAtom" transform="translate(845.3,413) scale(0.707)" data-latex="{-\gamma}" data-mjx-texclass="ORD"><g data-mml-node="mo" data-latex="-"><path data-c="2212" d="M698 270L80 270C64 270 56 263 56 250C56 237 64 230 80 230L698 230C714 230 722 237 722 250C722 262 710 270 698 270Z"></path></g><g data-mml-node="mi" data-latex="\gamma" transform="translate(778,0)"><path data-c="1D6FE" d="M524 378C537 403 543 416 543 417C543 426 538 431 527 431C520 431 515 428 512 422C477 357 436 265 388 146C384 212 371 274 349 331C320 405 275 442 214 442C151 442 96 400 68 361C35 314 18 279 18 257C18 248 26 243 43 243L48 250C65 302 94 335 135 349C163 358 185 363 201 363C305 363 357 281 357 116C357 77 353 45 345 20C311-91 294-162 294-193C294-208 300-215 311-215C323-215 335-194 346-153C363-89 375-32 382 18C385 33 387 46 390 55C426 167 471 275 524 378Z"></path></g></g></g></g></g></svg></mjx-container></p>
+<p>N 表示参数规模，D 表示训练数据量，C 表示计算量，L 是损失。具体指数和常数依实验而定，不能把公式当成任何模型都适用的精确预测器。</p>
+<p>在对数坐标中，损失曲线往往比较平滑。工程结论是：增加高质量数据、参数和训练算力通常会带来可预测收益。</p>
+<p>但“更大”不等于“无条件更好”。训练预算固定时，参数和数据需要合理配比。Chinchilla 研究强调，参数较小但训练更充分的模型，可能超过参数更大、数据不足的模型。</p>
+<h2 id="八、能力涌现：突然出现，还是连续积累？"><a href="#八、能力涌现：突然出现，还是连续积累？" class="headerlink" title="八、能力涌现：突然出现，还是连续积累？"></a>八、能力涌现：突然出现，还是连续积累？</h2><p>能力涌现（Emergent Abilities）通常指模型规模扩大后，在少样本学习、代码、多步推理或指令遵循任务上的表现显著改善。</p>
+<p>从使用者视角看，它像是跨过阈值后突然会了；从测量角度看，离散指标、提示方式和任务难度也会放大这种“突然”。更稳妥的记忆方式是：</p>
+<blockquote>
+<p>模型能力来自持续的规模化积累，但某些任务的可用性会在达到阈值后明显跃升。</p>
+</blockquote>
+<p>小模型适合边界清晰、规则明确、可用工具补足的任务；复杂规划和多步推理需要先验证模型是否达到任务阈值。</p>
+<h2 id="九、局限性：模型变强后，问题仍然存在"><a href="#九、局限性：模型变强后，问题仍然存在" class="headerlink" title="九、局限性：模型变强后，问题仍然存在"></a>九、局限性：模型变强后，问题仍然存在</h2><p>幻觉（Hallucination）是模型生成与事实、输入或来源不一致的内容。自回归模型直接预测下一个 token，并没有内置一个永远可靠的事实数据库和事实核查器。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>表现</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>事实性幻觉</td>
+<td>与现实事实不符</td>
+<td>编造不存在的论文或 API</td>
+</tr>
+<tr>
+<td>忠实性幻觉</td>
+<td>没有忠实表达输入</td>
+<td>摘要加入原文不存在的结论</td>
+</tr>
+<tr>
+<td>内在幻觉</td>
+<td>与给定输入直接矛盾</td>
+<td>输入写“已付款”，回答却说“未付款”</td>
+</tr>
+</tbody></table>
+<p>模型知识还会过时，训练数据可能包含偏见；长上下文会增加费用和注意力分散；生成 SQL 或脚本也不等于能安全执行。</p>
+<pre>
+<code class="mermaid">
+
+flowchart TD
+    Q["🔵 模型回答"] --&gt; C{"🟡 需要外部事实？"}
+    C --&gt;|"否"| F["🟣 格式与逻辑校验"]
+    C --&gt;|"是"| R["🟠 RAG / 搜索 / 数据库"]
+    R --&gt; F
+    F --&gt; D{"🍓 涉及真实动作？"}
+    D --&gt;|"否"| A["🟢 返回并标注不确定性"]
+    D --&gt;|"是"| P["🟡 权限、参数、审批、审计"]
+    P --&gt; E["🟢 工具执行或人工确认"]
+    style Q fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
+    style C fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
+    style R fill:#FFDAB9,stroke:#FFAB76,stroke-width:2px,color:#333
+    style F fill:#C7CEEA,stroke:#9FA8DA,stroke-width:2px,color:#333
+    style D fill:#FFB3C6,stroke:#F48FB1,stroke-width:2px,color:#333
+    style P fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
+    style A fill:#B5EAD7,stroke:#80CBC4,stroke-width:2px,color:#333
+    style E fill:#B5EAD7,stroke:#80CBC4,stroke-width:2px,color:#333
+</code>
+</pre>
+
+<p>缓解幻觉不能只靠一句“请不要胡说”。更可靠的组合是：数据清洗、RAG 外部证据、多步复核、专用工具、结构化输出、权限控制和固定评测集。</p>
+<h2 id="十、把两节内容连成-Agent-工程方法"><a href="#十、把两节内容连成-Agent-工程方法" class="headerlink" title="十、把两节内容连成 Agent 工程方法"></a>十、把两节内容连成 Agent 工程方法</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">定义任务验收标准</span><br><span class="line">    → 设计角色、上下文、约束和输出格式</span><br><span class="line">    → 选择合适模型与采样参数</span><br><span class="line">    → 估算 token、延迟和成本</span><br><span class="line">    → 接入 RAG、工具或程序校验</span><br><span class="line">    → 对失败样本分类</span><br><span class="line">    → 修改提示、数据、模型或边界</span><br><span class="line">    → 用固定评测集回归验证</span><br></pre></td></tr></table></figure>
+
+<p>我给自己的三个实践规则：</p>
+<ol>
+<li><strong>先写验收，再写 Prompt。</strong> 不知道什么叫“答对”，提示词再长也只是文字堆积。</li>
+<li><strong>先用小模型和低成本参数验证流程。</strong> 流程没有跑通时，换更大模型只会让错误变贵。</li>
+<li><strong>把不确定性设计进系统。</strong> 允许模型返回“资料不足”“需要确认”和“无法执行”。</li>
+</ol>
+<h2 id="十一、复习提纲"><a href="#十一、复习提纲" class="headerlink" title="十一、复习提纲"></a>十一、复习提纲</h2><ol>
+<li>Temperature、Top-k 和 Top-p 分别改变概率分布的什么部分？</li>
+<li>为什么 Few-shot 示例应覆盖边界，而不是盲目增加数量？</li>
+<li>token 数量为什么同时影响上下文长度和 API 成本？</li>
+<li>固定计算预算下，为什么参数量和数据量需要配比？</li>
+<li>为什么能力涌现既可能来自模型变化，也可能受评测方式影响？</li>
+<li>为什么 RAG、工具调用和结构化输出只能降低风险，不能保证零幻觉？</li>
+<li>哪些操作必须保留代码权限控制和人工审批？</li>
+</ol>
+<blockquote>
+<p><strong>提示负责表达任务，模型负责生成候选，工具负责接触事实，程序负责验证边界。</strong></p>
+</blockquote>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://datawhalechina.github.io/hello-agents/#/./chapter3/%E7%AC%AC%E4%B8%89%E7%AB%A0%20%E5%A4%A7%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80">Datawhale Hello-Agents 第三章：大语言模型基础</a></li>
+<li>Kaplan et al., <em>Scaling Laws for Neural Language Models</em>.</li>
+<li>Hoffmann et al., <em>Training Compute-Optimal Large Language Models</em>.</li>
+</ul>
+<p>本文是个人学习笔记，按课程内容重新组织，并补充面向 Agent 开发的实践理解。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/MyBlog/tags/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/" rel="tag"># 大语言模型</a>
+              <a href="/MyBlog/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"># 学习笔记</a>
+              <a href="/MyBlog/tags/Prompt/" rel="tag"># Prompt</a>
+              <a href="/MyBlog/tags/Token/" rel="tag"># Token</a>
+              <a href="/MyBlog/tags/%E7%BC%A9%E6%94%BE%E6%B3%95%E5%88%99/" rel="tag"># 缩放法则</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/06/hello-agents-chapter3-1/" rel="prev" title="Hello-Agents 第三章 3.1 学习笔记：语言模型与 Transformer 架构">
+                  <i class="fa fa-angle-left"></i> Hello-Agents 第三章 3.1 学习笔记：语言模型与 Transformer 架构
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>
