@@ -127,7 +127,7 @@ class HelloAgentsLLM:
     def think(
         self,
         messages: List[Dict[str, str]],
-        temperature: float = 0,
+        temperature: float = 0, # 温度设置为0，不发散
     ) -> str:
         """调用模型并返回完整文本；temperature=0 便于 ReAct 输出稳定。"""
         response = self.client.chat.completions.create(
@@ -162,7 +162,7 @@ if __name__ == "__main__":
     print("完整响应：", answer)
 ```
 
-关于采样参数的含义，可以回看[上一章 3.2-3.3 笔记中的 `Temperature` 小节](/MyBlog/2026/11/07/hello-agents-chapter3-2-3/#Temperature)。这里把 `temperature` 设为 `0`，不是为了让模型“绝对正确”，而是为了降低格式随机性。ReAct 需要模型严格输出 `Action: Tool[...]` 或 `Action: Finish[...]`，格式越稳定，解析器越容易工作。
+关于采样参数的含义，可以回看[`Temperature`](/MyBlog/2026/11/07/hello-agents-chapter3-2-3/#Temperature)。这里把 `temperature` 设为 `0`，不是为了让模型“绝对正确”，而是为了降低格式随机性。ReAct 需要模型严格输出 `Action: Tool[...]` 或 `Action: Finish[...]`，格式越稳定，解析器越容易工作。
 
 ## 三、把外部能力封装成工具
 
