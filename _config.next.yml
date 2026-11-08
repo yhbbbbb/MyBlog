@@ -67,7 +67,7 @@ footer:
   since: 2026
   icon:
     name: fa fa-heart
-    animated: false
+    animated: true
     color: '#ff0000'
   copyright: yhbbbbb
 
