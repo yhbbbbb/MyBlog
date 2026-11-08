@@ -51,11 +51,11 @@ pip install openai python-dotenv google-search-results
 在项目根目录创建 `.env`。密钥不要写进 Python 文件，也不要提交到 Git：
 
 ```dotenv
-LLM_MODEL_ID=your-model-name
-LLM_API_KEY=your-llm-api-key
-LLM_BASE_URL=https://your-provider.example.com/v1
-LLM_TIMEOUT=60
-SERPAPI_API_KEY=your-serpapi-key
+LLM_MODEL_ID="your-model-name"
+LLM_API_KEY="your-llm-api-key"
+LLM_BASE_URL="https://your-provider.example.com/v1"
+LLM_TIMEOUT=60 # 可以在输入时赋值
+SERPAPI_API_KEY="your-serpapi-key"
 ```
 
 可以提交一个不包含真实密钥的 `.env.example`，方便其他人知道需要配置哪些变量。
@@ -162,7 +162,7 @@ if __name__ == "__main__":
     print("完整响应：", answer)
 ```
 
-这里把 `temperature` 设为 `0`，不是为了让模型“绝对正确”，而是为了降低格式随机性。ReAct 需要模型严格输出 `Action: Tool[...]` 或 `Action: Finish[...]`，格式越稳定，解析器越容易工作。
+关于采样参数的含义，可以回看[上一章 3.2-3.3 笔记中的 `Temperature` 小节](/MyBlog/2026/11/07/hello-agents-chapter3-2-3/#Temperature)。这里把 `temperature` 设为 `0`，不是为了让模型“绝对正确”，而是为了降低格式随机性。ReAct 需要模型严格输出 `Action: Tool[...]` 或 `Action: Finish[...]`，格式越稳定，解析器越容易工作。
 
 ## 三、把外部能力封装成工具
 
