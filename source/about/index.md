@@ -10,7 +10,7 @@ layout: page
 
 ## 联系方式
 - GitHub: https://github.com/yhbbbbb
-- Email : 971337546@qq.com
+- Email : 23hbyao@gmail.com
 
 ## 技术方向
 
