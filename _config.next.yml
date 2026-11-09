@@ -20,7 +20,11 @@ avatar:
   opacity: 1
 social:
   GitHub: https://github.com/yhbbbbb || fab fa-github
-  Google Email: mailto:23hbyao@gmail.com || fa fa-envelope
+  Google Email: mailto:23hbyao@gmail.com || fab fa-google
+social_icons:
+  enable: true
+  icons_only: true
+  transition: true
 site_state: true
 
 # Mermaid 流程图与架构图
