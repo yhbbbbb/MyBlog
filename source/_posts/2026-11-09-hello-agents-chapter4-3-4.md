@@ -15,7 +15,9 @@ series: hello-agents
 description: 学习 Hello-Agents 第四章 4.3 Plan-and-Solve 与 4.4 Reflection，记录规划执行、短期记忆、代码优化和三种 Agent 范式的取舍。
 ---
 
-> ReAct 解决“边观察边行动”，Plan-and-Solve 解决“先想清楚再执行”，Reflection 解决“做完以后再检查并改进”。
+{% cq %}
+ReAct 解决“边观察边行动”，Plan-and-Solve 解决“先想清楚再执行”，Reflection 解决“做完以后再检查并改进”。
+{% endcq %}
 
 ## 开篇：为什么还需要另外两种范式
 
