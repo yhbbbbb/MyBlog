@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="记录 Hello-Agents 工具基类、注册表、自定义计算器、多源搜索、工具链与异步执行器的实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hello-Agents 第七章（三）：工具系统、搜索整合与异步执行">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-tools/index.html">
+<meta property="og:site_name" content="yhbbbbb">
+<meta property="og:description" content="记录 Hello-Agents 工具基类、注册表、自定义计算器、多源搜索、工具链与异步执行器的实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-11-13T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-13T04:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Hello-Agents">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="RAG">
+<meta property="article:tag" content="Tool">
+<meta property="article:tag" content="异步编程">
+<meta property="article:tag" content="搜索">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-tools/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-tools/","path":"2026/11/13/hello-agents-chapter7-tools/","title":"Hello-Agents 第七章（三）：工具系统、搜索整合与异步执行"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Hello-Agents 第七章（三）：工具系统、搜索整合与异步执行 | yhbbbbb</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","display_overflow":"scroll","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-mml-chtml.js","integrity":"sha256-ihPtDDm7pTmSF9ViEsItlvsrBTsNkz0MOXMchzOwCQw="}}</script>
+<script src="/MyBlog/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">yhbbbbb</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E7%BB%9F%E4%B8%80%E5%B7%A5%E5%85%B7%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.</span> <span class="nav-text">一、为什么需要统一工具系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81BaseTool-%E5%92%8C-ToolRegistry"><span class="nav-number">2.</span> <span class="nav-text">二、BaseTool 和 ToolRegistry</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BB%8E-AST-%E5%AE%89%E5%85%A8%E5%AE%9E%E7%8E%B0%E8%AE%A1%E7%AE%97%E5%99%A8"><span class="nav-number">3.</span> <span class="nav-text">三、从 AST 安全实现计算器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%A4%9A%E6%BA%90%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7"><span class="nav-number">4.</span> <span class="nav-text">四、多源搜索工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%B7%A5%E5%85%B7%E9%93%BE%EF%BC%9A%E6%8A%8A%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7%E4%B8%B2%E8%B5%B7%E6%9D%A5"><span class="nav-number">5.</span> <span class="nav-text">五、工具链：把三个工具串起来</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%BC%82%E6%AD%A5%E5%B7%A5%E5%85%B7%E6%89%A7%E8%A1%8C%E5%99%A8"><span class="nav-number">6.</span> <span class="nav-text">六、异步工具执行器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E5%B9%B6%E8%A1%8C%E6%9C%89%E6%94%B6%E7%9B%8A"><span class="nav-number">6.1.</span> <span class="nav-text">6.1 什么时候并行有收益</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B7%A5%E5%85%B7%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%AE%89%E5%85%A8%E8%BE%B9%E7%95%8C"><span class="nav-number">7.</span> <span class="nav-text">七、工具系统的安全边界</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E8%BF%99%E4%B8%80%E7%AF%87%E7%9A%84%E5%9B%9E%E9%A1%BE"><span class="nav-number">8.</span> <span class="nav-text">八、这一篇的回顾</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">9.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:23hbyao@gmail.com" title="Google Email → mailto:23hbyao@gmail.com" rel="noopener me" target="_blank"><i class="fab fa-google fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-tools/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yhbbbbb">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Hello-Agents 第七章（三）：工具系统、搜索整合与异步执行 | yhbbbbb">
+      <meta itemprop="description" content="记录 Hello-Agents 工具基类、注册表、自定义计算器、多源搜索、工具链与异步执行器的实现。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hello-Agents 第七章（三）：工具系统、搜索整合与异步执行
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-11-13 12:00:00" itemprop="dateCreated datePublished" datetime="2026-11-13T12:00:00+08:00">2026-11-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">记录 Hello-Agents 工具基类、注册表、自定义计算器、多源搜索、工具链与异步执行器的实现。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote class="blockquote-center">
+<p>Agent 的能力边界，不由提示词决定，而由它被允许调用哪些工具决定。</p>
+
+</blockquote>
+
+<h2 id="一、为什么需要统一工具系统"><a href="#一、为什么需要统一工具系统" class="headerlink" title="一、为什么需要统一工具系统"></a>一、为什么需要统一工具系统</h2><p>模型只能生成文本，真正访问外部世界要依靠工具：</p>
+<ul>
+<li>查询数据库。</li>
+<li>调用搜索引擎。</li>
+<li>读写文件。</li>
+<li>执行计算。</li>
+<li>调用企业内部 API。</li>
+</ul>
+<p>如果每个 Agent 都直接 import 某个函数，工具会和 Agent 强耦合，后续很难替换。第七章的工具系统用三个对象解决这个问题：</p>
+<ol>
+<li>BaseTool：统一工具接口。</li>
+<li>ToolRegistry：工具注册、查询和执行。</li>
+<li>ToolChain：把多个工具串成可复用流程。</li>
+</ol>
+<h2 id="二、BaseTool-和-ToolRegistry"><a href="#二、BaseTool-和-ToolRegistry" class="headerlink" title="二、BaseTool 和 ToolRegistry"></a>二、BaseTool 和 ToolRegistry</h2><p>所有工具都应该统一为“输入一个参数，返回一个结果”的可执行对象。即使底层返回多个字段，也应该在工具内部转换为字典或 JSON 字符串。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> abc <span class="keyword">import</span> ABC, abstractmethod</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Any</span>, <span class="type">Callable</span>, <span class="type">Dict</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">BaseTool</span>(<span class="title class_ inherited__">ABC</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;工具的最小公共接口。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># name 用于模型选择工具，description 会被拼进系统提示词。</span></span><br><span class="line">    name: <span class="built_in">str</span></span><br><span class="line">    description: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @abstractmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">execute</span>(<span class="params">self, input_data: <span class="type">Any</span></span>) -&gt; <span class="type">Any</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;执行工具，子类必须实现。&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">raise</span> NotImplementedError</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self, input_data: <span class="type">Any</span></span>) -&gt; <span class="type">Any</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;统一入口，后续可以在这里增加日志和耗时统计。&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 不让调用方直接依赖 execute，便于未来统一增加鉴权、计时和重试。</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.execute(input_data)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">FunctionTool</span>(<span class="title class_ inherited__">BaseTool</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;把普通函数包装成标准工具。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        name: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        description: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        func: <span class="type">Callable</span>[[<span class="type">Any</span>], <span class="type">Any</span>],</span></span><br><span class="line"><span class="params">    </span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = name</span><br><span class="line">        <span class="variable language_">self</span>.description = description</span><br><span class="line">        <span class="variable language_">self</span>.func = func</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">execute</span>(<span class="params">self, input_data: <span class="type">Any</span></span>) -&gt; <span class="type">Any</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.func(input_data)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ToolRegistry</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;管理工具注册、描述和执行。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>._tools: <span class="type">Dict</span>[<span class="built_in">str</span>, BaseTool] = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">register_tool</span>(<span class="params">self, tool: BaseTool</span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="comment"># 同名工具会造成模型选择歧义，所以注册时直接失败。</span></span><br><span class="line">        <span class="keyword">if</span> tool.name <span class="keyword">in</span> <span class="variable language_">self</span>._tools:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">f&quot;工具已存在：<span class="subst">&#123;tool.name&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="variable language_">self</span>._tools[tool.name] = tool</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">register_function</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        name: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        description: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        func: <span class="type">Callable</span>[[<span class="type">Any</span>], <span class="type">Any</span>],</span></span><br><span class="line"><span class="params">    </span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="variable language_">self</span>.register_tool(FunctionTool(name, description, func))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_tool</span>(<span class="params">self, name: <span class="built_in">str</span></span>) -&gt; BaseTool | <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>._tools.get(name)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">unregister</span>(<span class="params">self, name: <span class="built_in">str</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="variable language_">self</span>._tools.pop(name, <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">list_tools</span>(<span class="params">self</span>) -&gt; <span class="built_in">list</span>[<span class="built_in">str</span>]:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">list</span>(<span class="variable language_">self</span>._tools.keys())</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_tools_description</span>(<span class="params">self</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> <span class="variable language_">self</span>._tools:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;暂无可用工具&quot;</span></span><br><span class="line">        <span class="comment"># 描述是给模型看的自然语言；真正执行时仍以工具对象为准。</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;\n&quot;</span>.join(</span><br><span class="line">            <span class="string">f&quot;- <span class="subst">&#123;tool.name&#125;</span>: <span class="subst">&#123;tool.description&#125;</span>&quot;</span></span><br><span class="line">            <span class="keyword">for</span> tool <span class="keyword">in</span> <span class="variable language_">self</span>._tools.values()</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">execute_tool</span>(<span class="params">self, name: <span class="built_in">str</span>, input_data: <span class="type">Any</span></span>) -&gt; <span class="type">Any</span>:</span><br><span class="line">        <span class="comment"># 所有工具调用都经过这一层，便于统一做权限、超时和审计。</span></span><br><span class="line">        tool = <span class="variable language_">self</span>.get_tool(name)</span><br><span class="line">        <span class="keyword">if</span> tool <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">raise</span> KeyError(<span class="string">f&quot;工具不存在：<span class="subst">&#123;name&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> tool.run(input_data)</span><br></pre></td></tr></table></figure>
+
+<p>统一接口的意义在于：Agent 只需要知道工具名、描述和调用方法，不必关心工具是本地函数、远程 API 还是异步服务。</p>
+<p>如果一个工具返回多个值，可以返回结构化字典：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="string">&quot;title&quot;</span>: <span class="string">&quot;结果标题&quot;</span>,</span><br><span class="line">    <span class="string">&quot;summary&quot;</span>: <span class="string">&quot;结果摘要&quot;</span>,</span><br><span class="line">    <span class="string">&quot;url&quot;</span>: <span class="string">&quot;https://example.com&quot;</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>生产代码中还应为结构化结果定义 Pydantic 模型，避免字段名称随意变化。</p>
+<h2 id="三、从-AST-安全实现计算器"><a href="#三、从-AST-安全实现计算器" class="headerlink" title="三、从 AST 安全实现计算器"></a>三、从 AST 安全实现计算器</h2><p>不要直接使用 eval 计算模型生成的表达式。下面的计算器只允许 AST 中出现白名单节点：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># my_calculator_tool.py</span></span><br><span class="line"><span class="keyword">import</span> ast</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> operator</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> hello_agents <span class="keyword">import</span> ToolRegistry</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">my_calculate</span>(<span class="params">expression: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;安全计算基本四则运算和 sqrt。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 先拒绝空输入，避免把格式错误传给 AST 解析器。</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> expression.strip():</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;计算表达式不能为空&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 只登记允许的运算符；未登记的 AST 节点会在求值时被拒绝。</span></span><br><span class="line">    operators = &#123;</span><br><span class="line">        ast.Add: operator.add,</span><br><span class="line">        ast.Sub: operator.sub,</span><br><span class="line">        ast.Mult: operator.mul,</span><br><span class="line">        ast.Div: operator.truediv,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    functions = &#123;</span><br><span class="line">        <span class="string">&quot;sqrt&quot;</span>: math.sqrt,</span><br><span class="line">        <span class="string">&quot;pi&quot;</span>: math.pi,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># mode=&quot;eval&quot; 只允许表达式，不允许执行任意多行 Python 代码。</span></span><br><span class="line">        node = ast.parse(expression, mode=<span class="string">&quot;eval&quot;</span>)</span><br><span class="line">        result = _eval_node(node.body, operators, functions)</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">str</span>(result)</span><br><span class="line">    <span class="keyword">except</span> (SyntaxError, ValueError, TypeError, ZeroDivisionError):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;计算失败，请检查表达式格式&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_eval_node</span>(<span class="params">node, operators, functions</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;递归执行允许的 AST 节点。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 递归求值只接受数字、白名单运算符和白名单函数。</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(node, ast.Constant):</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">isinstance</span>(node.value, (<span class="built_in">int</span>, <span class="built_in">float</span>)):</span><br><span class="line">            <span class="keyword">return</span> node.value</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">&quot;只允许数字常量&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(node, ast.BinOp):</span><br><span class="line">        left = _eval_node(node.left, operators, functions)</span><br><span class="line">        right = _eval_node(node.right, operators, functions)</span><br><span class="line">        operation = operators.get(<span class="built_in">type</span>(node.op))</span><br><span class="line">        <span class="keyword">if</span> operation <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">&quot;不支持的运算符&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> operation(left, right)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(node, ast.Call):</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> <span class="built_in">isinstance</span>(node.func, ast.Name):</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">&quot;不支持的函数调用&quot;</span>)</span><br><span class="line">        function = functions.get(node.func.<span class="built_in">id</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> <span class="built_in">callable</span>(function):</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">&quot;不支持的函数&quot;</span>)</span><br><span class="line">        args = [</span><br><span class="line">            _eval_node(arg, operators, functions)</span><br><span class="line">            <span class="keyword">for</span> arg <span class="keyword">in</span> node.args</span><br><span class="line">        ]</span><br><span class="line">        <span class="keyword">return</span> function(*args)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(node, ast.Name) <span class="keyword">and</span> node.<span class="built_in">id</span> <span class="keyword">in</span> functions:</span><br><span class="line">        <span class="keyword">return</span> functions[node.<span class="built_in">id</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">raise</span> ValueError(<span class="string">&quot;表达式中包含不允许的语法&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create_calculator_registry</span>() -&gt; ToolRegistry:</span><br><span class="line">    registry = ToolRegistry()</span><br><span class="line">    registry.register_function(</span><br><span class="line">        name=<span class="string">&quot;my_calculator&quot;</span>,</span><br><span class="line">        description=<span class="string">&quot;支持 +、-、*、/ 和 sqrt 的安全计算器&quot;</span>,</span><br><span class="line">        func=my_calculate,</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> registry</span><br></pre></td></tr></table></figure>
+
+<p>这里有两个工程要点：</p>
+<ul>
+<li>白名单校验比黑名单过滤更可靠。</li>
+<li>异常应该返回可理解的错误，而不是把完整堆栈直接交给用户。</li>
+</ul>
+<h2 id="四、多源搜索工具"><a href="#四、多源搜索工具" class="headerlink" title="四、多源搜索工具"></a>四、多源搜索工具</h2><p>真实搜索服务有密钥、依赖和网络失败问题，因此工具应该在初始化时探测可用源，在执行时按顺序降级。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># my_advanced_search.py</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Any</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> hello_agents <span class="keyword">import</span> ToolRegistry</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyAdvancedSearchTool</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;整合 Tavily 和 SerpApi 的多源搜索工具。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = <span class="string">&quot;my_advanced_search&quot;</span></span><br><span class="line">        <span class="variable language_">self</span>.description = <span class="string">&quot;整合多个搜索源并自动降级&quot;</span></span><br><span class="line">        <span class="variable language_">self</span>.search_sources: <span class="built_in">list</span>[<span class="built_in">str</span>] = []</span><br><span class="line">        <span class="variable language_">self</span>._setup_search_sources()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_setup_search_sources</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="comment"># 只启用已配置密钥且已安装依赖的搜索源。</span></span><br><span class="line">        <span class="keyword">if</span> os.getenv(<span class="string">&quot;TAVILY_API_KEY&quot;</span>):</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                <span class="keyword">from</span> tavily <span class="keyword">import</span> TavilyClient</span><br><span class="line"></span><br><span class="line">                <span class="variable language_">self</span>.tavily_client = TavilyClient(</span><br><span class="line">                    api_key=os.getenv(<span class="string">&quot;TAVILY_API_KEY&quot;</span>)</span><br><span class="line">                )</span><br><span class="line">                <span class="variable language_">self</span>.search_sources.append(<span class="string">&quot;tavily&quot;</span>)</span><br><span class="line">            <span class="keyword">except</span> ImportError:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;Tavily 库未安装&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> os.getenv(<span class="string">&quot;SERPAPI_API_KEY&quot;</span>):</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                <span class="keyword">import</span> serpapi  <span class="comment"># noqa: F401</span></span><br><span class="line"></span><br><span class="line">                <span class="variable language_">self</span>.search_sources.append(<span class="string">&quot;serpapi&quot;</span>)</span><br><span class="line">            <span class="keyword">except</span> ImportError:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;SerpApi 库未安装&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">search</span>(<span class="params">self, query: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="comment"># 查询为空时不发起任何外部请求，减少无效调用和成本。</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> query.strip():</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;搜索查询不能为空&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> <span class="variable language_">self</span>.search_sources:</span><br><span class="line">            <span class="keyword">return</span> (</span><br><span class="line">                <span class="string">&quot;没有可用的搜索源，请设置 TAVILY_API_KEY &quot;</span></span><br><span class="line">                <span class="string">&quot;或 SERPAPI_API_KEY。&quot;</span></span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 按配置顺序依次尝试，前一个来源失败时自动降级到下一个。</span></span><br><span class="line">        <span class="keyword">for</span> source <span class="keyword">in</span> <span class="variable language_">self</span>.search_sources:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                <span class="keyword">if</span> source == <span class="string">&quot;tavily&quot;</span>:</span><br><span class="line">                    result = <span class="variable language_">self</span>._search_with_tavily(query)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    result = <span class="variable language_">self</span>._search_with_serpapi(query)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> result:</span><br><span class="line">                    <span class="keyword">return</span> result</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> exc:</span><br><span class="line">                <span class="comment"># 一个搜索源失败时继续尝试下一个源。</span></span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;source&#125;</span> 搜索失败：<span class="subst">&#123;exc&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;所有搜索源都失败，请检查网络和 API 密钥。&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_search_with_tavily</span>(<span class="params">self, query: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        response = <span class="variable language_">self</span>.tavily_client.search(query=query, max_results=<span class="number">3</span>)</span><br><span class="line">        output = []</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> response.get(<span class="string">&quot;answer&quot;</span>):</span><br><span class="line">            output.append(<span class="string">f&quot;AI 答案：<span class="subst">&#123;response[<span class="string">&#x27;answer&#x27;</span>]&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> index, item <span class="keyword">in</span> <span class="built_in">enumerate</span>(</span><br><span class="line">            response.get(<span class="string">&quot;results&quot;</span>, [])[:<span class="number">3</span>],</span><br><span class="line">            start=<span class="number">1</span>,</span><br><span class="line">        ):</span><br><span class="line">            output.append(</span><br><span class="line">                <span class="string">f&quot;[<span class="subst">&#123;index&#125;</span>] <span class="subst">&#123;item.get(<span class="string">&#x27;title&#x27;</span>, <span class="string">&#x27;&#x27;</span>)&#125;</span>\n&quot;</span></span><br><span class="line">                <span class="string">f&quot;<span class="subst">&#123;item.get(<span class="string">&#x27;content&#x27;</span>, <span class="string">&#x27;&#x27;</span>)[:<span class="number">150</span>]&#125;</span>&quot;</span></span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;\n\n&quot;</span>.join(output)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_search_with_serpapi</span>(<span class="params">self, query: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="keyword">import</span> serpapi</span><br><span class="line"></span><br><span class="line">        search = serpapi.GoogleSearch(</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">&quot;q&quot;</span>: query,</span><br><span class="line">                <span class="string">&quot;api_key&quot;</span>: os.getenv(<span class="string">&quot;SERPAPI_API_KEY&quot;</span>),</span><br><span class="line">                <span class="string">&quot;num&quot;</span>: <span class="number">3</span>,</span><br><span class="line">            &#125;</span><br><span class="line">        )</span><br><span class="line">        results = search.get_dict()</span><br><span class="line"></span><br><span class="line">        output = []</span><br><span class="line">        <span class="keyword">for</span> index, item <span class="keyword">in</span> <span class="built_in">enumerate</span>(</span><br><span class="line">            results.get(<span class="string">&quot;organic_results&quot;</span>, [])[:<span class="number">3</span>],</span><br><span class="line">            start=<span class="number">1</span>,</span><br><span class="line">        ):</span><br><span class="line">            output.append(</span><br><span class="line">                <span class="string">f&quot;[<span class="subst">&#123;index&#125;</span>] <span class="subst">&#123;item.get(<span class="string">&#x27;title&#x27;</span>, <span class="string">&#x27;&#x27;</span>)&#125;</span>\n&quot;</span></span><br><span class="line">                <span class="string">f&quot;<span class="subst">&#123;item.get(<span class="string">&#x27;snippet&#x27;</span>, <span class="string">&#x27;&#x27;</span>)&#125;</span>&quot;</span></span><br><span class="line">            )</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;\n\n&quot;</span>.join(output)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create_advanced_search_registry</span>() -&gt; ToolRegistry:</span><br><span class="line">    registry = ToolRegistry()</span><br><span class="line">    search_tool = MyAdvancedSearchTool()</span><br><span class="line">    registry.register_function(</span><br><span class="line">        name=<span class="string">&quot;advanced_search&quot;</span>,</span><br><span class="line">        description=<span class="string">&quot;整合 Tavily 和 SerpApi 的多源搜索&quot;</span>,</span><br><span class="line">        func=search_tool.search,</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> registry</span><br></pre></td></tr></table></figure>
+
+<p>多源搜索的价值不只是“多一个 API”，而是把可用性从单点依赖变成故障转移：</p>
+<ul>
+<li>Tavily 失败时尝试 SerpApi。</li>
+<li>没有任何密钥时给出配置提示。</li>
+<li>所有错误都记录来源，便于排障。</li>
+</ul>
+<h2 id="五、工具链：把三个工具串起来"><a href="#五、工具链：把三个工具串起来" class="headerlink" title="五、工具链：把三个工具串起来"></a>五、工具链：把三个工具串起来</h2><p>实际业务中，一个任务经常需要“搜索→抽取→计算”或“读取→转换→写入”。ToolChain 负责保存每一步的输入模板和输出键。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Any</span>, <span class="type">Dict</span>, <span class="type">List</span>, <span class="type">Optional</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> hello_agents <span class="keyword">import</span> ToolRegistry</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ToolChain</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;按顺序执行多个工具。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name: <span class="built_in">str</span>, description: <span class="built_in">str</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = name</span><br><span class="line">        <span class="variable language_">self</span>.description = description</span><br><span class="line">        <span class="variable language_">self</span>.steps: <span class="type">List</span>[<span class="type">Dict</span>[<span class="built_in">str</span>, <span class="type">Any</span>]] = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">add_step</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        tool_name: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        input_template: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        output_key: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    </span>):</span><br><span class="line">        <span class="comment"># output_key 让后续步骤可以通过模板引用当前步骤结果。</span></span><br><span class="line">        <span class="variable language_">self</span>.steps.append(</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">&quot;tool_name&quot;</span>: tool_name,</span><br><span class="line">                <span class="string">&quot;input_template&quot;</span>: input_template,</span><br><span class="line">                <span class="string">&quot;output_key&quot;</span>: output_key</span><br><span class="line">                <span class="keyword">or</span> <span class="string">f&quot;step_<span class="subst">&#123;<span class="built_in">len</span>(self.steps)&#125;</span>_result&quot;</span>,</span><br><span class="line">            &#125;</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">execute</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        registry: ToolRegistry,</span></span><br><span class="line"><span class="params">        initial_input: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        context: <span class="type">Optional</span>[<span class="type">Dict</span>[<span class="built_in">str</span>, <span class="type">Any</span>]] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    </span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="comment"># 复制上下文，避免工具链修改调用方传入的原始字典。</span></span><br><span class="line">        context = <span class="built_in">dict</span>(context <span class="keyword">or</span> &#123;&#125;)</span><br><span class="line">        context[<span class="string">&quot;input&quot;</span>] = initial_input</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 工具链按声明顺序执行；有依赖关系的步骤不能并行。</span></span><br><span class="line">        <span class="keyword">for</span> index, step <span class="keyword">in</span> <span class="built_in">enumerate</span>(<span class="variable language_">self</span>.steps, start=<span class="number">1</span>):</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                tool_input = step[<span class="string">&quot;input_template&quot;</span>].<span class="built_in">format</span>(**context)</span><br><span class="line">            <span class="keyword">except</span> KeyError <span class="keyword">as</span> exc:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">f&quot;第 <span class="subst">&#123;index&#125;</span> 步模板变量不存在：<span class="subst">&#123;exc&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># 每一步都走 Registry，保持和单独调用工具相同的安全边界。</span></span><br><span class="line">            result = registry.execute_tool(</span><br><span class="line">                step[<span class="string">&quot;tool_name&quot;</span>],</span><br><span class="line">                tool_input,</span><br><span class="line">            )</span><br><span class="line">            context[step[<span class="string">&quot;output_key&quot;</span>]] = result</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> <span class="variable language_">self</span>.steps:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;工具链没有配置步骤&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> context[<span class="variable language_">self</span>.steps[-<span class="number">1</span>][<span class="string">&quot;output_key&quot;</span>]]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ToolChainManager</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;管理多条可复用工具链。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, registry: ToolRegistry</span>):</span><br><span class="line">        <span class="variable language_">self</span>.registry = registry</span><br><span class="line">        <span class="variable language_">self</span>.chains: <span class="type">Dict</span>[<span class="built_in">str</span>, ToolChain] = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">register_chain</span>(<span class="params">self, chain: ToolChain</span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="variable language_">self</span>.chains[chain.name] = chain</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">execute_chain</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        chain_name: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        input_data: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        context: <span class="type">Optional</span>[<span class="type">Dict</span>[<span class="built_in">str</span>, <span class="type">Any</span>]] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    </span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="keyword">if</span> chain_name <span class="keyword">not</span> <span class="keyword">in</span> <span class="variable language_">self</span>.chains:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">f&quot;工具链不存在：<span class="subst">&#123;chain_name&#125;</span>&quot;</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.chains[chain_name].execute(</span><br><span class="line">            <span class="variable language_">self</span>.registry,</span><br><span class="line">            input_data,</span><br><span class="line">            context,</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create_research_chain</span>() -&gt; ToolChain:</span><br><span class="line">    chain = ToolChain(</span><br><span class="line">        name=<span class="string">&quot;research_and_calculate&quot;</span>,</span><br><span class="line">        description=<span class="string">&quot;搜索、计算、总结&quot;</span>,</span><br><span class="line">    )</span><br><span class="line">    chain.add_step(<span class="string">&quot;advanced_search&quot;</span>, <span class="string">&quot;&#123;input&#125;&quot;</span>, <span class="string">&quot;search_result&quot;</span>)</span><br><span class="line">    chain.add_step(</span><br><span class="line">        <span class="string">&quot;my_calculator&quot;</span>,</span><br><span class="line">        <span class="string">&quot;2 + 2&quot;</span>,</span><br><span class="line">        <span class="string">&quot;calculation_result&quot;</span>,</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> chain</span><br></pre></td></tr></table></figure>
+
+<p>工具链的三个关键设计点：</p>
+<ol>
+<li>模板变量必须在运行时校验。</li>
+<li>每一步要保存输入、输出和耗时。</li>
+<li>中间结果要可重放，失败时才能从失败步骤继续。</li>
+</ol>
+<h2 id="六、异步工具执行器"><a href="#六、异步工具执行器" class="headerlink" title="六、异步工具执行器"></a>六、异步工具执行器</h2><p>独立的搜索和计算任务之间没有数据依赖时，可以并行执行。线程池适合等待网络 I&#x2F;O 的工具；如果是纯 CPU 计算，应该考虑进程池或专门的计算服务。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">import</span> concurrent.futures</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Dict</span>, <span class="type">List</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> hello_agents <span class="keyword">import</span> ToolRegistry</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AsyncToolExecutor</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;在线程池中并行执行阻塞型工具。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, registry: ToolRegistry, max_workers: <span class="built_in">int</span> = <span class="number">4</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>.registry = registry</span><br><span class="line">        <span class="variable language_">self</span>.executor = concurrent.futures.ThreadPoolExecutor(</span><br><span class="line">            max_workers=max_workers</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">execute_tool_async</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        tool_name: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        input_data: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">    </span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="comment"># 获取当前事件循环，把同步阻塞工具交给线程池执行。</span></span><br><span class="line">        loop = asyncio.get_running_loop()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">call_tool</span>():</span><br><span class="line">            <span class="keyword">return</span> <span class="variable language_">self</span>.registry.execute_tool(tool_name, input_data)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># await 只等待结果，不会阻塞其他异步任务继续发起请求。</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">await</span> loop.run_in_executor(</span><br><span class="line">            <span class="variable language_">self</span>.executor,</span><br><span class="line">            call_tool,</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">execute_tools_parallel</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        tasks: <span class="type">List</span>[<span class="type">Dict</span>[<span class="built_in">str</span>, <span class="built_in">str</span>]],</span></span><br><span class="line"><span class="params">    </span>) -&gt; <span class="type">List</span>[<span class="built_in">str</span>]:</span><br><span class="line">        <span class="comment"># 先创建所有协程，再用 gather 并行等待它们完成。</span></span><br><span class="line">        coroutines = [</span><br><span class="line">            <span class="variable language_">self</span>.execute_tool_async(</span><br><span class="line">                task[<span class="string">&quot;tool_name&quot;</span>],</span><br><span class="line">                task[<span class="string">&quot;input_data&quot;</span>],</span><br><span class="line">            )</span><br><span class="line">            <span class="keyword">for</span> task <span class="keyword">in</span> tasks</span><br><span class="line">        ]</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">await</span> asyncio.gather(*coroutines)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">close</span>(<span class="params">self</span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="variable language_">self</span>.executor.shutdown(wait=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    registry = ToolRegistry()</span><br><span class="line">    executor = AsyncToolExecutor(registry, max_workers=<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">    tasks = [</span><br><span class="line">        &#123;<span class="string">&quot;tool_name&quot;</span>: <span class="string">&quot;advanced_search&quot;</span>, <span class="string">&quot;input_data&quot;</span>: <span class="string">&quot;Python 历史&quot;</span>&#125;,</span><br><span class="line">        &#123;<span class="string">&quot;tool_name&quot;</span>: <span class="string">&quot;advanced_search&quot;</span>, <span class="string">&quot;input_data&quot;</span>: <span class="string">&quot;机器学习趋势&quot;</span>&#125;,</span><br><span class="line">        &#123;<span class="string">&quot;tool_name&quot;</span>: <span class="string">&quot;my_calculator&quot;</span>, <span class="string">&quot;input_data&quot;</span>: <span class="string">&quot;2 + 2&quot;</span>&#125;,</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        results = <span class="keyword">await</span> executor.execute_tools_parallel(tasks)</span><br><span class="line">        <span class="keyword">for</span> index, result <span class="keyword">in</span> <span class="built_in">enumerate</span>(results, start=<span class="number">1</span>):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;任务 <span class="subst">&#123;index&#125;</span>：<span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        <span class="comment"># 无论任务成功还是失败，都要释放线程池资源。</span></span><br><span class="line">        executor.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    asyncio.run(main())</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-1-什么时候并行有收益"><a href="#6-1-什么时候并行有收益" class="headerlink" title="6.1 什么时候并行有收益"></a>6.1 什么时候并行有收益</h3><p>设三个独立网络请求耗时分别是 2 秒、3 秒和 4 秒：</p>
+<ul>
+<li>串行执行约 9 秒。</li>
+<li>并行执行约等于最长请求耗时，再加上调度开销，约 4 秒。</li>
+</ul>
+<p>但如果第二个工具必须使用第一个工具的输出，就不能并行。并行前要先画出依赖图：</p>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+    A[&quot;🔵 用户问题&quot;] --&gt; B[&quot;🟣 查询拆分&quot;]
+    B --&gt; C[&quot;🍑 搜索源 A&quot;]
+    B --&gt; D[&quot;🍑 搜索源 B&quot;]
+    B --&gt; E[&quot;🍑 数据库查询&quot;]
+    C --&gt; F[&quot;🟡 结果合并&quot;]
+    D --&gt; F
+    E --&gt; F
+    F --&gt; G[&quot;🟢 统一回答&quot;]
+</code>
+</pre>
+
+<h2 id="七、工具系统的安全边界"><a href="#七、工具系统的安全边界" class="headerlink" title="七、工具系统的安全边界"></a>七、工具系统的安全边界</h2><p>工具是 Agent 接触真实系统的入口，至少要增加：</p>
+<ul>
+<li>参数白名单和类型校验。</li>
+<li>超时、重试和熔断。</li>
+<li>文件路径限制。</li>
+<li>数据库只读权限。</li>
+<li>外部请求域名白名单。</li>
+<li>完整的调用日志和 trace_id。</li>
+<li>高风险动作的人类确认。</li>
+</ul>
+<p>模型可以提出“删除文件”的建议，但是否真的执行，必须由权限层和业务规则决定。</p>
+<h2 id="八、这一篇的回顾"><a href="#八、这一篇的回顾" class="headerlink" title="八、这一篇的回顾"></a>八、这一篇的回顾</h2><p>工具系统的核心不是工具数量，而是稳定边界：</p>
+<ul>
+<li>BaseTool 统一行为。</li>
+<li>Registry 统一发现和执行。</li>
+<li>ToolChain 统一组合步骤。</li>
+<li>AsyncToolExecutor 统一并发。</li>
+<li>权限、超时和日志必须由程序控制。</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li>Datawhale《Hello-Agents》第七章：工具系统</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jjyaoao/helloagents">HelloAgents GitHub</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.tavily.com/">Tavily 官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://serpapi.com/">SerpApi 官方文档</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/RAG/" rel="tag"># RAG</a>
+              <a href="/MyBlog/tags/Hello-Agents/" rel="tag"># Hello-Agents</a>
+              <a href="/MyBlog/tags/Tool/" rel="tag"># Tool</a>
+              <a href="/MyBlog/tags/%E6%90%9C%E7%B4%A2/" rel="tag"># 搜索</a>
+              <a href="/MyBlog/tags/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/" rel="tag"># 异步编程</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/13/hello-agents-chapter7-core-and-agents/" rel="prev" title="Hello-Agents 第七章（二）：核心接口与四种 Agent 范式">
+                  <i class="fa fa-angle-left"></i> Hello-Agents 第七章（二）：核心接口与四种 Agent 范式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/13/hello-agents-chapter7-exercises/" rel="next" title="Hello-Agents 第七章（四）：全章总结与课后习题详解">
+                  Hello-Agents 第七章（四）：全章总结与课后习题详解 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

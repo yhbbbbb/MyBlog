@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="学习 Hello-Agents 第四章 4.3 Plan-and-Solve 与 4.4 Reflection，记录规划执行、短期记忆、代码优化和三种 Agent 范式的取舍。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hello-Agents 第四章 4.3-4.4 学习笔记：Plan-and-Solve 与 Reflection">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/11/09/hello-agents-chapter4-3-4/index.html">
+<meta property="og:site_name" content="yhbbbbb">
+<meta property="og:description" content="学习 Hello-Agents 第四章 4.3 Plan-and-Solve 与 4.4 Reflection，记录规划执行、短期记忆、代码优化和三种 Agent 范式的取舍。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-11-09T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-09T02:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="Hello-Agents">
+<meta property="article:tag" content="Plan-and-Solve">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Reflection">
+<meta property="article:tag" content="学习笔记">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/11/09/hello-agents-chapter4-3-4/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/11/09/hello-agents-chapter4-3-4/","path":"2026/11/09/hello-agents-chapter4-3-4/","title":"Hello-Agents 第四章 4.3-4.4 学习笔记：Plan-and-Solve 与 Reflection"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Hello-Agents 第四章 4.3-4.4 学习笔记：Plan-and-Solve 与 Reflection | yhbbbbb</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","display_overflow":"scroll","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-mml-chtml.js","integrity":"sha256-ihPtDDm7pTmSF9ViEsItlvsrBTsNkz0MOXMchzOwCQw="}}</script>
+<script src="/MyBlog/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">yhbbbbb</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E7%AF%87%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%98%E9%9C%80%E8%A6%81%E5%8F%A6%E5%A4%96%E4%B8%A4%E7%A7%8D%E8%8C%83%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">开篇：为什么还需要另外两种范式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%814-3-Plan-and-Solve%EF%BC%9A%E5%85%88%E8%A7%84%E5%88%92%EF%BC%8C%E5%90%8E%E6%89%A7%E8%A1%8C"><span class="nav-number">2.</span> <span class="nav-text">一、4.3 Plan-and-Solve：先规划，后执行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">1. 工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%A7%84%E5%88%92%E9%98%B6%E6%AE%B5%EF%BC%9A%E8%BE%93%E5%87%BA%E5%8F%AF%E4%BB%A5%E8%A7%A3%E6%9E%90%E7%9A%84%E5%88%97%E8%A1%A8"><span class="nav-number">2.2.</span> <span class="nav-text">2. 规划阶段：输出可以解析的列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%89%A7%E8%A1%8C%E9%98%B6%E6%AE%B5%EF%BC%9A%E7%BB%B4%E6%8A%A4%E6%AD%A5%E9%AA%A4%E7%BB%93%E6%9E%9C"><span class="nav-number">2.3.</span> <span class="nav-text">3. 执行阶段：维护步骤结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%BB%84%E5%90%88%E6%88%90%E5%AE%8C%E6%95%B4-Agent"><span class="nav-number">2.4.</span> <span class="nav-text">4. 组合成完整 Agent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF%E4%B8%8E%E5%B1%80%E9%99%90"><span class="nav-number">2.5.</span> <span class="nav-text">5. 适用场景与局限</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%814-4-Reflection%EF%BC%9A%E8%AE%A9-Agent-%E6%A3%80%E6%9F%A5%E5%B9%B6%E6%94%B9%E8%BF%9B%E8%87%AA%E5%B7%B1"><span class="nav-number">3.</span> <span class="nav-text">二、4.4 Reflection：让 Agent 检查并改进自己</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3"><span class="nav-number">3.1.</span> <span class="nav-text">1. 核心思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9F%AD%E6%9C%9F%E8%AE%B0%E5%BF%86%EF%BC%9A%E4%BF%9D%E5%AD%98%E6%89%A7%E8%A1%8C%E4%B8%8E%E5%8F%8D%E6%80%9D%E8%BD%A8%E8%BF%B9"><span class="nav-number">3.2.</span> <span class="nav-text">2. 短期记忆：保存执行与反思轨迹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%89%E7%B1%BB%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="nav-number">3.3.</span> <span class="nav-text">3. 三类提示词</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Reflection-Agent-%E7%9A%84%E5%AE%8C%E6%95%B4%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.4.</span> <span class="nav-text">4. Reflection Agent 的完整实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E8%BF%90%E8%A1%8C%E6%A1%88%E4%BE%8B%EF%BC%9A%E4%BC%98%E5%8C%96%E7%B4%A0%E6%95%B0%E5%87%BD%E6%95%B0"><span class="nav-number">3.5.</span> <span class="nav-text">5. 运行案例：优化素数函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E6%88%90%E6%9C%AC%E3%80%81%E6%94%B6%E7%9B%8A%E4%B8%8E%E8%BE%B9%E7%95%8C"><span class="nav-number">3.6.</span> <span class="nav-text">6. 成本、收益与边界</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%B8%89%E7%A7%8D%E8%8C%83%E5%BC%8F%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9"><span class="nav-number">4.</span> <span class="nav-text">三、三种范式如何选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%AC%AC%E5%9B%9B%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">四、第四章小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:23hbyao@gmail.com" title="Google Email → mailto:23hbyao@gmail.com" rel="noopener me" target="_blank"><i class="fab fa-google fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/11/09/hello-agents-chapter4-3-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yhbbbbb">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Hello-Agents 第四章 4.3-4.4 学习笔记：Plan-and-Solve 与 Reflection | yhbbbbb">
+      <meta itemprop="description" content="学习 Hello-Agents 第四章 4.3 Plan-and-Solve 与 4.4 Reflection，记录规划执行、短期记忆、代码优化和三种 Agent 范式的取舍。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hello-Agents 第四章 4.3-4.4 学习笔记：Plan-and-Solve 与 Reflection
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-11-09 10:00:00" itemprop="dateCreated datePublished" datetime="2026-11-09T10:00:00+08:00">2026-11-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/AI-Agent/" itemprop="url" rel="index"><span itemprop="name">AI Agent</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">学习 Hello-Agents 第四章 4.3 Plan-and-Solve 与 4.4 Reflection，记录规划执行、短期记忆、代码优化和三种 Agent 范式的取舍。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote class="blockquote-center">
+<p>ReAct 解决“边观察边行动”，Plan-and-Solve 解决“先想清楚再执行”，Reflection 解决“做完以后再检查并改进”。</p>
+
+</blockquote>
+
+<h2 id="开篇：为什么还需要另外两种范式"><a href="#开篇：为什么还需要另外两种范式" class="headerlink" title="开篇：为什么还需要另外两种范式"></a>开篇：为什么还需要另外两种范式</h2><p>在 4.1 和 4.2 中，我实现了一个能调用搜索工具的 ReAct Agent。它会根据当前的 <code>Observation</code> 决定下一步动作，适合信息不完整、需要动态探索的任务。</p>
+<p>但 ReAct 并不是所有问题的最佳答案：如果任务的步骤可以提前拆清楚，边走边想会增加不必要的随机性；如果任务已经有一个初稿，仅仅得到结果也不够，还需要检查质量、发现问题并继续修改。</p>
+<p>因此，第四章继续介绍两种互补的范式：</p>
+<ul>
+<li><strong>Plan-and-Solve</strong>：先由规划器生成完整计划，再由执行器逐步完成。</li>
+<li><strong>Reflection</strong>：先生成初稿，再让评审角色反思，最后根据反馈优化，循环直到满足停止条件。</li>
+</ul>
+<h2 id="一、4-3-Plan-and-Solve：先规划，后执行"><a href="#一、4-3-Plan-and-Solve：先规划，后执行" class="headerlink" title="一、4.3 Plan-and-Solve：先规划，后执行"></a>一、4.3 Plan-and-Solve：先规划，后执行</h2><h3 id="1-工作原理"><a href="#1-工作原理" class="headerlink" title="1. 工作原理"></a>1. 工作原理</h3><p>Plan-and-Solve 将任务拆成两个阶段。规划阶段接收原始问题，输出结构化的步骤列表；执行阶段逐一完成步骤，并把前面步骤的结果作为后续上下文。</p>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+    Q[&quot;🔵 用户问题&quot;] --&gt; P[&quot;🟣 Planner&lt;br&gt;拆解任务&quot;]
+    P --&gt; L[&quot;🟡 结构化计划&lt;br&gt;步骤1...步骤 n&quot;]
+    L --&gt; E[&quot;🍑 Executor&lt;br&gt;按顺序执行&quot;]
+    E --&gt; H[&quot;🟢 历史结果&lt;br&gt;作为上下文&quot;]
+    H --&gt; E
+    E --&gt; A[&quot;🟢 最终答案&quot;]
+    style Q fill:#C7CEEA,stroke:#9FA8DA,stroke-width:2px,color:#333
+    style P fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
+    style L fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
+    style E fill:#FFDAB9,stroke:#FFB74D,stroke-width:2px,color:#333
+    style H fill:#C7CEEA,stroke:#9FA8DA,stroke-width:2px,color:#333
+    style A fill:#B5EAD7,stroke:#80CBC4,stroke-width:2px,color:#333
+</code>
+</pre>
+
+<p>规划器和执行器的职责必须分开。规划器关注“需要哪些步骤”，不急着回答问题；执行器关注“当前步骤怎么完成”，不需要也不应该重新安排整套计划。这个边界让代码更容易测试，也方便以后替换模型或增加动态重规划。</p>
+<h3 id="2-规划阶段：输出可以解析的列表"><a href="#2-规划阶段：输出可以解析的列表" class="headerlink" title="2. 规划阶段：输出可以解析的列表"></a>2. 规划阶段：输出可以解析的列表</h3><p>课程示例要求模型把计划放进 <code>```python</code> 代码围栏中，再用 <code>ast.literal_eval()</code> 将字符串安全地解析成 Python 列表。这里的 <code>literal_eval</code> 只解析字面量，不会像 <code>eval</code> 一样执行任意代码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> ast</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Any</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">PLANNER_PROMPT_TEMPLATE = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">你是一位 AI 规划专家。请把用户的问题拆分成多个独立、可执行、顺序合理的步骤。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">用户问题：</span></span><br><span class="line"><span class="string">&#123;question&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">请严格输出 Python 列表，必须放在 ```python 和 ``` 之间，例如：</span></span><br><span class="line"><span class="string">```python</span></span><br><span class="line"><span class="string">[&quot;步骤1&quot;, &quot;步骤2&quot;, &quot;步骤3&quot;]</span></span><br><span class="line"><span class="string">```</span></span><br><span class="line"><span class="string">不要输出列表以外的解释。</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Planner</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;调用 LLM 生成结构化执行计划。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, llm_client: <span class="type">Any</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="variable language_">self</span>.llm_client = llm_client</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">plan</span>(<span class="params">self, question: <span class="built_in">str</span></span>) -&gt; <span class="built_in">list</span>[<span class="built_in">str</span>]:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;生成计划；格式不正确时返回空列表。&quot;&quot;&quot;</span></span><br><span class="line">        prompt = PLANNER_PROMPT_TEMPLATE.<span class="built_in">format</span>(question=question)</span><br><span class="line">        response = <span class="variable language_">self</span>.llm_client.think(</span><br><span class="line">            [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: prompt&#125;]</span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> response:</span><br><span class="line">            <span class="keyword">return</span> []</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 只取代码围栏中的内容，避免把模型的解释文字传给解析器。</span></span><br><span class="line">            plan_text = response.split(<span class="string">&quot;```python&quot;</span>, <span class="number">1</span>)[<span class="number">1</span>]</span><br><span class="line">            plan_text = plan_text.split(<span class="string">&quot;```&quot;</span>, <span class="number">1</span>)[<span class="number">0</span>].strip()</span><br><span class="line">            plan = ast.literal_eval(plan_text)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 不仅要检查外层是列表，还要检查每一步确实是字符串。</span></span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">isinstance</span>(plan, <span class="built_in">list</span>) <span class="keyword">and</span> <span class="built_in">all</span>(</span><br><span class="line">                <span class="built_in">isinstance</span>(step, <span class="built_in">str</span>) <span class="keyword">and</span> step.strip() <span class="keyword">for</span> step <span class="keyword">in</span> plan</span><br><span class="line">            ):</span><br><span class="line">                <span class="keyword">return</span> plan</span><br><span class="line">        <span class="keyword">except</span> (SyntaxError, ValueError, IndexError) <span class="keyword">as</span> exc:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;计划解析失败：<span class="subst">&#123;exc&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> []</span><br></pre></td></tr></table></figure>
+
+<p>这里的关键不是“让模型输出 Python”，而是<strong>让模型输出一种宿主程序可以验证的协议</strong>。生产环境可以把列表替换成 JSON Schema 或 Pydantic 模型，减少代码围栏、单引号和额外解释导致的解析失败。</p>
+<h3 id="3-执行阶段：维护步骤结果"><a href="#3-执行阶段：维护步骤结果" class="headerlink" title="3. 执行阶段：维护步骤结果"></a>3. 执行阶段：维护步骤结果</h3><p>执行器每完成一个步骤，就把当前步骤和结果写入 <code>history</code>。下一步的 Prompt 可以看到之前发生了什么，因此不会把每个子任务当成互不相关的问题。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">EXECUTOR_PROMPT_TEMPLATE = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">你是一位 AI 执行专家。请严格按照计划解决当前步骤。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">原始问题：</span></span><br><span class="line"><span class="string">&#123;question&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">完整计划：</span></span><br><span class="line"><span class="string">&#123;plan&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">历史步骤与结果：</span></span><br><span class="line"><span class="string">&#123;history&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">当前步骤：</span></span><br><span class="line"><span class="string">&#123;current_step&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">请只完成当前步骤，并给出清晰、可供下一步使用的结果。</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Executor</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;按顺序执行计划，并保存每一步的结果。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, llm_client: <span class="type">Any</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="variable language_">self</span>.llm_client = llm_client</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">execute</span>(<span class="params">self, question: <span class="built_in">str</span>, plan: <span class="built_in">list</span>[<span class="built_in">str</span>]</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        history: <span class="built_in">list</span>[<span class="built_in">str</span>] = []</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> index, current_step <span class="keyword">in</span> <span class="built_in">enumerate</span>(plan, start=<span class="number">1</span>):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;\n-&gt; 正在执行步骤 <span class="subst">&#123;index&#125;</span>/<span class="subst">&#123;<span class="built_in">len</span>(plan)&#125;</span>：<span class="subst">&#123;current_step&#125;</span>&quot;</span>)</span><br><span class="line">            prompt = EXECUTOR_PROMPT_TEMPLATE.<span class="built_in">format</span>(</span><br><span class="line">                question=question,</span><br><span class="line">                plan=<span class="string">&quot;\n&quot;</span>.join(</span><br><span class="line">                    <span class="string">f&quot;<span class="subst">&#123;i&#125;</span>. <span class="subst">&#123;step&#125;</span>&quot;</span> <span class="keyword">for</span> i, step <span class="keyword">in</span> <span class="built_in">enumerate</span>(plan, start=<span class="number">1</span>)</span><br><span class="line">                ),</span><br><span class="line">                history=<span class="string">&quot;\n&quot;</span>.join(history) <span class="keyword">or</span> <span class="string">&quot;（这是第一步，暂无历史结果）&quot;</span>,</span><br><span class="line">                current_step=current_step,</span><br><span class="line">            )</span><br><span class="line">            result = <span class="variable language_">self</span>.llm_client.think(</span><br><span class="line">                [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: prompt&#125;]</span><br><span class="line">            )</span><br><span class="line">            result = result <span class="keyword">or</span> <span class="string">&quot;执行失败：模型没有返回结果。&quot;</span></span><br><span class="line">            history.append(<span class="string">f&quot;步骤 <span class="subst">&#123;index&#125;</span>：<span class="subst">&#123;current_step&#125;</span>\n结果：<span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> history[-<span class="number">1</span>] <span class="keyword">if</span> history <span class="keyword">else</span> <span class="string">&quot;没有可执行的步骤。&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-组合成完整-Agent"><a href="#4-组合成完整-Agent" class="headerlink" title="4. 组合成完整 Agent"></a>4. 组合成完整 Agent</h3><p><code>PlanAndSolveAgent</code> 只是协调器：先调用 <code>Planner</code>，校验计划，再调用 <code>Executor</code>。它不把规划细节和执行细节混在一起，体现了“组合优于继承”的设计思路。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">PlanAndSolveAgent</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;先生成计划，再执行计划的 Agent。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, llm_client: <span class="type">Any</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="variable language_">self</span>.planner = Planner(llm_client)</span><br><span class="line">        <span class="variable language_">self</span>.executor = Executor(llm_client)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self, question: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span> | <span class="literal">None</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;\n--- 开始处理问题 ---\n问题：<span class="subst">&#123;question&#125;</span>&quot;</span>)</span><br><span class="line">        plan = <span class="variable language_">self</span>.planner.plan(question)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> plan:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;无法生成有效计划，任务终止。&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;✅ 计划已生成：&quot;</span>)</span><br><span class="line">        <span class="keyword">for</span> index, step <span class="keyword">in</span> <span class="built_in">enumerate</span>(plan, start=<span class="number">1</span>):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;index&#125;</span>. <span class="subst">&#123;step&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        final_answer = <span class="variable language_">self</span>.executor.execute(question, plan)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;\n--- 任务完成 ---\n最终结果：<span class="subst">&#123;final_answer&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> final_answer</span><br></pre></td></tr></table></figure>
+
+<p>例如水果店问题可以被拆成“计算周一销量→计算周二销量→计算周三销量→求三天总量”。每一步结果都进入下一步上下文，最后得到 <code>15 + 30 + 25 = 70</code>。这个例子虽然简单，却能清楚验证规划、状态传递和执行顺序。</p>
+<h3 id="5-适用场景与局限"><a href="#5-适用场景与局限" class="headerlink" title="5. 适用场景与局限"></a>5. 适用场景与局限</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Plan-and-Solve 表现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>结构化</td>
+<td>✅ 先拆步骤，过程清晰</td>
+</tr>
+<tr>
+<td>可预测性</td>
+<td>✅ 执行顺序固定，容易复现</td>
+</tr>
+<tr>
+<td>适用任务</td>
+<td>多步数学题、代码模块设计、固定流程文档生成</td>
+</tr>
+<tr>
+<td>环境变化</td>
+<td>⚠️ 中途出现新信息时，原计划可能过时</td>
+</tr>
+<tr>
+<td>计划错误</td>
+<td>⚠️ 第一步拆错，后续可能沿着错误路线继续</td>
+</tr>
+<tr>
+<td>延迟与成本</td>
+<td>⚠️ 规划阶段额外调用一次模型，步骤多时仍会串行执行</td>
+</tr>
+</tbody></table>
+<p>它适合“可以提前画出蓝图”的任务，不适合每一步都依赖外部反馈、经常改变方向的探索任务。遇到执行失败时，可以在执行器中增加重试或动态重规划，而不是盲目继续原计划。</p>
+<h2 id="二、4-4-Reflection：让-Agent-检查并改进自己"><a href="#二、4-4-Reflection：让-Agent-检查并改进自己" class="headerlink" title="二、4.4 Reflection：让 Agent 检查并改进自己"></a>二、4.4 Reflection：让 Agent 检查并改进自己</h2><h3 id="1-核心思想"><a href="#1-核心思想" class="headerlink" title="1. 核心思想"></a>1. 核心思想</h3><p>Reflection 模仿人类写完初稿后校对、解完题后验算的过程。它把一次性输出改造成一个质量迭代环：先执行得到初稿，再由评审角色指出问题，最后由优化角色修改。</p>
+<pre>
+<code class="mermaid">
+
+flowchart TD
+    T[&quot;🔵 任务&quot;] --&gt; E[&quot;🟣 Execution&lt;br&gt;生成初稿&quot;]
+    E --&gt; M[&quot;🟡 Memory&lt;br&gt;保存尝试&quot;]
+    M --&gt; R[&quot;🍑 Reflection&lt;br&gt;评审反馈&quot;]
+    R --&gt; D{&quot;是否需要改进？&quot;}
+    D --&gt;|&quot;是&quot;| F[&quot;🟣 Refinement&lt;br&gt;根据反馈优化&quot;]
+    F --&gt; M
+    D --&gt;|&quot;否&quot;| A[&quot;🟢 输出最终结果&quot;]
+    M -.-&gt;|&quot;达到最大轮数&quot;| A
+    style T fill:#C7CEEA,stroke:#9FA8DA,stroke-width:2px,color:#333
+    style E fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
+    style M fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
+    style R fill:#FFDAB9,stroke:#FFB74D,stroke-width:2px,color:#333
+    style D fill:#FFF9C4,stroke:#F9A825,stroke-width:2px,color:#333
+    style F fill:#E8D5F5,stroke:#CE93D8,stroke-width:2px,color:#333
+    style A fill:#B5EAD7,stroke:#80CBC4,stroke-width:2px,color:#333
+</code>
+</pre>
+
+<p>Reflection 与 ReAct 的反馈来源不同：ReAct 主要利用工具返回的外部 <code>Observation</code>，Reflection 主要利用评审模型对已有结果的批判。它因此可以发现代码结构、算法复杂度和表达质量等更高层次的问题，但也会增加模型调用次数。</p>
+<h3 id="2-短期记忆：保存执行与反思轨迹"><a href="#2-短期记忆：保存执行与反思轨迹" class="headerlink" title="2. 短期记忆：保存执行与反思轨迹"></a>2. 短期记忆：保存执行与反思轨迹</h3><p>如果每次反思只能看到最新代码，它很难知道之前改过什么。<code>Memory</code> 将每轮执行结果和评审反馈保存成轨迹，并把轨迹序列化后放入下一轮 Prompt。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Any</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Memory</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;保存 Reflection Agent 的短期轨迹。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="variable language_">self</span>.records: <span class="built_in">list</span>[<span class="built_in">dict</span>[<span class="built_in">str</span>, <span class="built_in">str</span>]] = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">add_record</span>(<span class="params">self, record_type: <span class="built_in">str</span>, content: <span class="built_in">str</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;增加一条 execution 或 reflection 记录。&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> record_type <span class="keyword">not</span> <span class="keyword">in</span> &#123;<span class="string">&quot;execution&quot;</span>, <span class="string">&quot;reflection&quot;</span>&#125;:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">&quot;record_type 必须是 execution 或 reflection&quot;</span>)</span><br><span class="line">        <span class="variable language_">self</span>.records.append(&#123;<span class="string">&quot;type&quot;</span>: record_type, <span class="string">&quot;content&quot;</span>: content&#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_trajectory</span>(<span class="params">self</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;把轨迹整理为可嵌入提示词的文本。&quot;&quot;&quot;</span></span><br><span class="line">        parts: <span class="built_in">list</span>[<span class="built_in">str</span>] = []</span><br><span class="line">        <span class="keyword">for</span> record <span class="keyword">in</span> <span class="variable language_">self</span>.records:</span><br><span class="line">            title = <span class="string">&quot;上一轮尝试&quot;</span> <span class="keyword">if</span> record[<span class="string">&quot;type&quot;</span>] == <span class="string">&quot;execution&quot;</span> <span class="keyword">else</span> <span class="string">&quot;评审员反馈&quot;</span></span><br><span class="line">            parts.append(<span class="string">f&quot;--- <span class="subst">&#123;title&#125;</span> ---\n<span class="subst">&#123;record[<span class="string">&#x27;content&#x27;</span>]&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;\n\n&quot;</span>.join(parts) <span class="keyword">or</span> <span class="string">&quot;（暂无历史轨迹）&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_last_execution</span>(<span class="params">self</span>) -&gt; <span class="built_in">str</span> | <span class="literal">None</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;获取最近一次生成的结果。&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">for</span> record <span class="keyword">in</span> <span class="built_in">reversed</span>(<span class="variable language_">self</span>.records):</span><br><span class="line">            <span class="keyword">if</span> record[<span class="string">&quot;type&quot;</span>] == <span class="string">&quot;execution&quot;</span>:</span><br><span class="line">                <span class="keyword">return</span> record[<span class="string">&quot;content&quot;</span>]</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-三类提示词"><a href="#3-三类提示词" class="headerlink" title="3. 三类提示词"></a>3. 三类提示词</h3><p>Reflection 至少需要三个角色提示词：执行者负责生成代码，评审员专门找问题，优化者根据反馈重写代码。角色分离可以减少“自己生成、自己马上说完美”的偏差。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">INITIAL_PROMPT_TEMPLATE = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">你是一位资深 Python 程序员。请完成下面的任务：</span></span><br><span class="line"><span class="string">&#123;task&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">代码必须包含完整函数签名、文档字符串，并遵循 PEP 8。</span></span><br><span class="line"><span class="string">请只输出 Python 代码，不要添加解释。</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">REFLECT_PROMPT_TEMPLATE = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">你是一位严格的代码评审专家和算法工程师。</span></span><br><span class="line"><span class="string">请审查下面的 Python 代码，重点分析正确性、时间复杂度和空间复杂度。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">原始任务：</span></span><br><span class="line"><span class="string">&#123;task&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">待审查代码：</span></span><br><span class="line"><span class="string">```python</span></span><br><span class="line"><span class="string">&#123;code&#125;</span></span><br><span class="line"><span class="string">```</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">请给出具体、可执行的改进建议。如果算法和实现已经足够合理，最后明确写出“无需改进”。</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">REFINE_PROMPT_TEMPLATE = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">你是一位资深 Python 程序员。请根据评审意见优化代码。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">原始任务：</span></span><br><span class="line"><span class="string">&#123;task&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">上一轮代码：</span></span><br><span class="line"><span class="string">```python</span></span><br><span class="line"><span class="string">&#123;code&#125;</span></span><br><span class="line"><span class="string">```</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">评审意见：</span></span><br><span class="line"><span class="string">&#123;feedback&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">请输出完整的优化后 Python 代码，保留函数签名和文档字符串，不要输出额外解释。</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-Reflection-Agent-的完整实现"><a href="#4-Reflection-Agent-的完整实现" class="headerlink" title="4. Reflection Agent 的完整实现"></a>4. Reflection Agent 的完整实现</h3><p>下面的代码把执行、评审、优化和停止条件串起来。它不假设模型一定会收敛，所以同时设置“评审说无需改进”和“达到最大迭代次数”两个出口。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ReflectionAgent</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;通过执行、反思、优化循环提升结果质量。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, llm_client: <span class="type">Any</span>, max_iterations: <span class="built_in">int</span> = <span class="number">3</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="variable language_">self</span>.llm_client = llm_client</span><br><span class="line">        <span class="variable language_">self</span>.max_iterations = max_iterations</span><br><span class="line">        <span class="variable language_">self</span>.memory = Memory()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_ask</span>(<span class="params">self, prompt: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;统一调用 LLM，避免每个阶段重复构造消息格式。&quot;&quot;&quot;</span></span><br><span class="line">        response = <span class="variable language_">self</span>.llm_client.think(</span><br><span class="line">            [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: prompt&#125;]</span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">return</span> response <span class="keyword">or</span> <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self, task: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="comment"># 第一次执行：先得到一个可以被评审的初稿。</span></span><br><span class="line">        code = <span class="variable language_">self</span>._ask(INITIAL_PROMPT_TEMPLATE.<span class="built_in">format</span>(task=task))</span><br><span class="line">        <span class="variable language_">self</span>.memory.add_record(<span class="string">&quot;execution&quot;</span>, code)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> iteration <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="variable language_">self</span>.max_iterations + <span class="number">1</span>):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;\n--- 第 <span class="subst">&#123;iteration&#125;</span> 轮反思 ---&quot;</span>)</span><br><span class="line">            feedback = <span class="variable language_">self</span>._ask(</span><br><span class="line">                REFLECT_PROMPT_TEMPLATE.<span class="built_in">format</span>(task=task, code=code)</span><br><span class="line">            )</span><br><span class="line">            <span class="variable language_">self</span>.memory.add_record(<span class="string">&quot;reflection&quot;</span>, feedback)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;评审反馈：<span class="subst">&#123;feedback&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> <span class="string">&quot;无需改进&quot;</span> <span class="keyword">in</span> feedback:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;✅ 评审认为当前结果无需改进。&quot;</span>)</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># 没有明确反馈时不继续盲目生成，避免把错误放大。</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> feedback.strip():</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;评审没有返回有效反馈，停止迭代。&quot;</span>)</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">            code = <span class="variable language_">self</span>._ask(</span><br><span class="line">                REFINE_PROMPT_TEMPLATE.<span class="built_in">format</span>(</span><br><span class="line">                    task=task,</span><br><span class="line">                    code=code,</span><br><span class="line">                    feedback=feedback,</span><br><span class="line">                )</span><br><span class="line">            )</span><br><span class="line">            <span class="variable language_">self</span>.memory.add_record(<span class="string">&quot;execution&quot;</span>, code)</span><br><span class="line"></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;\n--- 最终结果 ---\n<span class="subst">&#123;code&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> code</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-运行案例：优化素数函数"><a href="#5-运行案例：优化素数函数" class="headerlink" title="5. 运行案例：优化素数函数"></a>5. 运行案例：优化素数函数</h3><p>课程使用“找出 1 到 n 之间所有素数”作为示例。初稿可能逐个数字试除，时间复杂度接近 <code>O(n√n)</code>；评审员指出瓶颈后，优化阶段可以改用埃拉托斯特尼筛法，将复杂度降到 <code>O(n log log n)</code>，空间复杂度为 <code>O(n)</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">task = <span class="string">&quot;编写一个 Python 函数，找出 1 到 n 之间所有的素数。&quot;</span></span><br><span class="line">agent = ReflectionAgent(llm_client, max_iterations=<span class="number">3</span>)</span><br><span class="line">final_code = agent.run(task)</span><br></pre></td></tr></table></figure>
+
+<p>这个例子体现了 Reflection 的三个价值：它不满足于“能运行”，会检查算法效率；它把反馈传给下一轮，而不是重新随机生成；它通过停止条件让迭代最终收敛。</p>
+<h3 id="6-成本、收益与边界"><a href="#6-成本、收益与边界" class="headerlink" title="6. 成本、收益与边界"></a>6. 成本、收益与边界</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Reflection 表现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>结果质量</td>
+<td>✅ 能把功能正确的初稿继续优化</td>
+</tr>
+<tr>
+<td>纠错能力</td>
+<td>✅ 可以发现逻辑、性能和表达问题</td>
+</tr>
+<tr>
+<td>调用成本</td>
+<td>❌ 每轮至少增加评审和优化调用</td>
+</tr>
+<tr>
+<td>总延迟</td>
+<td>❌ 串行循环，轮数越多等待越久</td>
+</tr>
+<tr>
+<td>Prompt 复杂度</td>
+<td>⚠️ 执行、评审、优化需要分别设计和测试</td>
+</tr>
+<tr>
+<td>收敛风险</td>
+<td>⚠️ 评审标准不清时可能反复修改或过度优化</td>
+</tr>
+</tbody></table>
+<p>Reflection 是典型的“用成本换质量”。代码审查、技术报告、研究分析等对质量敏感且不要求秒级返回的任务适合使用；简单问答、实时客服和预算严格的任务应限制迭代轮数，或只在低置信度时触发反思。</p>
+<h2 id="三、三种范式如何选择"><a href="#三、三种范式如何选择" class="headerlink" title="三、三种范式如何选择"></a>三、三种范式如何选择</h2><table>
+<thead>
+<tr>
+<th>范式</th>
+<th>核心循环</th>
+<th>最适合的问题</th>
+<th>主要风险</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ReAct</td>
+<td>Thought → Action → Observation</td>
+<td>需要外部工具和动态探索</td>
+<td>串行调用、格式错误、原地循环</td>
+</tr>
+<tr>
+<td>Plan-and-Solve</td>
+<td>Plan → Solve</td>
+<td>步骤清晰、结构稳定的多步任务</td>
+<td>计划过时，缺少动态调整</td>
+</tr>
+<tr>
+<td>Reflection</td>
+<td>Execute → Reflect → Refine</td>
+<td>初稿可生成但需要质量提升</td>
+<td>成本和延迟增加，可能过度优化</td>
+</tr>
+</tbody></table>
+<p>三种范式也可以组合。例如先用 Plan-and-Solve 生成项目实施计划，再用 ReAct 查询资料和调用工具，最后用 Reflection 审查代码或报告。组合时要明确每个阶段的输入、输出和停止条件，避免多个循环互相嵌套后失去可观测性。</p>
+<h2 id="四、第四章小结"><a href="#四、第四章小结" class="headerlink" title="四、第四章小结"></a>四、第四章小结</h2><p>这一章从零实现了三种 Agent Loop：</p>
+<ol>
+<li><strong>ReAct</strong> 把推理和行动放在同一循环中，通过工具观察结果动态调整。</li>
+<li><strong>Plan-and-Solve</strong> 先生成结构化计划，再按顺序执行，强调过程稳定和步骤传递。</li>
+<li><strong>Reflection</strong> 保存执行轨迹，让评审角色检查初稿，再根据反馈迭代优化，强调结果质量。</li>
+</ol>
+<p>我的理解是，Agent 的“智能”不只来自更大的模型，也来自对循环结构、状态、工具边界和终止条件的设计。选择范式时，先问清楚任务最需要什么：是外部事实、全局规划，还是结果审查；然后只引入解决该问题所需的循环。</p>
+<div class="note primary"><p>复习这章时可以记住三句话：ReAct 是边走边看，Plan-and-Solve 是先画蓝图再施工，Reflection 是交付前复盘并返工。</p>
+</div>
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://datawhalechina.github.io/hello-agents/">Datawhale《Hello-Agents》第四章：智能体经典范式构建</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2210.03629">ReAct: Synergizing Reasoning and Acting in Language Models</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2305.04091">Plan-and-Solve Prompting</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2303.11366">Reflexion: Language Agents with Verbal Reinforcement Learning</a></li>
+</ul>
+<p>本文是个人学习笔记。示例代码用于理解范式原理，真实项目还需要加入超时、重试、结构化输出校验、日志脱敏、权限控制和成本预算。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/Hello-Agents/" rel="tag"># Hello-Agents</a>
+              <a href="/MyBlog/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"># 学习笔记</a>
+              <a href="/MyBlog/tags/Plan-and-Solve/" rel="tag"># Plan-and-Solve</a>
+              <a href="/MyBlog/tags/Reflection/" rel="tag"># Reflection</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/08/hello-agents-chapter4-1-2/" rel="prev" title="Hello-Agents 第四章 4.1-4.2 学习笔记：工具调用与 ReAct 智能体">
+                  <i class="fa fa-angle-left"></i> Hello-Agents 第四章 4.1-4.2 学习笔记：工具调用与 ReAct 智能体
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/10/hello-agents-chapter5/" rel="next" title="Hello-Agents 第五章学习笔记：低代码平台搭建智能体">
+                  Hello-Agents 第五章学习笔记：低代码平台搭建智能体 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

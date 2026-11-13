@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="记录 Message、Config、Agent 基类及 Simple、ReAct、Reflection、Plan-and-Solve 四种 Agent 的框架化实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hello-Agents 第七章（二）：核心接口与四种 Agent 范式">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-core-and-agents/index.html">
+<meta property="og:site_name" content="yhbbbbb">
+<meta property="og:description" content="记录 Message、Config、Agent 基类及 Simple、ReAct、Reflection、Plan-and-Solve 四种 Agent 的框架化实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-11-13T03:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-13T03:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="Hello-Agents">
+<meta property="article:tag" content="Plan-and-Solve">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="ReAct">
+<meta property="article:tag" content="Reflection">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-core-and-agents/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-core-and-agents/","path":"2026/11/13/hello-agents-chapter7-core-and-agents/","title":"Hello-Agents 第七章（二）：核心接口与四种 Agent 范式"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Hello-Agents 第七章（二）：核心接口与四种 Agent 范式 | yhbbbbb</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","display_overflow":"scroll","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-mml-chtml.js","integrity":"sha256-ihPtDDm7pTmSF9ViEsItlvsrBTsNkz0MOXMchzOwCQw="}}</script>
+<script src="/MyBlog/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">yhbbbbb</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E5%85%88%E8%AE%BE%E8%AE%A1%E6%A0%B8%E5%BF%83%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.</span> <span class="nav-text">一、为什么先设计核心接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Message%EF%BC%9A%E6%8A%8A%E5%AF%B9%E8%AF%9D%E6%95%B0%E6%8D%AE%E5%8F%98%E6%88%90%E7%BB%93%E6%9E%84%E5%8C%96%E5%AF%B9%E8%B1%A1"><span class="nav-number">2.</span> <span class="nav-text">二、Message：把对话数据变成结构化对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81Config%EF%BC%9A%E7%BB%9F%E4%B8%80%E7%AE%A1%E7%90%86%E8%BF%90%E8%A1%8C%E5%8F%82%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">三、Config：统一管理运行参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Agent-%E6%8A%BD%E8%B1%A1%E5%9F%BA%E7%B1%BB"><span class="nav-number">4.</span> <span class="nav-text">四、Agent 抽象基类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81SimpleAgent%EF%BC%9A%E6%9C%80%E5%B0%8F%E9%97%AD%E7%8E%AF"><span class="nav-number">5.</span> <span class="nav-text">五、SimpleAgent：最小闭环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81ReActAgent%EF%BC%9A%E6%8E%A8%E7%90%86%E4%B8%8E%E8%A1%8C%E5%8A%A8%E5%BE%AA%E7%8E%AF"><span class="nav-number">6.</span> <span class="nav-text">六、ReActAgent：推理与行动循环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81ReflectionAgent%EF%BC%9A%E6%89%A7%E8%A1%8C%E3%80%81%E5%8F%8D%E6%80%9D%E5%92%8C%E4%BC%98%E5%8C%96"><span class="nav-number">7.</span> <span class="nav-text">七、ReflectionAgent：执行、反思和优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81Plan-and-SolveAgent%EF%BC%9A%E5%85%88%E8%AE%A1%E5%88%92%E5%86%8D%E6%89%A7%E8%A1%8C"><span class="nav-number">8.</span> <span class="nav-text">八、Plan-and-SolveAgent：先计划再执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81FunctionCallAgent%EF%BC%9A%E7%BB%93%E6%9E%84%E5%8C%96%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8"><span class="nav-number">9.</span> <span class="nav-text">九、FunctionCallAgent：结构化工具调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E3%80%81%E5%9B%9B%E7%A7%8D%E8%8C%83%E5%BC%8F%E6%80%8E%E4%B9%88%E9%80%89"><span class="nav-number">10.</span> <span class="nav-text">十、四种范式怎么选</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E5%AE%9E%E8%B7%B5%E6%A3%80%E6%9F%A5"><span class="nav-number">11.</span> <span class="nav-text">十一、实践检查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">12.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:23hbyao@gmail.com" title="Google Email → mailto:23hbyao@gmail.com" rel="noopener me" target="_blank"><i class="fab fa-google fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-core-and-agents/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yhbbbbb">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Hello-Agents 第七章（二）：核心接口与四种 Agent 范式 | yhbbbbb">
+      <meta itemprop="description" content="记录 Message、Config、Agent 基类及 Simple、ReAct、Reflection、Plan-and-Solve 四种 Agent 的框架化实现。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hello-Agents 第七章（二）：核心接口与四种 Agent 范式
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-11-13 11:00:00" itemprop="dateCreated datePublished" datetime="2026-11-13T11:00:00+08:00">2026-11-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">记录 Message、Config、Agent 基类及 Simple、ReAct、Reflection、Plan-and-Solve 四种 Agent 的框架化实现。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote class="blockquote-center">
+<p>把 Agent 写成类，只是形式；真正的框架化，是让每种能力都能被替换、组合和测试。</p>
+
+</blockquote>
+
+<h2 id="一、为什么先设计核心接口"><a href="#一、为什么先设计核心接口" class="headerlink" title="一、为什么先设计核心接口"></a>一、为什么先设计核心接口</h2><p>如果每个 Agent 都自己管理消息、配置和模型调用，代码很快会出现重复：每个类都重复拼接系统提示词，每个类都用不同的字典结构保存历史，每个类都自己读取环境变量，测试时也无法用同一个假模型替换真实模型。</p>
+<p>第七章先实现 Message、Config 和 Agent，目的是让上层 Agent 共享稳定的底座。</p>
+<h2 id="二、Message：把对话数据变成结构化对象"><a href="#二、Message：把对话数据变成结构化对象" class="headerlink" title="二、Message：把对话数据变成结构化对象"></a>二、Message：把对话数据变成结构化对象</h2><p>消息至少要有 content、role、name 和 metadata。使用 Pydantic 的好处是：创建对象时就能验证字段，序列化时也有统一格式。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Any</span>, <span class="type">Dict</span>, <span class="type">Optional</span>, <span class="type">Literal</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel, Field</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 限定角色集合，避免把任意字符串直接传给模型 API。</span></span><br><span class="line">Role = <span class="type">Literal</span>[<span class="string">&quot;system&quot;</span>, <span class="string">&quot;user&quot;</span>, <span class="string">&quot;assistant&quot;</span>, <span class="string">&quot;tool&quot;</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Message</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Agent 内部使用的标准消息对象。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 空内容通常意味着上游拼接或工具返回出了问题，因此直接拒绝。</span></span><br><span class="line">    content: <span class="built_in">str</span> = Field(min_length=<span class="number">1</span>)</span><br><span class="line">    <span class="comment"># role 决定模型如何解释这条消息，是消息协议的核心字段。</span></span><br><span class="line">    role: Role</span><br><span class="line">    <span class="comment"># name 可用于标识具体 Agent 或工具，便于多 Agent 日志追踪。</span></span><br><span class="line">    name: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span></span><br><span class="line">    <span class="comment"># metadata 不参与模型正文，但可保存 trace_id、耗时和工具版本。</span></span><br><span class="line">    metadata: <span class="type">Dict</span>[<span class="built_in">str</span>, <span class="type">Any</span>] = Field(default_factory=<span class="built_in">dict</span>)</span><br><span class="line">    <span class="comment"># 创建时间用于审计和调试，不依赖模型返回内容。</span></span><br><span class="line">    created_at: datetime = Field(default_factory=datetime.now)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">to_openai</span>(<span class="params">self</span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;转换成 OpenAI 兼容的字典格式。&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 只转换模型 API 需要的字段，内部 metadata 不直接泄露给模型。</span></span><br><span class="line">        data = &#123;</span><br><span class="line">            <span class="string">&quot;role&quot;</span>: <span class="variable language_">self</span>.role,</span><br><span class="line">            <span class="string">&quot;content&quot;</span>: <span class="variable language_">self</span>.content,</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.name:</span><br><span class="line">            data[<span class="string">&quot;name&quot;</span>] = <span class="variable language_">self</span>.name</span><br><span class="line">        <span class="keyword">return</span> data</span><br></pre></td></tr></table></figure>
+
+<p>结构化消息比直接使用字典更容易发现错误。例如把 role 写成不支持的值时，Pydantic 可以阻止非法数据进入模型调用层。</p>
+<h2 id="三、Config：统一管理运行参数"><a href="#三、Config：统一管理运行参数" class="headerlink" title="三、Config：统一管理运行参数"></a>三、Config：统一管理运行参数</h2><p>配置对象集中管理模型名、温度、最大 Token、最大循环次数和工具超时等参数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Optional</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel, Field</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Config</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;HelloAgents 的运行配置。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 默认模型从环境变量读取，便于在不同环境切换而不改代码。</span></span><br><span class="line">    model: <span class="built_in">str</span> = Field(</span><br><span class="line">        default_factory=<span class="keyword">lambda</span>: os.getenv(<span class="string">&quot;LLM_MODEL_ID&quot;</span>, <span class="string">&quot;gpt-4o-mini&quot;</span>)</span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># temperature 控制随机性；工具调用场景通常应设置得更低。</span></span><br><span class="line">    temperature: <span class="built_in">float</span> = <span class="number">0.7</span></span><br><span class="line">    max_tokens: <span class="type">Optional</span>[<span class="built_in">int</span>] = <span class="literal">None</span></span><br><span class="line">    <span class="comment"># max_steps 是所有循环型 Agent 的保险丝，防止无限调用模型。</span></span><br><span class="line">    max_steps: <span class="built_in">int</span> = <span class="number">5</span></span><br><span class="line">    tool_timeout: <span class="built_in">float</span> = <span class="number">30.0</span></span><br><span class="line">    debug: <span class="built_in">bool</span> = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Config</span>:</span><br><span class="line">        <span class="comment"># 允许从环境变量和普通字典创建配置。</span></span><br><span class="line">        extra = <span class="string">&quot;ignore&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">_config: Config | <span class="literal">None</span> = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_config</span>() -&gt; Config:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;返回进程内共享的配置对象。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 通过全局引用保证同一进程内复用同一个默认配置对象。</span></span><br><span class="line">    <span class="keyword">global</span> _config</span><br><span class="line">    <span class="keyword">if</span> _config <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        _config = Config()</span><br><span class="line">    <span class="keyword">return</span> _config</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">reset_config</span>() -&gt; <span class="literal">None</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;测试时清空单例，避免测试之间互相污染。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">global</span> _config</span><br><span class="line">    _config = <span class="literal">None</span></span><br></pre></td></tr></table></figure>
+
+<p>单例的意义是让同一进程中的 Agent 读取同一套默认配置。测试时要提供 reset_config，否则前一个测试修改的配置可能影响后一个测试。</p>
+<h2 id="四、Agent-抽象基类"><a href="#四、Agent-抽象基类" class="headerlink" title="四、Agent 抽象基类"></a>四、Agent 抽象基类</h2><p>基类的 run 是公开入口，负责统一的前置处理、历史记录和异常处理；子类只实现 execute，定义自己的推理逻辑。这属于 Template Method（模板方法）模式。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> abc <span class="keyword">import</span> ABC, abstractmethod</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span>, <span class="type">Optional</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> .config <span class="keyword">import</span> Config, get_config</span><br><span class="line"><span class="keyword">from</span> .message <span class="keyword">import</span> Message</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Agent</span>(<span class="title class_ inherited__">ABC</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;所有 Agent 的公共生命周期。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        name: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        llm,</span></span><br><span class="line"><span class="params">        system_prompt: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        config: <span class="type">Optional</span>[Config] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    </span>):</span><br><span class="line">        <span class="comment"># 这些字段是所有子类都会使用的公共状态。</span></span><br><span class="line">        <span class="variable language_">self</span>.name = name</span><br><span class="line">        <span class="variable language_">self</span>.llm = llm</span><br><span class="line">        <span class="variable language_">self</span>.system_prompt = system_prompt <span class="keyword">or</span> <span class="string">&quot;你是一个有帮助的 AI 助手。&quot;</span></span><br><span class="line">        <span class="variable language_">self</span>.config = config <span class="keyword">or</span> get_config()</span><br><span class="line">        <span class="variable language_">self</span>._history: <span class="type">List</span>[Message] = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self, input_text: <span class="built_in">str</span>, **kwargs</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;统一公开接口，子类不需要重复实现历史管理。&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 在进入模型调用前校验输入，避免浪费一次请求。</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> input_text.strip():</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">&quot;输入内容不能为空&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 先记录用户输入，使 _execute 可以直接读取完整历史。</span></span><br><span class="line">        <span class="variable language_">self</span>.add_message(Message(role=<span class="string">&quot;user&quot;</span>, content=input_text))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 子类只实现推理过程，公共生命周期仍由基类控制。</span></span><br><span class="line">            result = <span class="variable language_">self</span>._execute(input_text, **kwargs)</span><br><span class="line">        <span class="keyword">except</span> Exception:</span><br><span class="line">            <span class="comment"># 真实项目中这里还应记录 trace_id 和完整堆栈。</span></span><br><span class="line">            <span class="keyword">raise</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 只有成功得到最终结果后，才写入 assistant 历史。</span></span><br><span class="line">        <span class="variable language_">self</span>.add_message(Message(role=<span class="string">&quot;assistant&quot;</span>, content=result))</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"><span class="meta">    @abstractmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_execute</span>(<span class="params">self, input_text: <span class="built_in">str</span>, **kwargs</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;由具体 Agent 实现。&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">raise</span> NotImplementedError</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">add_message</span>(<span class="params">self, message: Message</span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="variable language_">self</span>._history.append(message)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_history</span>(<span class="params">self</span>) -&gt; <span class="type">List</span>[Message]:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">list</span>(<span class="variable language_">self</span>._history)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">clear_history</span>(<span class="params">self</span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="variable language_">self</span>._history.clear()</span><br></pre></td></tr></table></figure>
+
+<p>这个设计带来三个好处：外部调用统一、内部实现可替换、日志和鉴权等公共逻辑可以集中维护。</p>
+<h2 id="五、SimpleAgent：最小闭环"><a href="#五、SimpleAgent：最小闭环" class="headerlink" title="五、SimpleAgent：最小闭环"></a>五、SimpleAgent：最小闭环</h2><p>SimpleAgent 只负责把历史消息交给模型，不主动规划，也不调用工具。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> hello_agents <span class="keyword">import</span> Agent</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SimpleAgent</span>(<span class="title class_ inherited__">Agent</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;最基础的单轮或多轮对话 Agent。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_execute</span>(<span class="params">self, input_text: <span class="built_in">str</span>, **kwargs</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        messages = []</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.system_prompt:</span><br><span class="line">            messages.append(</span><br><span class="line">                &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;system&quot;</span>, <span class="string">&quot;content&quot;</span>: <span class="variable language_">self</span>.system_prompt&#125;</span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> item <span class="keyword">in</span> <span class="variable language_">self</span>._history:</span><br><span class="line">            messages.append(item.to_openai())</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Agent 基类已经记录了当前 user 消息。</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.llm.invoke(messages, **kwargs)</span><br></pre></td></tr></table></figure>
+
+<p>SimpleAgent 是后续实现的基准。只有先跑通它，才有必要继续增加循环、反思和工具调用。</p>
+<h2 id="六、ReActAgent：推理与行动循环"><a href="#六、ReActAgent：推理与行动循环" class="headerlink" title="六、ReActAgent：推理与行动循环"></a>六、ReActAgent：推理与行动循环</h2><p>ReAct（Reasoning and Acting）把每一轮分成 Thought、Action 和 Observation，直到模型输出 Finish。</p>
+<pre>
+<code class="mermaid">
+
+flowchart TD
+    A[&quot;🔵 用户问题&quot;] --&gt; B[&quot;🟣 生成 Thought + Action&quot;]
+    B --&gt; C{&quot;需要工具？&quot;}
+    C --&gt;|&quot;是&quot;| D[&quot;🍑 执行 Tool&quot;]
+    D --&gt; E[&quot;🟡 写入 Observation&quot;]
+    E --&gt; B
+    C --&gt;|&quot;否&quot;| F[&quot;🟢 Finish 最终回答&quot;]
+</code>
+</pre>
+
+<p>自定义 ReAct Agent 的完整核心代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span>, <span class="type">Optional</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> hello_agents <span class="keyword">import</span> Config, HelloAgentsLLM, Message, ReActAgent, ToolRegistry</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">MY_REACT_PROMPT = <span class="string">&quot;&quot;&quot;你是一个具备推理和行动能力的 AI 助手。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## 可用工具</span></span><br><span class="line"><span class="string">&#123;tools&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## 输出格式</span></span><br><span class="line"><span class="string">Thought: 分析问题和下一步行动。</span></span><br><span class="line"><span class="string">Action: 使用 Tool[参数]，或使用 Finish[最终答案]。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## 当前问题</span></span><br><span class="line"><span class="string">&#123;question&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## 执行历史</span></span><br><span class="line"><span class="string">&#123;history&#125;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyReActAgent</span>(<span class="title class_ inherited__">ReActAgent</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;展示如何基于框架基类重写 ReAct 行为。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        name: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        llm: HelloAgentsLLM,</span></span><br><span class="line"><span class="params">        tool_registry: ToolRegistry,</span></span><br><span class="line"><span class="params">        system_prompt: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        config: <span class="type">Optional</span>[Config] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        max_steps: <span class="built_in">int</span> = <span class="number">5</span>,</span></span><br><span class="line"><span class="params">        custom_prompt: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    </span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__(name, llm, system_prompt, config)</span><br><span class="line">        <span class="variable language_">self</span>.tool_registry = tool_registry</span><br><span class="line">        <span class="variable language_">self</span>.max_steps = max_steps</span><br><span class="line">        <span class="variable language_">self</span>.current_history: <span class="type">List</span>[<span class="built_in">str</span>] = []</span><br><span class="line">        <span class="variable language_">self</span>.prompt_template = custom_prompt <span class="keyword">or</span> MY_REACT_PROMPT</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_execute</span>(<span class="params">self, input_text: <span class="built_in">str</span>, **kwargs</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="comment"># 每次 run 都从新的一棵推理树开始，避免串入上一轮任务。</span></span><br><span class="line">        <span class="variable language_">self</span>.current_history = []</span><br><span class="line"></span><br><span class="line">        <span class="comment"># max_steps 同时限制成本、延迟和模型输出格式错误造成的循环。</span></span><br><span class="line">        <span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="variable language_">self</span>.max_steps + <span class="number">1</span>):</span><br><span class="line">            prompt = <span class="variable language_">self</span>.prompt_template.<span class="built_in">format</span>(</span><br><span class="line">                tools=<span class="variable language_">self</span>.tool_registry.get_tools_description(),</span><br><span class="line">                question=input_text,</span><br><span class="line">                history=<span class="string">&quot;\n&quot;</span>.join(<span class="variable language_">self</span>.current_history),</span><br><span class="line">            )</span><br><span class="line">            <span class="comment"># 每一轮都把历史观察结果重新放入提示词，形成 ReAct 上下文。</span></span><br><span class="line">            response = <span class="variable language_">self</span>.llm.invoke(</span><br><span class="line">                [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: prompt&#125;],</span><br><span class="line">                **kwargs,</span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">            thought, action = <span class="variable language_">self</span>._parse_output(response)</span><br><span class="line">            <span class="comment"># Finish 是唯一允许结束循环的动作，其余动作必须经过工具注册表。</span></span><br><span class="line">            <span class="keyword">if</span> action.startswith(<span class="string">&quot;Finish&quot;</span>):</span><br><span class="line">                <span class="keyword">return</span> <span class="variable language_">self</span>._parse_action_input(action)</span><br><span class="line"></span><br><span class="line">            tool_name, tool_input = <span class="variable language_">self</span>._parse_action(action)</span><br><span class="line">            <span class="comment"># Agent 不直接调用函数，由 Registry 负责查找、执行和统一异常。</span></span><br><span class="line">            observation = <span class="variable language_">self</span>.tool_registry.execute_tool(</span><br><span class="line">                tool_name,</span><br><span class="line">                tool_input,</span><br><span class="line">            )</span><br><span class="line">            <span class="variable language_">self</span>.current_history.extend(</span><br><span class="line">                [</span><br><span class="line">                    <span class="string">f&quot;Step <span class="subst">&#123;step&#125;</span> Thought: <span class="subst">&#123;thought&#125;</span>&quot;</span>,</span><br><span class="line">                    <span class="string">f&quot;Step <span class="subst">&#123;step&#125;</span> Action: <span class="subst">&#123;action&#125;</span>&quot;</span>,</span><br><span class="line">                    <span class="string">f&quot;Step <span class="subst">&#123;step&#125;</span> Observation: <span class="subst">&#123;observation&#125;</span>&quot;</span>,</span><br><span class="line">                ]</span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 超限时返回明确失败信息，调用方可以据此转人工或重试。</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;抱歉，未能在最大步数内完成任务。&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_parse_output</span>(<span class="params">text: <span class="built_in">str</span></span>) -&gt; <span class="built_in">tuple</span>[<span class="built_in">str</span>, <span class="built_in">str</span>]:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;解析模型输出中的 Thought 和 Action。&quot;&quot;&quot;</span></span><br><span class="line">        thought_match = re.search(</span><br><span class="line">            <span class="string">r&quot;Thought:\s*(.*?)(?=Action:|$)&quot;</span>,</span><br><span class="line">            text,</span><br><span class="line">            flags=re.S,</span><br><span class="line">        )</span><br><span class="line">        action_match = re.search(</span><br><span class="line">            <span class="string">r&quot;Action:\s*(.*)&quot;</span>,</span><br><span class="line">            text,</span><br><span class="line">            flags=re.S,</span><br><span class="line">        )</span><br><span class="line">        <span class="comment"># 解析失败时返回空字符串，让上层可以记录格式错误并决定是否重试。</span></span><br><span class="line">        thought = thought_match.group(<span class="number">1</span>).strip() <span class="keyword">if</span> thought_match <span class="keyword">else</span> <span class="string">&quot;&quot;</span></span><br><span class="line">        action = action_match.group(<span class="number">1</span>).strip() <span class="keyword">if</span> action_match <span class="keyword">else</span> <span class="string">&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> thought, action</span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_parse_action</span>(<span class="params">action: <span class="built_in">str</span></span>) -&gt; <span class="built_in">tuple</span>[<span class="built_in">str</span>, <span class="built_in">str</span>]:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;解析 ToolName[input]。&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">match</span> = re.<span class="keyword">match</span>(<span class="string">r&quot;([^\[]+)\[(.*)\]&quot;</span>, action, flags=re.S)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> <span class="keyword">match</span>:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">f&quot;无法解析 Action: <span class="subst">&#123;action&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">match</span>.group(<span class="number">1</span>).strip(), <span class="keyword">match</span>.group(<span class="number">2</span>).strip()</span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_parse_action_input</span>(<span class="params">action: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="keyword">match</span> = re.<span class="keyword">match</span>(<span class="string">r&quot;Finish\[(.*)\]&quot;</span>, action, flags=re.S)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> <span class="keyword">match</span>:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">&quot;Finish 格式错误&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">match</span>.group(<span class="number">1</span>).strip()</span><br></pre></td></tr></table></figure>
+
+<p>工程重点不是让模型输出一段漂亮的思考，而是让 Action 可解析、工具执行可控、循环次数有上限。</p>
+<h2 id="七、ReflectionAgent：执行、反思和优化"><a href="#七、ReflectionAgent：执行、反思和优化" class="headerlink" title="七、ReflectionAgent：执行、反思和优化"></a>七、ReflectionAgent：执行、反思和优化</h2><p>ReflectionAgent 先生成结果，再让模型担任审查者。如果审查不通过，就把反馈送回模型进行修订。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ReflectionAgent</span>(<span class="title class_ inherited__">Agent</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;通过反思循环改进答案质量。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_execute</span>(<span class="params">self, input_text: <span class="built_in">str</span>, max_rounds: <span class="built_in">int</span> = <span class="number">3</span>, **kwargs</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="comment"># 第一轮先产生候选答案，后续循环只围绕这个答案进行审查和修订。</span></span><br><span class="line">        answer = <span class="variable language_">self</span>.llm.invoke(</span><br><span class="line">            [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: input_text&#125;],</span><br><span class="line">            **kwargs,</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        <span class="comment"># max_rounds 防止模型在“继续优化”与“仍需修改”之间无限循环。</span></span><br><span class="line">        <span class="keyword">for</span> round_index <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, max_rounds + <span class="number">1</span>):</span><br><span class="line">            review_prompt = (</span><br><span class="line">                <span class="string">&quot;请审查下面的答案，输出问题、改进建议和是否通过。\n\n&quot;</span></span><br><span class="line">                <span class="string">f&quot;答案：<span class="subst">&#123;answer&#125;</span>&quot;</span></span><br><span class="line">            )</span><br><span class="line">            review = <span class="variable language_">self</span>.llm.invoke(</span><br><span class="line">                [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: review_prompt&#125;],</span><br><span class="line">                **kwargs,</span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 教学示例用字符串判断；生产实现应改成结构化 JSON 字段。</span></span><br><span class="line">            <span class="keyword">if</span> <span class="string">&quot;通过&quot;</span> <span class="keyword">in</span> review <span class="keyword">or</span> <span class="string">&quot;PASS&quot;</span> <span class="keyword">in</span> review.upper():</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">            revise_prompt = (</span><br><span class="line">                <span class="string">f&quot;原问题：<span class="subst">&#123;input_text&#125;</span>\n&quot;</span></span><br><span class="line">                <span class="string">f&quot;当前答案：<span class="subst">&#123;answer&#125;</span>\n&quot;</span></span><br><span class="line">                <span class="string">f&quot;审查意见：<span class="subst">&#123;review&#125;</span>\n&quot;</span></span><br><span class="line">                <span class="string">&quot;请只输出修订后的完整答案。&quot;</span></span><br><span class="line">            )</span><br><span class="line">            answer = <span class="variable language_">self</span>.llm.invoke(</span><br><span class="line">                [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: revise_prompt&#125;],</span><br><span class="line">                **kwargs,</span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> answer</span><br></pre></td></tr></table></figure>
+
+<p>真实项目中最好让反思结果输出结构化 JSON，例如 passed、score、missing_points，而不是只搜索字符串“通过”。</p>
+<h2 id="八、Plan-and-SolveAgent：先计划再执行"><a href="#八、Plan-and-SolveAgent：先计划再执行" class="headerlink" title="八、Plan-and-SolveAgent：先计划再执行"></a>八、Plan-and-SolveAgent：先计划再执行</h2><p>Plan-and-Solve 适合多步骤任务。它把规划和执行分开，便于观察中间状态，也便于失败后从某一步重试。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">PlanAndSolveAgent</span>(<span class="title class_ inherited__">Agent</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;先生成步骤计划，再逐步执行。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_execute</span>(<span class="params">self, input_text: <span class="built_in">str</span>, **kwargs</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        plan_prompt = (</span><br><span class="line">            <span class="string">&quot;请把任务拆成有序步骤。&quot;</span></span><br><span class="line">            <span class="string">&quot;每一步都要有明确输入、输出和完成标准。\n&quot;</span></span><br><span class="line">            <span class="string">f&quot;任务：<span class="subst">&#123;input_text&#125;</span>&quot;</span></span><br><span class="line">        )</span><br><span class="line">        <span class="comment"># 先单独生成计划，便于把规划结果记录下来或让人工审核。</span></span><br><span class="line">        plan_text = <span class="variable language_">self</span>.llm.invoke(</span><br><span class="line">            [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: plan_prompt&#125;],</span><br><span class="line">            **kwargs,</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        solve_prompt = (</span><br><span class="line">            <span class="string">f&quot;任务：<span class="subst">&#123;input_text&#125;</span>\n&quot;</span></span><br><span class="line">            <span class="string">f&quot;计划：<span class="subst">&#123;plan_text&#125;</span>\n&quot;</span></span><br><span class="line">            <span class="string">&quot;请按计划执行，并在最终结果中列出完成情况。&quot;</span></span><br><span class="line">        )</span><br><span class="line">        <span class="comment"># 执行阶段带上原任务和计划，避免模型只看到局部步骤。</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.llm.invoke(</span><br><span class="line">            [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: solve_prompt&#125;],</span><br><span class="line">            **kwargs,</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>如果计划需要真实工具，应该把每个步骤保存为结构化任务对象，而不是把整段计划再次拼进提示词。</p>
+<h2 id="九、FunctionCallAgent：结构化工具调用"><a href="#九、FunctionCallAgent：结构化工具调用" class="headerlink" title="九、FunctionCallAgent：结构化工具调用"></a>九、FunctionCallAgent：结构化工具调用</h2><p>Function calling 的核心是让模型返回工具名和参数，而不是让 Agent 从自然语言中猜测工具调用。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel, Field</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ToolCall</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    name: <span class="built_in">str</span> = Field(min_length=<span class="number">1</span>)</span><br><span class="line">    arguments: <span class="built_in">dict</span> = Field(default_factory=<span class="built_in">dict</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">FunctionCallAgent</span>(<span class="title class_ inherited__">Agent</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;使用结构化工具调用协议的 Agent。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, *args, tool_registry=<span class="literal">None</span>, **kwargs</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__(*args, **kwargs)</span><br><span class="line">        <span class="variable language_">self</span>.tool_registry = tool_registry</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_execute</span>(<span class="params">self, input_text: <span class="built_in">str</span>, **kwargs</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        messages = [</span><br><span class="line">            &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;system&quot;</span>, <span class="string">&quot;content&quot;</span>: <span class="variable language_">self</span>.system_prompt&#125;,</span><br><span class="line">            &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: input_text&#125;,</span><br><span class="line">        ]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 结构化调用让模型返回工具名和参数，避免从自然语言中猜测。</span></span><br><span class="line">        decision = <span class="variable language_">self</span>.llm.invoke_with_tools(</span><br><span class="line">            messages,</span><br><span class="line">            tools=<span class="variable language_">self</span>.tool_registry.schemas(),</span><br><span class="line">            **kwargs,</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 模型可以直接结束，也可以请求工具；两条路径都要显式处理。</span></span><br><span class="line">        <span class="keyword">if</span> decision.get(<span class="string">&quot;type&quot;</span>) == <span class="string">&quot;final&quot;</span>:</span><br><span class="line">            <span class="keyword">return</span> decision[<span class="string">&quot;content&quot;</span>]</span><br><span class="line"></span><br><span class="line">        call = ToolCall(</span><br><span class="line">            name=decision[<span class="string">&quot;name&quot;</span>],</span><br><span class="line">            arguments=decision.get(<span class="string">&quot;arguments&quot;</span>, &#123;&#125;),</span><br><span class="line">        )</span><br><span class="line">        <span class="comment"># Registry 仍然是权限和参数校验的最后一道边界。</span></span><br><span class="line">        result = <span class="variable language_">self</span>.tool_registry.execute_structured(</span><br><span class="line">            call.name,</span><br><span class="line">            call.arguments,</span><br><span class="line">        )</span><br><span class="line">        messages.append(&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;tool&quot;</span>, <span class="string">&quot;content&quot;</span>: <span class="built_in">str</span>(result)&#125;)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.llm.invoke(messages, **kwargs)</span><br></pre></td></tr></table></figure>
+
+<h2 id="十、四种范式怎么选"><a href="#十、四种范式怎么选" class="headerlink" title="十、四种范式怎么选"></a>十、四种范式怎么选</h2><table>
+<thead>
+<tr>
+<th>范式</th>
+<th>核心循环</th>
+<th>适合任务</th>
+<th>主要风险</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Simple</td>
+<td>直接问答</td>
+<td>FAQ、聊天、摘要</td>
+<td>没有主动行动</td>
+</tr>
+<tr>
+<td>ReAct</td>
+<td>思考→行动→观察</td>
+<td>搜索、计算、工具调用</td>
+<td>格式错误和循环失控</td>
+</tr>
+<tr>
+<td>Reflection</td>
+<td>生成→审查→修改</td>
+<td>写作、代码、方案优化</td>
+<td>成本高、容易自我重复</td>
+</tr>
+<tr>
+<td>Plan-and-Solve</td>
+<td>规划→逐步执行</td>
+<td>复杂多步骤任务</td>
+<td>计划错误会级联</td>
+</tr>
+<tr>
+<td>Function calling</td>
+<td>结构化决策→工具</td>
+<td>生产级工具调用</td>
+<td>依赖模型的函数调用能力</td>
+</tr>
+</tbody></table>
+<h2 id="十一、实践检查"><a href="#十一、实践检查" class="headerlink" title="十一、实践检查"></a>十一、实践检查</h2><ol>
+<li>先用 SimpleAgent 验证模型密钥和基础调用。</li>
+<li>再用无副作用的计算器测试 ReAct。</li>
+<li>给 ReflectionAgent 设置最大反思轮数，观察是否提前结束。</li>
+<li>给 Plan-and-Solve 的每一步增加日志，确认失败位置可以定位。</li>
+<li>把工具调用结果保存到 Message.metadata，便于追踪。</li>
+</ol>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li>Datawhale《Hello-Agents》第七章：框架接口实现与 Agent 范式</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jjyaoao/helloagents">HelloAgents GitHub</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/Hello-Agents/" rel="tag"># Hello-Agents</a>
+              <a href="/MyBlog/tags/ReAct/" rel="tag"># ReAct</a>
+              <a href="/MyBlog/tags/Plan-and-Solve/" rel="tag"># Plan-and-Solve</a>
+              <a href="/MyBlog/tags/Reflection/" rel="tag"># Reflection</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/13/hello-agents-chapter7-architecture/" rel="prev" title="Hello-Agents 第七章（一）：从零设计智能体框架">
+                  <i class="fa fa-angle-left"></i> Hello-Agents 第七章（一）：从零设计智能体框架
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/13/hello-agents-chapter7-tools/" rel="next" title="Hello-Agents 第七章（三）：工具系统、搜索整合与异步执行">
+                  Hello-Agents 第七章（三）：工具系统、搜索整合与异步执行 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

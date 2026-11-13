@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="测试当前 NexT 主题实际支持的文本块、代码块、标签页、图片组和常用标签插件。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NexT 文本块与标签插件测试">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/11/07/block-test/index.html">
+<meta property="og:site_name" content="yhbbbbb">
+<meta property="og:description" content="测试当前 NexT 主题实际支持的文本块、代码块、标签页、图片组和常用标签插件。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yhbbbbb.github.io/MyBlog/MyBlog/images/avatar.gif">
+<meta property="og:image" content="https://yhbbbbb.github.io/MyBlog/MyBlog/images/avatar.gif">
+<meta property="article:published_time" content="2026-11-07T10:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-07T10:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Hexo">
+<meta property="article:tag" content="NexT">
+<meta property="article:tag" content="学习笔记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yhbbbbb.github.io/MyBlog/MyBlog/images/avatar.gif">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/11/07/block-test/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/11/07/block-test/","path":"2026/11/07/block-test/","title":"NexT 文本块与标签插件测试"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>NexT 文本块与标签插件测试 | yhbbbbb</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","display_overflow":"scroll","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-mml-chtml.js","integrity":"sha256-ihPtDDm7pTmSF9ViEsItlvsrBTsNkz0MOXMchzOwCQw="}}</script>
+<script src="/MyBlog/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">yhbbbbb</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81NexT-%E7%9A%84-note-%E6%96%87%E6%9C%AC%E5%9D%97"><span class="nav-number">1.</span> <span class="nav-text">一、NexT 的 note 文本块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%BB%E6%8E%89%E5%9B%BE%E6%A0%87%E4%B8%8E%E6%8A%98%E5%8F%A0%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">去掉图标与折叠摘要</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%A0%87%E7%AD%BE%E9%A1%B5-tabs"><span class="nav-number">2.</span> <span class="nav-text">二、标签页 tabs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%9B%BE%E7%89%87%E7%BB%84-grouppicture"><span class="nav-number">3.</span> <span class="nav-text">三、图片组 grouppicture</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E8%A1%8C%E5%86%85%E6%A0%87%E7%AD%BE%E3%80%81%E6%8C%89%E9%92%AE%E4%B8%8E%E5%B1%85%E4%B8%AD%E5%BC%95%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">四、行内标签、按钮与居中引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E9%93%BE%E6%8E%A5%E7%BD%91%E6%A0%BC-linkgrid"><span class="nav-number">5.</span> <span class="nav-text">五、链接网格 linkgrid</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81Mermaid-%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-number">6.</span> <span class="nav-text">六、Mermaid 流程图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E4%BB%A3%E7%A0%81%E4%B8%8E%E5%BC%95%E7%94%A8%E5%9D%97"><span class="nav-number">7.</span> <span class="nav-text">七、代码与引用块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%85%B6%E4%BB%96-NexT-%E6%A0%87%E7%AD%BE"><span class="nav-number">8.</span> <span class="nav-text">八、其他 NexT 标签</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#WaveDrom"><span class="nav-number">8.1.</span> <span class="nav-text">WaveDrom</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#caniuse"><span class="nav-number">8.2.</span> <span class="nav-text">caniuse</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#video%E3%80%81pdf"><span class="nav-number">8.3.</span> <span class="nav-text">video、pdf</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E5%BD%93%E5%89%8D-NexT-%E4%B8%8D%E6%94%AF%E6%8C%81%E7%9A%84%E5%85%B6%E4%BB%96%E4%B8%BB%E9%A2%98%E6%A0%87%E7%AD%BE"><span class="nav-number">9.</span> <span class="nav-text">九、当前 NexT 不支持的其他主题标签</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E3%80%81%E6%B5%8B%E8%AF%95%E7%BB%93%E8%AE%BA"><span class="nav-number">10.</span> <span class="nav-text">十、测试结论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:23hbyao@gmail.com" title="Google Email → mailto:23hbyao@gmail.com" rel="noopener me" target="_blank"><i class="fab fa-google fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/11/07/block-test/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yhbbbbb">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="NexT 文本块与标签插件测试 | yhbbbbb">
+      <meta itemprop="description" content="测试当前 NexT 主题实际支持的文本块、代码块、标签页、图片组和常用标签插件。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          NexT 文本块与标签插件测试
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-11-07 18:00:00" itemprop="dateCreated datePublished" datetime="2026-11-07T18:00:00+08:00">2026-11-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">测试当前 NexT 主题实际支持的文本块、代码块、标签页、图片组和常用标签插件。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>这篇文章用于验证当前仓库的 NexT 8.29.0 标签插件。示例以主题源码实际注册的标签为准，不把 Butterfly 专属语法当成 NexT 功能。</p>
+</blockquote>
+<h2 id="一、NexT-的-note-文本块"><a href="#一、NexT-的-note-文本块" class="headerlink" title="一、NexT 的 note 文本块"></a>一、NexT 的 note 文本块</h2><div class="note default"><p>default：默认说明块。</p>
+</div>
+
+<div class="note primary"><p>primary：重点内容。</p>
+</div>
+
+<div class="note info"><p>info：提示信息，适合记录概念和防忘内容。</p>
+</div>
+
+<div class="note success"><p>success：成功或正确结果 ✅</p>
+</div>
+
+<div class="note warning"><p>warning：需要留意的风险 ⚠️</p>
+</div>
+
+<div class="note danger"><p>danger：危险操作或错误信息 ❌</p>
+</div>
+
+<h3 id="去掉图标与折叠摘要"><a href="#去掉图标与折叠摘要" class="headerlink" title="去掉图标与折叠摘要"></a>去掉图标与折叠摘要</h3><p>NexT 支持 no-icon 参数，也支持把剩余参数作为折叠块摘要：</p>
+<div class="note warning no-icon"><p>这个警告块没有图标。</p>
+</div>
+
+<details class="note info"><summary><p>点击展开详情</p>
+</summary>
+<p>这里是折叠内容。NexT 会把标题参数渲染为 details 的 summary。</p>
+
+</details>
+
+<blockquote>
+<p>注意：simple、modern、flat 在当前 NexT 中是主题级配置，不是 note 标签的单块参数。需要切换时，应修改主题配置中的 note.style，然后重新构建。</p>
+</blockquote>
+<h2 id="二、标签页-tabs"><a href="#二、标签页-tabs" class="headerlink" title="二、标签页 tabs"></a>二、标签页 tabs</h2><p>NexT 的 tabs 需要一个唯一名称，并用 tab 注释分隔每个页签：</p>
+<div class="tabs" id="code-demo"><ul class="nav-tabs"><li class="tab active"><a href="#code-demo-1">Python</a></li><li class="tab"><a href="#code-demo-2">JavaScript</a></li></ul><div class="tab-content"><div class="tab-pane active" id="code-demo-1"><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">greet</span>(<span class="params">name: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="comment"># 返回一条问候语</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&quot;Hello, <span class="subst">&#123;name&#125;</span>!&quot;</span></span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="code-demo-2"><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">greet</span>(<span class="params">name</span>) &#123;</span><br><span class="line">  <span class="comment">// JavaScript 版本的同一功能</span></span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;Hello, &quot;</span> + name + <span class="string">&quot;!&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div></div>
+
+<div class="tabs" id="active-demo"><ul class="nav-tabs"><li class="tab"><a href="#active-demo-1">第一种方案</a></li><li class="tab active"><a href="#active-demo-2">第二种方案</a></li></ul><div class="tab-content"><div class="tab-pane" id="active-demo-1"><p>方案一：适合简单场景。</p></div><div class="tab-pane active" id="active-demo-2"><p>方案二：当前默认打开的页签。</p></div></div></div>
+
+<h2 id="三、图片组-grouppicture"><a href="#三、图片组-grouppicture" class="headerlink" title="三、图片组 grouppicture"></a>三、图片组 grouppicture</h2><p>当前 NexT 注册名是 grouppicture，别名是 gp，不是 Butterfly 的 gallery：</p>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img src="/MyBlog/MyBlog/images/avatar.gif" alt="博客头像"></div></div><div class="group-picture-row"><div class="group-picture-column"><img src="/MyBlog/MyBlog/images/avatar.gif" alt="博客头像"></div></div></div>
+
+<p>上面的 2-1 表示两张图片使用第一种两列布局。图片组内容必须是图片或带图片的链接。</p>
+<h2 id="四、行内标签、按钮与居中引用"><a href="#四、行内标签、按钮与居中引用" class="headerlink" title="四、行内标签、按钮与居中引用"></a>四、行内标签、按钮与居中引用</h2><p>这是 <mark class="label info">提示标签</mark>、<mark class="label success">stable</mark>、<mark class="label danger">deprecated</mark>。</p>
+<a class="btn" target="_blank" rel="noopener" href="https://hexo.io" title="打开 Hexo 官网"><i class="fa fa-home"></i>Hexo 官网</a>
+
+<blockquote class="blockquote-center">
+<p>这是一段居中引用，适合放置文章中的关键结论。</p>
+
+</blockquote>
+
+<blockquote class="blockquote-center">
+<p>别名 cq 与 centerquote 的效果相同。</p>
+
+</blockquote>
+
+<h2 id="五、链接网格-linkgrid"><a href="#五、链接网格-linkgrid" class="headerlink" title="五、链接网格 linkgrid"></a>五、链接网格 linkgrid</h2><p>linkgrid 根据“名称 | URL | 描述 | 图片地址”生成链接卡片：</p>
+<div class="link-grid"><div class="link-grid-container">
+<object class="link-grid-image" data="/MyBlog/images/avatar.gif"></object>
+<p>Hexo</p><p>静态博客生成器</p>
+<a target="_blank" rel="noopener" href="https://hexo.io/"></a>
+</div><div class="link-grid-container">
+<object class="link-grid-image" data="/MyBlog/images/avatar.gif"></object>
+<p>NexT</p><p>Hexo 主题</p>
+<a target="_blank" rel="noopener" href="https://theme-next.js.org/"></a>
+</div></div>
+
+<p>也可以使用别名 lg。每行的分隔符默认是竖线，空行和以百分号开头的行会被忽略。</p>
+<h2 id="六、Mermaid-流程图"><a href="#六、Mermaid-流程图" class="headerlink" title="六、Mermaid 流程图"></a>六、Mermaid 流程图</h2><pre>
+<code class="mermaid">
+
+flowchart LR
+    A[&quot;🔵 输入&lt;br&gt;文章内容&quot;] --&gt; B[&quot;🟣 Hexo 渲染&lt;br&gt;标签插件&quot;]
+    B --&gt; C[&quot;🟢 输出&lt;br&gt;静态 HTML&quot;]
+    style A fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style B fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style C fill:#B5EAD7,stroke:#80CBC4,color:#333
+</code>
+</pre>
+
+<p>Mermaid 必须使用 NexT 标签语法，节点换行使用 <br>，不要使用 Mermaid 三反引号代码块。</p>
+<h2 id="七、代码与引用块"><a href="#七、代码与引用块" class="headerlink" title="七、代码与引用块"></a>七、代码与引用块</h2><blockquote><p>这是 blockquote 标签生成的引用。</p>
+<footer><strong>NexT 文档, Tag Plugins</strong><cite><a target="_blank" rel="noopener" href="https://theme-next.js.org/docs/tag-plugins/">theme-next.js.org/docs/tag-plugins</a></cite></footer></blockquote>
+
+<figure class="highlight python"><figcaption><span>Python 示例</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">left: <span class="built_in">int</span>, right: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    <span class="comment"># 返回两个整数的和</span></span><br><span class="line">    <span class="keyword">return</span> left + right</span><br></pre></td></tr></table></figure>
+
+<blockquote class="pullquote"><p>这是 pullquote 侧边引语，适合突出文章中的一句判断。</p>
+</blockquote>
+
+<h2 id="八、其他-NexT-标签"><a href="#八、其他-NexT-标签" class="headerlink" title="八、其他 NexT 标签"></a>八、其他 NexT 标签</h2><h3 id="WaveDrom"><a href="#WaveDrom" class="headerlink" title="WaveDrom"></a>WaveDrom</h3><div class="wavedrom"><script type="WaveDrom">
+{ signal: [
+  { name: "clk", wave: "p....." },
+  { name: "data", wave: "x.345x", data: "A B C" }
+] }
+</script></div>
+
+<h3 id="caniuse"><a href="#caniuse" class="headerlink" title="caniuse"></a>caniuse</h3><p>下面会加载 Can I Use 的 iframe，网络受限时可能无法显示：</p>
+<iframe data-feature="flexbox" src="https://caniuse.bitsofco.de/embed/index.html?feat=flexbox&periods=current&accessible-colours=false" frameborder="0" width="100%" height="400px"></iframe>
+
+<h3 id="video、pdf"><a href="#video、pdf" class="headerlink" title="video、pdf"></a>video、pdf</h3><p>下面只测试 HTML 容器生成，地址是占位地址：</p>
+<video src="/MyBlog/demo.mp4" preload="metadata" controlslist="nodownload" controls playsinline poster=""></video>
+
+<div class="pdf-container" data-target="/MyBlog/demo.pdf" data-height="500px"></div>
+
+<h2 id="九、当前-NexT-不支持的其他主题标签"><a href="#九、当前-NexT-不支持的其他主题标签" class="headerlink" title="九、当前 NexT 不支持的其他主题标签"></a>九、当前 NexT 不支持的其他主题标签</h2><table>
+<thead>
+<tr>
+<th>标签</th>
+<th>当前 NexT 状态</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>folding</td>
+<td>❌ 未注册</td>
+<td>使用 note 折叠摘要或主题代码折叠</td>
+</tr>
+<tr>
+<td>cb &#x2F; checkbox</td>
+<td>❌ 未注册</td>
+<td>使用 Markdown 任务列表</td>
+</tr>
+<tr>
+<td>timeline</td>
+<td>❌ 未注册</td>
+<td>使用 Markdown 列表或 Mermaid</td>
+</tr>
+<tr>
+<td>gallery</td>
+<td>❌ 未注册</td>
+<td>使用 grouppicture &#x2F; gp</td>
+</tr>
+</tbody></table>
+<p>Markdown 任务列表可以直接使用：</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 已完成部署</li>
+<li><input disabled="" type="checkbox"> 待调试标签参数</li>
+</ul>
+<h2 id="十、测试结论"><a href="#十、测试结论" class="headerlink" title="十、测试结论"></a>十、测试结论</h2><ul>
+<li>note、tabs、grouppicture、label、button、centerquote、linkgrid、mermaid、wavedrom、caniuse、video、pdf 已按当前 NexT 注册代码编写。</li>
+<li>simple、modern、flat 需要在主题配置中设置，不能当作每个 note 的独立参数。</li>
+<li>folding、cb、timeline、gallery 属于其他主题生态，当前 NexT 不会按预期渲染。</li>
+<li>如果某个标签构建时报错，先检查标签名、开始和结束标签、参数逗号以及资源 URL。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Hexo/" rel="tag"># Hexo</a>
+              <a href="/MyBlog/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"># 学习笔记</a>
+              <a href="/MyBlog/tags/NexT/" rel="tag"># NexT</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/07/hello-agents-chapter3-2-3/" rel="prev" title="Hello-Agents 第三章 3.2-3.3 学习笔记：提示工程、缩放法则与模型边界">
+                  <i class="fa fa-angle-left"></i> Hello-Agents 第三章 3.2-3.3 学习笔记：提示工程、缩放法则与模型边界
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/08/hello-agents-chapter4-1-2/" rel="next" title="Hello-Agents 第四章 4.1-4.2 学习笔记：工具调用与 ReAct 智能体">
+                  Hello-Agents 第四章 4.1-4.2 学习笔记：工具调用与 ReAct 智能体 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

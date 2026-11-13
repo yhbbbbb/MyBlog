@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="记录 Hello-Agents 第七章的框架设计动机、分层架构、统一 LLM 接口与本地模型接入。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hello-Agents 第七章（一）：从零设计智能体框架">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-architecture/index.html">
+<meta property="og:site_name" content="yhbbbbb">
+<meta property="og:description" content="记录 Hello-Agents 第七章的框架设计动机、分层架构、统一 LLM 接口与本地模型接入。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-11-13T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-13T02:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="Hello-Agents">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="框架设计">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-architecture/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-architecture/","path":"2026/11/13/hello-agents-chapter7-architecture/","title":"Hello-Agents 第七章（一）：从零设计智能体框架"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Hello-Agents 第七章（一）：从零设计智能体框架 | yhbbbbb</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","display_overflow":"scroll","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-mml-chtml.js","integrity":"sha256-ihPtDDm7pTmSF9ViEsItlvsrBTsNkz0MOXMchzOwCQw="}}</script>
+<script src="/MyBlog/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">yhbbbbb</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%87%AA%E5%B7%B1%E6%9E%84%E5%BB%BA-Agent-%E6%A1%86%E6%9E%B6"><span class="nav-number">1.</span> <span class="nav-text">一、为什么要自己构建 Agent 框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81HelloAgents-%E7%9A%84%E5%9B%9B%E4%B8%AA%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5"><span class="nav-number">2.</span> <span class="nav-text">二、HelloAgents 的四个设计理念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E8%BD%BB%E9%87%8F%E7%BA%A7%E4%B8%8E%E6%95%99%E5%AD%A6%E5%8F%8B%E5%A5%BD"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 轻量级与教学友好</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%9F%BA%E4%BA%8E%E6%A0%87%E5%87%86-API"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 基于标准 API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E6%B8%90%E8%BF%9B%E5%BC%8F%E5%AD%A6%E4%B9%A0"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 渐进式学习</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E4%B8%87%E7%89%A9%E7%9A%86%E4%B8%BA%E5%B7%A5%E5%85%B7"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 万物皆为工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%A1%86%E6%9E%B6%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="nav-number">3.</span> <span class="nav-text">三、框架整体架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%85%88%E8%BF%90%E8%A1%8C%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-Agent"><span class="nav-number">4.</span> <span class="nav-text">四、先运行一个最小 Agent</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%89%A9%E5%B1%95-HelloAgentsLLM-%E6%94%AF%E6%8C%81%E6%96%B0%E7%9A%84%E6%A8%A1%E5%9E%8B%E4%BE%9B%E5%BA%94%E5%95%86"><span class="nav-number">5.</span> <span class="nav-text">五、扩展 HelloAgentsLLM 支持新的模型供应商</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8%E7%BB%A7%E6%89%BF%E6%89%A9%E5%B1%95"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 为什么使用继承扩展</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E6%9C%AC%E5%9C%B0%E6%A8%A1%E5%9E%8B%EF%BC%9AvLLM-%E4%B8%8E-Ollama"><span class="nav-number">6.</span> <span class="nav-text">六、本地模型：vLLM 与 Ollama</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-vLLM"><span class="nav-number">6.1.</span> <span class="nav-text">6.1 vLLM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-Ollama"><span class="nav-number">6.2.</span> <span class="nav-text">6.2 Ollama</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-%E4%B8%89%E7%A7%8D%E9%83%A8%E7%BD%B2%E6%96%B9%E5%BC%8F%E7%9A%84%E9%80%89%E6%8B%A9"><span class="nav-number">6.3.</span> <span class="nav-text">6.3 三种部署方式的选择</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E8%87%AA%E5%8A%A8%E6%A3%80%E6%B5%8B-Provider-%E7%9A%84%E5%B7%A5%E7%A8%8B%E6%80%9D%E8%B7%AF"><span class="nav-number">7.</span> <span class="nav-text">七、自动检测 Provider 的工程思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E8%BF%99%E4%B8%80%E7%AF%87%E7%9A%84%E5%9B%9E%E9%A1%BE"><span class="nav-number">8.</span> <span class="nav-text">八、这一篇的回顾</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">9.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:23hbyao@gmail.com" title="Google Email → mailto:23hbyao@gmail.com" rel="noopener me" target="_blank"><i class="fab fa-google fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-architecture/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yhbbbbb">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Hello-Agents 第七章（一）：从零设计智能体框架 | yhbbbbb">
+      <meta itemprop="description" content="记录 Hello-Agents 第七章的框架设计动机、分层架构、统一 LLM 接口与本地模型接入。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hello-Agents 第七章（一）：从零设计智能体框架
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-11-13 10:00:00" itemprop="dateCreated datePublished" datetime="2026-11-13T10:00:00+08:00">2026-11-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">记录 Hello-Agents 第七章的框架设计动机、分层架构、统一 LLM 接口与本地模型接入。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote class="blockquote-center">
+<p>真正理解 Agent，不只是会调用框架，而是知道框架为什么这样组织代码。</p>
+
+</blockquote>
+
+<h2 id="一、为什么要自己构建-Agent-框架"><a href="#一、为什么要自己构建-Agent-框架" class="headerlink" title="一、为什么要自己构建 Agent 框架"></a>一、为什么要自己构建 Agent 框架</h2><p>第七章的任务不是再学习一个现成框架，而是从零开始搭建一个轻量的 HelloAgents。目标不是和 LangChain、AutoGen 等成熟框架比功能数量，而是把智能体运行时拆开，让我们看清每个组件的职责。</p>
+<p>成熟框架通常会遇到四类问题：</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>具体表现</th>
+<th>对学习和开发的影响</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>抽象层过多</td>
+<td>完成一个简单调用需要理解 Chain、Memory、Retriever、Tool 等多个对象</td>
+<td>初学者难以定位真正执行模型调用的代码</td>
+</tr>
+<tr>
+<td>API 变化快</td>
+<td>版本升级后类名、参数和导入路径变化</td>
+<td>示例代码容易失效，维护成本增加</td>
+</tr>
+<tr>
+<td>内部逻辑黑盒化</td>
+<td>工具选择、消息拼接和重试逻辑被封装</td>
+<td>出问题时只能反复查文档</td>
+</tr>
+<tr>
+<td>依赖关系复杂</td>
+<td>一个小项目需要安装大量依赖</td>
+<td>容易出现版本冲突和环境膨胀</td>
+</tr>
+</tbody></table>
+<p>自建框架的价值在于把“使用者”变成“构建者”。当我亲手实现模型客户端、消息对象、Agent 基类和工具注册表时，才会知道一个 Agent 的最小闭环到底是什么：</p>
+<ol>
+<li>接收用户输入。</li>
+<li>组织系统提示词和历史消息。</li>
+<li>调用语言模型。</li>
+<li>判断是否需要工具。</li>
+<li>执行工具并把结果写回上下文。</li>
+<li>在满足终止条件后返回结果。</li>
+</ol>
+<h2 id="二、HelloAgents-的四个设计理念"><a href="#二、HelloAgents-的四个设计理念" class="headerlink" title="二、HelloAgents 的四个设计理念"></a>二、HelloAgents 的四个设计理念</h2><h3 id="2-1-轻量级与教学友好"><a href="#2-1-轻量级与教学友好" class="headerlink" title="2.1 轻量级与教学友好"></a>2.1 轻量级与教学友好</h3><p>HelloAgents 把核心代码拆成可理解的小模块，尽量只依赖 OpenAI SDK、Pydantic 和少量工具库。依赖越少，越容易从异常堆栈反查真实原因。</p>
+<h3 id="2-2-基于标准-API"><a href="#2-2-基于标准-API" class="headerlink" title="2.2 基于标准 API"></a>2.2 基于标准 API</h3><p>HelloAgents 选择兼容 OpenAI 风格的接口。这样做的好处是，切换 OpenAI、ModelScope、Ollama 或 vLLM 时，Agent 层不需要重写，只修改模型客户端的配置。</p>
+<h3 id="2-3-渐进式学习"><a href="#2-3-渐进式学习" class="headerlink" title="2.3 渐进式学习"></a>2.3 渐进式学习</h3><p>框架按章节递进。先实现统一模型调用，再加入 Message、Config 和 Agent 基类，最后扩展 ReAct、Reflection、Plan-and-Solve 与工具系统。每一步都建立在上一层接口之上。</p>
+<h3 id="2-4-万物皆为工具"><a href="#2-4-万物皆为工具" class="headerlink" title="2.4 万物皆为工具"></a>2.4 万物皆为工具</h3><p>HelloAgents 用一个非常简化的观点统一扩展能力：除了 Agent 核心循环之外，Memory、RAG、MCP、数据库查询和搜索服务都可以视作工具。</p>
+<p>这种做法适合教学，因为调用边界很清楚：</p>
+<ul>
+<li>Agent 负责决定“什么时候调用”。</li>
+<li>Tool 负责完成“具体做什么”。</li>
+<li>工具结果以统一格式回到 Agent。</li>
+</ul>
+<p>但在生产系统中，Memory 和 RAG 往往还需要独立的生命周期、权限、索引和可观测性。因此“万物皆为工具”适合作为统一入口，不代表所有模块的内部实现都应该真的写成一个函数。</p>
+<h2 id="三、框架整体架构"><a href="#三、框架整体架构" class="headerlink" title="三、框架整体架构"></a>三、框架整体架构</h2><p>课程给出的目录体现了分层解耦：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">hello-agents/</span><br><span class="line">├── hello_agents/</span><br><span class="line">│   ├── core/</span><br><span class="line">│   │   ├── agent.py          # Agent 抽象基类</span><br><span class="line">│   │   ├── llm.py            # 统一模型接口</span><br><span class="line">│   │   ├── message.py        # 消息对象</span><br><span class="line">│   │   ├── config.py         # 全局配置</span><br><span class="line">│   │   └── exceptions.py     # 自定义异常</span><br><span class="line">│   ├── agents/</span><br><span class="line">│   │   ├── simple_agent.py</span><br><span class="line">│   │   ├── react_agent.py</span><br><span class="line">│   │   ├── reflection_agent.py</span><br><span class="line">│   │   └── plan_solve_agent.py</span><br><span class="line">│   └── tools/</span><br><span class="line">│       ├── base.py</span><br><span class="line">│       ├── registry.py</span><br><span class="line">│       ├── chain.py</span><br><span class="line">│       ├── async_executor.py</span><br><span class="line">│       └── builtin/</span><br><span class="line">└── tests/</span><br></pre></td></tr></table></figure>
+
+<p>这套结构可以理解成三层：</p>
+<ol>
+<li><code>core</code> 是稳定底座，负责消息、配置、模型和生命周期。</li>
+<li><code>agents</code> 是行为层，负责不同的智能体范式。</li>
+<li><code>tools</code> 是能力层，负责让 Agent 访问外部世界。</li>
+</ol>
+<pre>
+<code class="mermaid">
+
+flowchart TB
+    U[&quot;🔵 用户请求&quot;] --&gt; L[&quot;🟣 LLM 适配层&lt;br&gt;统一 Provider&quot;]
+    L --&gt; C[&quot;🍑 Core&lt;br&gt;Message + Config&quot;]
+    C --&gt; A[&quot;🟡 Agent 层&lt;br&gt;推理循环&quot;]
+    A --&gt; T[&quot;🟠 Tool 层&lt;br&gt;外部能力&quot;]
+    T --&gt; R[&quot;🟢 结果与日志&quot;]
+    style U fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style L fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style C fill:#FFDAB9,stroke:#FFB74D,color:#333
+    style A fill:#FFF9C4,stroke:#F9A825,color:#333
+    style T fill:#FFDAB9,stroke:#FFB74D,color:#333
+    style R fill:#B5EAD7,stroke:#80CBC4,color:#333
+</code>
+</pre>
+
+<h2 id="四、先运行一个最小-Agent"><a href="#四、先运行一个最小-Agent" class="headerlink" title="四、先运行一个最小 Agent"></a>四、先运行一个最小 Agent</h2><p>安装第七章对应版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Python 版本需要 3.10 或更高</span></span><br><span class="line">pip install <span class="string">&quot;hello-agents==0.1.1&quot;</span></span><br><span class="line">pip install python-dotenv</span><br></pre></td></tr></table></figure>
+
+<p>在项目根目录准备 <code>.env</code>。下面的变量名只作为示例，真实密钥不要提交到 Git：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># OpenAI 兼容服务的 API 密钥</span><br><span class="line">OPENAI_API_KEY=your-api-key</span><br><span class="line"></span><br><span class="line"># 可选：指定模型名称</span><br><span class="line">LLM_MODEL_ID=gpt-4o-mini</span><br><span class="line"></span><br><span class="line"># 可选：指定兼容服务地址</span><br><span class="line"># LLM_BASE_URL=https://api.openai.com/v1</span><br></pre></td></tr></table></figure>
+
+<p>最小调用程序如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># quick_start.py</span></span><br><span class="line"><span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv</span><br><span class="line"><span class="keyword">from</span> hello_agents <span class="keyword">import</span> SimpleAgent, HelloAgentsLLM</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从当前目录的 .env 读取 API 密钥等配置；没有这一行时，环境变量不会自动加载。</span></span><br><span class="line">load_dotenv()</span><br><span class="line"></span><br><span class="line"><span class="comment"># provider=&quot;auto&quot; 时，框架会根据环境变量自动判断服务商。</span></span><br><span class="line"><span class="comment"># 生产环境建议记录最终选中的 Provider，方便排查请求实际发往哪里。</span></span><br><span class="line">llm = HelloAgentsLLM(provider=<span class="string">&quot;auto&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Agent 只关心“如何对话”，不需要知道底层服务商是谁。</span></span><br><span class="line"><span class="comment"># 这种依赖倒置让后续切换模型时无需修改 Agent 代码。</span></span><br><span class="line">agent = SimpleAgent(</span><br><span class="line">    name=<span class="string">&quot;AI助手&quot;</span>,</span><br><span class="line">    llm=llm,</span><br><span class="line">    system_prompt=<span class="string">&quot;你是一个有帮助、讲事实、会说明不确定性的 AI 助手。&quot;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">response = agent.run(<span class="string">&quot;请用三句话解释什么是 Agent。&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(response)</span><br></pre></td></tr></table></figure>
+
+<p>运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python quick_start.py</span><br></pre></td></tr></table></figure>
+
+<p>如果出现密钥缺失、模型不存在或连接失败，优先检查 <code>.env</code> 是否被正确加载，再检查 <code>provider</code> 和 <code>base_url</code> 是否匹配。</p>
+<h2 id="五、扩展-HelloAgentsLLM-支持新的模型供应商"><a href="#五、扩展-HelloAgentsLLM-支持新的模型供应商" class="headerlink" title="五、扩展 HelloAgentsLLM 支持新的模型供应商"></a>五、扩展 HelloAgentsLLM 支持新的模型供应商</h2><h3 id="5-1-为什么使用继承扩展"><a href="#5-1-为什么使用继承扩展" class="headerlink" title="5.1 为什么使用继承扩展"></a>5.1 为什么使用继承扩展</h3><p>直接修改已安装的框架源码会导致升级困难。更稳妥的方式是继承 <code>HelloAgentsLLM</code>，只重写新供应商需要变化的部分，其余行为交给父类。</p>
+<p>下面是课程中使用 ModelScope 的完整示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># my_llm.py</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Optional</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line"><span class="keyword">from</span> hello_agents <span class="keyword">import</span> HelloAgentsLLM</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyLLM</span>(<span class="title class_ inherited__">HelloAgentsLLM</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;通过继承为 HelloAgents 增加 ModelScope Provider。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        model: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        api_key: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        base_url: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        provider: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="string">&quot;auto&quot;</span>,</span></span><br><span class="line"><span class="params">        **kwargs,</span></span><br><span class="line"><span class="params">    </span>):</span><br><span class="line">        <span class="comment"># 只拦截自定义的 modelscope，其余 Provider 交给父类。</span></span><br><span class="line">        <span class="comment"># 新增供应商不会破坏框架原本支持的 OpenAI 等实现。</span></span><br><span class="line">        <span class="keyword">if</span> provider == <span class="string">&quot;modelscope&quot;</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;正在使用自定义的 ModelScope Provider&quot;</span>)</span><br><span class="line"></span><br><span class="line">            <span class="variable language_">self</span>.provider = <span class="string">&quot;modelscope&quot;</span></span><br><span class="line">            <span class="comment"># 优先使用构造函数参数，其次读取环境变量，便于测试时注入配置。</span></span><br><span class="line">            <span class="variable language_">self</span>.api_key = api_key <span class="keyword">or</span> os.getenv(<span class="string">&quot;MODELSCOPE_API_KEY&quot;</span>)</span><br><span class="line">            <span class="variable language_">self</span>.base_url = (</span><br><span class="line">                base_url</span><br><span class="line">                <span class="keyword">or</span> <span class="string">&quot;https://api-inference.modelscope.cn/v1/&quot;</span></span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 在客户端创建前就验证凭证，避免运行到请求阶段才失败。</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> <span class="variable language_">self</span>.api_key:</span><br><span class="line">                <span class="keyword">raise</span> ValueError(</span><br><span class="line">                    <span class="string">&quot;请设置 MODELSCOPE_API_KEY 环境变量。&quot;</span></span><br><span class="line">                )</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 允许调用方传入模型，否则使用环境变量或默认模型。</span></span><br><span class="line">            <span class="comment"># 初始化阶段只保存配置，不主动发起网络请求。</span></span><br><span class="line">            <span class="variable language_">self</span>.model = (</span><br><span class="line">                model</span><br><span class="line">                <span class="keyword">or</span> os.getenv(<span class="string">&quot;LLM_MODEL_ID&quot;</span>)</span><br><span class="line">                <span class="keyword">or</span> <span class="string">&quot;Qwen/Qwen2.5-VL-72B-Instruct&quot;</span></span><br><span class="line">            )</span><br><span class="line">            <span class="variable language_">self</span>.temperature = kwargs.get(<span class="string">&quot;temperature&quot;</span>, <span class="number">0.7</span>)</span><br><span class="line">            <span class="variable language_">self</span>.max_tokens = kwargs.get(<span class="string">&quot;max_tokens&quot;</span>)</span><br><span class="line">            <span class="variable language_">self</span>.timeout = kwargs.get(<span class="string">&quot;timeout&quot;</span>, <span class="number">60</span>)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># ModelScope 兼容 OpenAI SDK，因此只需替换 base_url。</span></span><br><span class="line">            <span class="comment"># Agent 层看到的仍然是统一的 HelloAgentsLLM 接口。</span></span><br><span class="line">            <span class="variable language_">self</span>._client = OpenAI(</span><br><span class="line">                api_key=<span class="variable language_">self</span>.api_key,</span><br><span class="line">                base_url=<span class="variable language_">self</span>.base_url,</span><br><span class="line">                timeout=<span class="variable language_">self</span>.timeout,</span><br><span class="line">            )</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="comment"># OpenAI 等内置 Provider 仍使用父类逻辑。</span></span><br><span class="line">            <span class="built_in">super</span>().__init__(</span><br><span class="line">                model=model,</span><br><span class="line">                api_key=api_key,</span><br><span class="line">                base_url=base_url,</span><br><span class="line">                provider=provider,</span><br><span class="line">                **kwargs,</span><br><span class="line">            )</span><br></pre></td></tr></table></figure>
+
+<p>对应配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># .env</span><br><span class="line">MODELSCOPE_API_KEY=your-modelscope-api-key</span><br><span class="line">LLM_MODEL_ID=Qwen/Qwen2.5-VL-72B-Instruct</span><br></pre></td></tr></table></figure>
+
+<p>调用代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># my_main.py</span></span><br><span class="line"><span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv</span><br><span class="line"><span class="keyword">from</span> my_llm <span class="keyword">import</span> MyLLM</span><br><span class="line"></span><br><span class="line"><span class="comment"># 先加载环境变量，再实例化模型客户端。</span></span><br><span class="line">load_dotenv()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 明确指定自定义 Provider。</span></span><br><span class="line">llm = MyLLM(provider=<span class="string">&quot;modelscope&quot;</span>)</span><br><span class="line"></span><br><span class="line">messages = [</span><br><span class="line">    &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: <span class="string">&quot;你好，请介绍一下你自己。&quot;</span>&#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># think() 返回流式结果，逐块打印可以实现打字效果。</span></span><br><span class="line">response_stream = llm.think(messages)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;ModelScope Response:&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> chunk <span class="keyword">in</span> response_stream:</span><br><span class="line">    <span class="comment"># 如果 think() 内部已经打印，这里只需要消费迭代器。</span></span><br><span class="line">    <span class="comment"># print(chunk, end=&quot;&quot;, flush=True)</span></span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+<p>继承扩展的关键是“只处理差异”。如果新供应商仍然兼容 OpenAI API，就不需要重写消息格式、Agent 逻辑和工具系统。</p>
+<h2 id="六、本地模型：vLLM-与-Ollama"><a href="#六、本地模型：vLLM-与-Ollama" class="headerlink" title="六、本地模型：vLLM 与 Ollama"></a>六、本地模型：vLLM 与 Ollama</h2><h3 id="6-1-vLLM"><a href="#6-1-vLLM" class="headerlink" title="6.1 vLLM"></a>6.1 vLLM</h3><p>vLLM 面向高吞吐推理，适合 GPU 服务器和并发请求。它通过 PagedAttention、连续批处理等机制提高显存利用率。</p>
+<p>安装与启动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">pip install vllm</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动 OpenAI 兼容服务；--port 要与客户端的 base_url 保持一致。</span></span><br><span class="line">python -m vllm.entrypoints.openai.api_server ^</span><br><span class="line">    --model Qwen/Qwen2.5-7B-Instruct ^</span><br><span class="line">    --host 0.0.0.0 ^</span><br><span class="line">    --port 8000</span><br></pre></td></tr></table></figure>
+
+<p>Windows 下如果使用 PowerShell，可以将命令写成一行：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python <span class="literal">-m</span> vllm.entrypoints.openai.api_server <span class="literal">--model</span> Qwen/Qwen2.<span class="number">5</span><span class="literal">-7B-Instruct</span> <span class="literal">--host</span> <span class="number">0.0</span>.<span class="number">0.0</span> <span class="literal">--port</span> <span class="number">8000</span></span><br></pre></td></tr></table></figure>
+
+<p>连接本地 vLLM：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> hello_agents <span class="keyword">import</span> HelloAgentsLLM</span><br><span class="line"></span><br><span class="line">llm = HelloAgentsLLM(</span><br><span class="line">    provider=<span class="string">&quot;vllm&quot;</span>,</span><br><span class="line">    base_url=<span class="string">&quot;http://localhost:8000/v1&quot;</span>,</span><br><span class="line">    api_key=<span class="string">&quot;EMPTY&quot;</span>,</span><br><span class="line">    model=<span class="string">&quot;Qwen/Qwen2.5-7B-Instruct&quot;</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-Ollama"><a href="#6-2-Ollama" class="headerlink" title="6.2 Ollama"></a>6.2 Ollama</h3><p>Ollama 更适合个人电脑快速运行本地模型。安装客户端后：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 首次运行会自动下载模型，之后会直接启动服务。</span></span><br><span class="line"><span class="comment"># Ollama 负责模型管理，应用代码只连接它暴露的兼容 API。</span></span><br><span class="line">ollama run llama3</span><br></pre></td></tr></table></figure>
+
+<p>Ollama 默认暴露 <code>http://localhost:11434/v1</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> hello_agents <span class="keyword">import</span> HelloAgentsLLM</span><br><span class="line"></span><br><span class="line">llm = HelloAgentsLLM(</span><br><span class="line">    provider=<span class="string">&quot;ollama&quot;</span>,</span><br><span class="line">    base_url=<span class="string">&quot;http://localhost:11434/v1&quot;</span>,</span><br><span class="line">    api_key=<span class="string">&quot;ollama&quot;</span>,</span><br><span class="line">    model=<span class="string">&quot;llama3&quot;</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-3-三种部署方式的选择"><a href="#6-3-三种部署方式的选择" class="headerlink" title="6.3 三种部署方式的选择"></a>6.3 三种部署方式的选择</h3><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>适合人群</th>
+<th>优点</th>
+<th>局限</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>云端 API</td>
+<td>快速验证、无 GPU 用户</td>
+<td>上手快、模型强、无需维护</td>
+<td>有调用成本、数据需出网</td>
+</tr>
+<tr>
+<td>vLLM</td>
+<td>GPU 服务器、团队服务</td>
+<td>吞吐高、兼容 OpenAI、适合并发</td>
+<td>部署复杂、显存要求高</td>
+</tr>
+<tr>
+<td>Ollama</td>
+<td>个人学习、本地 Demo</td>
+<td>安装简单、模型管理方便</td>
+<td>高并发和大模型能力有限</td>
+</tr>
+</tbody></table>
+<p>选择顺序应该是：先用云端 API 验证业务，再用 Ollama 完成本地学习，最后根据并发、隐私和成本决定是否使用 vLLM。</p>
+<h2 id="七、自动检测-Provider-的工程思路"><a href="#七、自动检测-Provider-的工程思路" class="headerlink" title="七、自动检测 Provider 的工程思路"></a>七、自动检测 Provider 的工程思路</h2><p>自动检测通常有三个优先级：</p>
+<ol>
+<li>显式传入 <code>provider</code>，优先级最高。</li>
+<li>根据 <code>LLM_BASE_URL</code> 判断本地 vLLM、Ollama 或其他兼容服务。</li>
+<li>最后根据环境变量密钥推断云端 Provider。</li>
+</ol>
+<p>例如同时设置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">OPENAI_API_KEY=xxx</span><br><span class="line">LLM_BASE_URL=http://localhost:11434/v1</span><br></pre></td></tr></table></figure>
+
+<p>如果框架把 <code>LLM_BASE_URL</code> 的判断放在密钥判断前，最终应选择本地 Ollama；如果先检查 <code>OPENAI_API_KEY</code>，就会错误地把请求发往 OpenAI。自动检测的核心不是“猜得准”，而是优先级稳定、可解释，并允许用户显式覆盖。</p>
+<p>建议把检测逻辑写成纯函数并测试：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">detect_provider</span>(<span class="params"></span></span><br><span class="line"><span class="params">    explicit_provider: <span class="built_in">str</span> | <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    base_url: <span class="built_in">str</span> | <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    openai_key: <span class="built_in">str</span> | <span class="literal">None</span>,</span></span><br><span class="line"><span class="params"></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;按照显式配置 &gt; 地址特征 &gt; 密钥的顺序选择 Provider。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 显式配置代表用户已经做出决定，自动检测不能覆盖它。</span></span><br><span class="line">    <span class="keyword">if</span> explicit_provider <span class="keyword">and</span> explicit_provider != <span class="string">&quot;auto&quot;</span>:</span><br><span class="line">        <span class="keyword">return</span> explicit_provider</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> base_url:</span><br><span class="line">        <span class="comment"># 地址比单纯的密钥更能说明请求实际应该发往哪里。</span></span><br><span class="line">        lowered = base_url.lower()</span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;11434&quot;</span> <span class="keyword">in</span> lowered <span class="keyword">or</span> <span class="string">&quot;ollama&quot;</span> <span class="keyword">in</span> lowered:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;ollama&quot;</span></span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;8000&quot;</span> <span class="keyword">in</span> lowered <span class="keyword">or</span> <span class="string">&quot;vllm&quot;</span> <span class="keyword">in</span> lowered:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;vllm&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 只有没有本地地址线索时，才退回到云端密钥判断。</span></span><br><span class="line">    <span class="keyword">if</span> openai_key:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;openai&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">raise</span> ValueError(<span class="string">&quot;没有足够的配置判断模型 Provider&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="八、这一篇的回顾"><a href="#八、这一篇的回顾" class="headerlink" title="八、这一篇的回顾"></a>八、这一篇的回顾</h2><p>第七章的第一步不是写 Agent，而是先确定边界：</p>
+<ul>
+<li>框架核心层不应该依赖具体业务。</li>
+<li>Agent 层只负责推理循环和状态更新。</li>
+<li>工具层负责外部能力和权限边界。</li>
+<li>模型客户端负责供应商差异。</li>
+<li>自动检测必须允许显式配置覆盖。</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li>Datawhale《Hello-Agents》第七章：构建你的 Agent 框架</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jjyaoao/helloagents">HelloAgents GitHub</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.vllm.ai/">vLLM 官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://ollama.com/">Ollama 官方文档</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/MyBlog/tags/Python/" rel="tag"># Python</a>
+              <a href="/MyBlog/tags/Hello-Agents/" rel="tag"># Hello-Agents</a>
+              <a href="/MyBlog/tags/LLM/" rel="tag"># LLM</a>
+              <a href="/MyBlog/tags/%E6%A1%86%E6%9E%B6%E8%AE%BE%E8%AE%A1/" rel="tag"># 框架设计</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/12/hello-agents-chapter6/" rel="prev" title="Hello-Agents 第六章学习笔记：四种智能体框架的设计哲学">
+                  <i class="fa fa-angle-left"></i> Hello-Agents 第六章学习笔记：四种智能体框架的设计哲学
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/13/hello-agents-chapter7-core-and-agents/" rel="next" title="Hello-Agents 第七章（二）：核心接口与四种 Agent 范式">
+                  Hello-Agents 第七章（二）：核心接口与四种 Agent 范式 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

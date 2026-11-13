@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">RAG 离线评估与线上监控闭环</title>
+  <desc id="desc">离线数据集和多层指标用于对照优化，线上追踪再将真实失败回流到评估集。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1 1 Q5 4 10 6 Q5 8 1 11" fill="none" stroke="#4d5555" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <filter id="pencil"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="1" seed="22"/><feDisplacementMap in="SourceGraphic" scale="1.2"/></filter>
+    <style>
+      .label{font:600 19px 'Segoe Print','Comic Sans MS',sans-serif;fill:#303b3b;text-anchor:middle}
+      .small{font:16px 'Segoe Print','Comic Sans MS',sans-serif;fill:#536060;text-anchor:middle}
+      .head{font:700 22px 'Segoe Print','Comic Sans MS',sans-serif;fill:#374141}
+      .box{stroke:#435051;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;filter:url(#pencil)}
+      .arrow{fill:none;stroke:#4d5555;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="560" rx="18" fill="#fffdf8"/>
+  <text x="54" y="49" class="head">离线：比较改动前后是否真的改善</text>
+  <path class="box" fill="#C7CEEA" d="M60 93 Q68 86 77 90 L268 88 Q277 92 275 103 L278 183 Q274 193 264 190 L70 194 Q62 190 64 180 Z"/>
+  <text x="171" y="132" class="label">🧾 评估问题集</text><text x="171" y="161" class="small">问题 + 必要证据 + 期望要点</text>
+  <path class="arrow" d="M282 141 Q305 137 328 141"/>
+  <path class="box" fill="#E8D5F5" d="M336 93 Q344 86 353 90 L544 88 Q553 92 551 103 L554 183 Q550 193 540 190 L346 194 Q338 190 340 180 Z"/>
+  <text x="447" y="132" class="label">🔍 检索评估</text><text x="447" y="161" class="small">Recall@k / MRR / nDCG</text>
+  <path class="arrow" d="M558 141 Q581 137 604 141"/>
+  <path class="box" fill="#FFF9C4" d="M612 93 Q620 86 629 90 L820 88 Q829 92 827 103 L830 183 Q826 193 816 190 L622 194 Q614 190 616 180 Z"/>
+  <text x="723" y="132" class="label">🧠 回答评估</text><text x="723" y="161" class="small">忠实度 / 答案相关性</text>
+  <path class="arrow" d="M834 141 Q857 137 880 141"/>
+  <path class="box" fill="#B5EAD7" d="M888 93 Q896 86 905 90 L1096 88 Q1105 92 1103 103 L1106 183 Q1102 193 1092 190 L898 194 Q890 190 892 180 Z"/>
+  <text x="999" y="132" class="label">📈 性能与成本</text><text x="999" y="161" class="small">延迟 / 失败率 / Token</text>
+  <path d="M56 234 Q600 221 1143 234" fill="none" stroke="#d9d4c7" stroke-width="2" stroke-dasharray="6 8"/>
+  <text x="54" y="279" class="head">线上：观察真实运行并持续回流</text>
+  <path class="box" fill="#FFDAB9" d="M105 326 Q113 319 122 323 L303 321 Q312 325 310 336 L313 419 Q309 429 299 426 L115 430 Q107 426 109 416 Z"/>
+  <text x="211" y="364" class="label">🌐 线上请求</text><text x="211" y="393" class="small">追踪检索、答案和耗时</text>
+  <path class="arrow" d="M315 374 Q346 370 375 374"/>
+  <path class="box" fill="#FFB3C6" d="M383 326 Q391 319 400 323 L581 321 Q590 325 588 336 L591 419 Q587 429 577 426 L393 430 Q385 426 387 416 Z"/>
+  <text x="489" y="364" class="label">🧑‍⚖️ 抽样复核</text><text x="489" y="393" class="small">核查证据与业务风险</text>
+  <path class="arrow" d="M593 374 Q624 370 653 374"/>
+  <path class="box" fill="#FFF9C4" d="M661 326 Q669 319 678 323 L859 321 Q868 325 866 336 L869 419 Q865 429 855 426 L671 430 Q663 426 665 416 Z"/>
+  <text x="767" y="364" class="label">🧰 分析失败类型</text><text x="767" y="393" class="small">数据、召回、排序或生成</text>
+  <path class="arrow" d="M871 374 Q902 370 931 374"/>
+  <path class="box" fill="#C7CEEA" d="M939 326 Q947 319 956 323 L1090 321 Q1099 325 1097 336 L1100 419 Q1096 429 1086 426 L949 430 Q941 426 943 416 Z"/>
+  <text x="1020" y="364" class="label">🔁 更新数据集</text><text x="1020" y="393" class="small">修复后重跑回归</text>
+  <path class="arrow" d="M1020 305 Q1010 254 889 254 Q640 248 489 305"/>
+  <text x="742" y="254" class="small">真实失败案例进入下一轮离线评估</text>
+</svg>

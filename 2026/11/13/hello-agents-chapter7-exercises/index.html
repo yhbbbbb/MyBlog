@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="总结 Hello-Agents 第七章，并详细回答框架设计、模型接入、Agent 范式、工具系统和扩展性习题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hello-Agents 第七章（四）：全章总结与课后习题详解">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-exercises/index.html">
+<meta property="og:site_name" content="yhbbbbb">
+<meta property="og:description" content="总结 Hello-Agents 第七章，并详细回答框架设计、模型接入、Agent 范式、工具系统和扩展性习题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-11-13T05:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-13T05:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="Hello-Agents">
+<meta property="article:tag" content="工程化">
+<meta property="article:tag" content="框架设计">
+<meta property="article:tag" content="课后习题">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-exercises/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-exercises/","path":"2026/11/13/hello-agents-chapter7-exercises/","title":"Hello-Agents 第七章（四）：全章总结与课后习题详解"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Hello-Agents 第七章（四）：全章总结与课后习题详解 | yhbbbbb</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","display_overflow":"scroll","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-mml-chtml.js","integrity":"sha256-ihPtDDm7pTmSF9ViEsItlvsrBTsNkz0MOXMchzOwCQw="}}</script>
+<script src="/MyBlog/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">yhbbbbb</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%85%A8%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">1.</span> <span class="nav-text">一、全章总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%B9%A0%E9%A2%98%E4%B8%80%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%87%AA%E5%BB%BA-Agent-%E6%A1%86%E6%9E%B6"><span class="nav-number">2.</span> <span class="nav-text">二、习题一：为什么要自建 Agent 框架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%9B%9B%E4%B8%AA%E5%B1%80%E9%99%90%E5%A6%82%E4%BD%95%E5%BD%B1%E5%93%8D%E5%BC%80%E5%8F%91%E6%95%88%E7%8E%87"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 四个局限如何影响开发效率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E2%80%9C%E4%B8%87%E7%89%A9%E7%9A%86%E4%B8%BA%E5%B7%A5%E5%85%B7%E2%80%9D%E7%9A%84%E4%BC%98%E5%8A%BF%E5%92%8C%E5%B1%80%E9%99%90"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 “万物皆为工具”的优势和局限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E6%89%8B%E5%86%99-Agent-%E4%B8%8E%E6%A1%86%E6%9E%B6%E5%8C%96-Agent-%E7%9A%84%E5%8F%98%E5%8C%96"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 手写 Agent 与框架化 Agent 的变化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%B9%A0%E9%A2%98%E4%BA%8C%EF%BC%9A%E6%89%A9%E5%B1%95%E6%A8%A1%E5%9E%8B%E4%BE%9B%E5%BA%94%E5%95%86%E4%B8%8E%E6%9C%AC%E5%9C%B0%E6%8E%A8%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">三、习题二：扩展模型供应商与本地推理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E7%BB%A7%E6%89%BF%E6%96%B9%E5%BC%8F%E6%B7%BB%E5%8A%A0-Gemini-Provider"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 继承方式添加 Gemini Provider</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E8%87%AA%E5%8A%A8%E6%A3%80%E6%B5%8B%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 自动检测的优先级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-vLLM%E3%80%81SGLang-%E5%92%8C-Ollama-%E5%AF%B9%E6%AF%94"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 vLLM、SGLang 和 Ollama 对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B9%A0%E9%A2%98%E4%B8%89%EF%BC%9AMessage%E3%80%81Agent-%E5%9F%BA%E7%B1%BB%E4%B8%8E%E5%8D%95%E4%BE%8B%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">四、习题三：Message、Agent 基类与单例配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-Pydantic-%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 Pydantic 的优势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-run-%E4%B8%8E-execute-%E6%98%AF%E4%BB%80%E4%B9%88%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 run 与 execute 是什么模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-Config-%E5%8D%95%E4%BE%8B%E7%9A%84%E4%BD%9C%E7%94%A8%E5%92%8C%E9%A3%8E%E9%99%A9"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 Config 单例的作用和风险</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B9%A0%E9%A2%98%E5%9B%9B%EF%BC%9A%E5%9B%9B%E7%A7%8D-Agent-%E7%9A%84%E6%94%B9%E8%BF%9B%E4%B8%8E-Tree-of-Thought"><span class="nav-number">5.</span> <span class="nav-text">五、习题四：四种 Agent 的改进与 Tree-of-Thought</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-ReAct-%E7%9A%84%E4%B8%89%E4%B8%AA%E5%85%B7%E4%BD%93%E6%94%B9%E8%BF%9B"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 ReAct 的三个具体改进</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E4%B8%BA-ReflectionAgent-%E5%A2%9E%E5%8A%A0%E8%B4%A8%E9%87%8F%E8%AF%84%E5%88%86"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 为 ReflectionAgent 增加质量评分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-Tree-of-Thought-Agent"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 Tree-of-Thought Agent</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E4%B9%A0%E9%A2%98%E4%BA%94%EF%BC%9A%E7%BB%9F%E4%B8%80%E5%B7%A5%E5%85%B7%E6%8E%A5%E5%8F%A3%E3%80%81%E5%B7%A5%E5%85%B7%E9%93%BE%E5%92%8C%E5%BC%82%E6%AD%A5%E6%89%A7%E8%A1%8C"><span class="nav-number">6.</span> <span class="nav-text">六、习题五：统一工具接口、工具链和异步执行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%BB%9F%E4%B8%80%E6%8E%A5%E5%8F%A3"><span class="nav-number">6.1.</span> <span class="nav-text">6.1 为什么要统一接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E4%B8%89%E5%B7%A5%E5%85%B7%E7%A0%94%E7%A9%B6%E9%93%BE"><span class="nav-number">6.2.</span> <span class="nav-text">6.2 三工具研究链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-%E5%BC%82%E6%AD%A5%E6%89%A7%E8%A1%8C%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E6%9C%89%E6%95%88"><span class="nav-number">6.3.</span> <span class="nav-text">6.3 异步执行什么时候有效</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E4%B9%A0%E9%A2%98%E5%85%AD%EF%BC%9A%E6%B5%81%E5%BC%8F%E8%BE%93%E5%87%BA%E3%80%81%E5%A4%9A%E8%BD%AE%E5%AF%B9%E8%AF%9D%E5%92%8C%E6%8F%92%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-number">7.</span> <span class="nav-text">七、习题六：流式输出、多轮对话和插件系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-%E6%B5%81%E5%BC%8F%E8%BE%93%E5%87%BA%E8%AE%BE%E8%AE%A1"><span class="nav-number">7.1.</span> <span class="nav-text">7.1 流式输出设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-%E5%A4%9A%E8%BD%AE%E5%AF%B9%E8%AF%9D%E3%80%81%E5%88%86%E6%94%AF%E4%B8%8E%E5%9B%9E%E6%BA%AF"><span class="nav-number">7.2.</span> <span class="nav-text">7.2 多轮对话、分支与回溯</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-3-%E6%8F%92%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84"><span class="nav-number">7.3.</span> <span class="nav-text">7.3 插件系统架构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E6%88%91%E7%9A%84%E5%AD%A6%E4%B9%A0%E7%BB%93%E8%AE%BA"><span class="nav-number">8.</span> <span class="nav-text">八、我的学习结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">9.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:23hbyao@gmail.com" title="Google Email → mailto:23hbyao@gmail.com" rel="noopener me" target="_blank"><i class="fab fa-google fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/11/13/hello-agents-chapter7-exercises/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yhbbbbb">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Hello-Agents 第七章（四）：全章总结与课后习题详解 | yhbbbbb">
+      <meta itemprop="description" content="总结 Hello-Agents 第七章，并详细回答框架设计、模型接入、Agent 范式、工具系统和扩展性习题。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hello-Agents 第七章（四）：全章总结与课后习题详解
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-11-13 13:00:00" itemprop="dateCreated datePublished" datetime="2026-11-13T13:00:00+08:00">2026-11-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">总结 Hello-Agents 第七章，并详细回答框架设计、模型接入、Agent 范式、工具系统和扩展性习题。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote class="blockquote-center">
+<p>框架的终点不是把所有能力都封装起来，而是让新的能力可以在不破坏旧代码的情况下加入。</p>
+
+</blockquote>
+
+<h2 id="一、全章总结"><a href="#一、全章总结" class="headerlink" title="一、全章总结"></a>一、全章总结</h2><p>第七章完成了一个从底层到上层的最小 Agent 框架：</p>
+<pre>
+<code class="mermaid">
+
+flowchart TB
+    A[&quot;🔵 用户请求&quot;] --&gt; B[&quot;🟣 LLM 统一接口&quot;]
+    B --&gt; C[&quot;🍑 Message 与 Config&quot;]
+    C --&gt; D[&quot;🟡 Agent 基类&quot;]
+    D --&gt; E[&quot;🟠 Simple &#x2F; ReAct &#x2F; Reflection &#x2F; Plan&quot;]
+    E --&gt; F[&quot;🟢 ToolRegistry 与 ToolChain&quot;]
+    F --&gt; G[&quot;✅ 可扩展 Agent 应用&quot;]
+</code>
+</pre>
+
+<p>核心设计可以归纳为四句话：</p>
+<ol>
+<li>用标准 API 隔离模型供应商。</li>
+<li>用结构化 Message 统一上下文。</li>
+<li>用抽象 Agent 承载不同推理范式。</li>
+<li>用工具注册表把能力从 Agent 中解耦。</li>
+</ol>
+<h2 id="二、习题一：为什么要自建-Agent-框架"><a href="#二、习题一：为什么要自建-Agent-框架" class="headerlink" title="二、习题一：为什么要自建 Agent 框架"></a>二、习题一：为什么要自建 Agent 框架</h2><div class="note info"><p>题目：分析主流框架的四个局限；解释“万物皆为工具”的优缺点；对比第四章手写 Agent 和第七章框架化实现，并说明你会优先考虑的设计原则。</p>
+</div>
+
+<h3 id="2-1-四个局限如何影响开发效率"><a href="#2-1-四个局限如何影响开发效率" class="headerlink" title="2.1 四个局限如何影响开发效率"></a>2.1 四个局限如何影响开发效率</h3><h4 id="过度抽象"><a href="#过度抽象" class="headerlink" title="过度抽象"></a>过度抽象</h4><p>以一个带检索的问答任务为例，开发者可能要同时理解模型、Prompt、Chain、Retriever、VectorStore、Memory 和 Callback。抽象本身没有错，但当问题只是“为什么这次调用没有返回结果”时，排查路径会穿过多个对象。</p>
+<p>对个人学习来说，影响是无法建立因果链；对项目开发来说，影响是定位一个错误需要阅读更多源码和文档。HelloAgents 选择小型接口，就是为了让模型调用、Agent 循环和工具执行可以直接被看见。</p>
+<h4 id="API-变化快"><a href="#API-变化快" class="headerlink" title="API 变化快"></a>API 变化快</h4><p>框架升级导致导入路径变化、参数改名或默认行为变化时，业务代码可能还没有变化，却无法运行。解决办法不是拒绝升级，而是：</p>
+<ul>
+<li>固定依赖版本。</li>
+<li>把第三方框架包在自己的适配层中。</li>
+<li>为关键行为写最小回归测试。</li>
+<li>在升级前记录旧版本的输入输出。</li>
+</ul>
+<h4 id="黑盒化"><a href="#黑盒化" class="headerlink" title="黑盒化"></a>黑盒化</h4><p>如果工具调用、重试和消息拼接全部被封装，开发者很难知道模型为什么选择某个工具。调试时需要把中间消息、工具参数、工具结果和异常原因记录下来。</p>
+<h4 id="依赖复杂"><a href="#依赖复杂" class="headerlink" title="依赖复杂"></a>依赖复杂</h4><p>依赖越多，环境冲突概率越高。轻量框架可以降低学习成本，但生产环境仍应使用成熟组件处理鉴权、队列、数据库和观测，不应该为了“自己实现”而重复制造基础设施。</p>
+<h3 id="2-2-“万物皆为工具”的优势和局限"><a href="#2-2-“万物皆为工具”的优势和局限" class="headerlink" title="2.2 “万物皆为工具”的优势和局限"></a>2.2 “万物皆为工具”的优势和局限</h3><p>优势：</p>
+<table>
+<thead>
+<tr>
+<th>优势</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>统一调用</td>
+<td>Agent 只需要理解名称、描述、输入和输出</td>
+</tr>
+<tr>
+<td>易于替换</td>
+<td>Memory 可以从内存实现换成 Redis，Agent 接口不变</td>
+</tr>
+<tr>
+<td>易于测试</td>
+<td>可以把真实工具替换成 FakeTool</td>
+</tr>
+<tr>
+<td>降低学习成本</td>
+<td>只需先掌握 Agent 与 Tool 的边界</td>
+</tr>
+</tbody></table>
+<p>局限：</p>
+<table>
+<thead>
+<tr>
+<th>局限</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>生命周期表达不足</td>
+<td>RAG 索引构建、更新和查询不是一次函数调用</td>
+</tr>
+<tr>
+<td>权限粒度不足</td>
+<td>数据库工具可能需要按用户隔离权限</td>
+</tr>
+<tr>
+<td>状态能力不足</td>
+<td>Memory 需要版本、回溯和持久化</td>
+</tr>
+<tr>
+<td>观测能力不足</td>
+<td>长链路任务需要独立 trace 和指标</td>
+</tr>
+</tbody></table>
+<p>我的判断是：把它当作统一入口很优秀，把所有复杂模块内部都压成一个函数则不够工程化。外部接口可以统一，内部实现应该允许分层。</p>
+<h3 id="2-3-手写-Agent-与框架化-Agent-的变化"><a href="#2-3-手写-Agent-与框架化-Agent-的变化" class="headerlink" title="2.3 手写 Agent 与框架化 Agent 的变化"></a>2.3 手写 Agent 与框架化 Agent 的变化</h3><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>第四章手写代码</th>
+<th>第七章框架化</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>模型调用</td>
+<td>每个脚本单独实现</td>
+<td>HelloAgentsLLM 统一</td>
+</tr>
+<tr>
+<td>消息历史</td>
+<td>普通列表或字符串</td>
+<td>Message 结构化管理</td>
+</tr>
+<tr>
+<td>配置</td>
+<td>散落在函数参数中</td>
+<td>Config 集中管理</td>
+</tr>
+<tr>
+<td>Agent 行为</td>
+<td>一个类承担所有逻辑</td>
+<td>基类 + 子类范式</td>
+</tr>
+<tr>
+<td>工具调用</td>
+<td>手写条件判断</td>
+<td>ToolRegistry 统一发现</td>
+</tr>
+<tr>
+<td>测试</td>
+<td>端到端脚本测试</td>
+<td>组件可以单独测试</td>
+</tr>
+<tr>
+<td>扩展</td>
+<td>修改原脚本</td>
+<td>新增子类或工具</td>
+</tr>
+</tbody></table>
+<p>如果由我设计框架，会优先考虑：接口稳定、可观测、可替换、可测试和安全边界。功能数量应该排在这些原则之后。</p>
+<h2 id="三、习题二：扩展模型供应商与本地推理"><a href="#三、习题二：扩展模型供应商与本地推理" class="headerlink" title="三、习题二：扩展模型供应商与本地推理"></a>三、习题二：扩展模型供应商与本地推理</h2><div class="note info"><p>题目：继承 HelloAgentsLLM 添加一个新供应商；分析自动检测优先级；比较 vLLM、SGLang 和 Ollama。</p>
+</div>
+
+<h3 id="3-1-继承方式添加-Gemini-Provider"><a href="#3-1-继承方式添加-Gemini-Provider" class="headerlink" title="3.1 继承方式添加 Gemini Provider"></a>3.1 继承方式添加 Gemini Provider</h3><p>下面展示一个兼容 OpenAI 风格网关的 Gemini 适配器。真正调用时要以当前网关的 API 兼容方式为准。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Optional</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line"><span class="keyword">from</span> hello_agents <span class="keyword">import</span> HelloAgentsLLM</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GeminiLLM</span>(<span class="title class_ inherited__">HelloAgentsLLM</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;通过兼容层把 Gemini 接入 HelloAgents。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        model: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        api_key: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        base_url: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        provider: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="string">&quot;auto&quot;</span>,</span></span><br><span class="line"><span class="params">        **kwargs,</span></span><br><span class="line"><span class="params">    </span>):</span><br><span class="line">        <span class="comment"># 只处理 gemini，其他 Provider 仍走父类的统一配置逻辑。</span></span><br><span class="line">        <span class="keyword">if</span> provider != <span class="string">&quot;gemini&quot;</span>:</span><br><span class="line">            <span class="comment"># 其他供应商继续使用父类实现。</span></span><br><span class="line">            <span class="built_in">super</span>().__init__(</span><br><span class="line">                model=model,</span><br><span class="line">                api_key=api_key,</span><br><span class="line">                base_url=base_url,</span><br><span class="line">                provider=provider,</span><br><span class="line">                **kwargs,</span><br><span class="line">            )</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">        <span class="variable language_">self</span>.provider = <span class="string">&quot;gemini&quot;</span></span><br><span class="line">        <span class="comment"># 构造参数优先于环境变量，方便单元测试注入不同配置。</span></span><br><span class="line">        <span class="variable language_">self</span>.api_key = api_key <span class="keyword">or</span> os.getenv(<span class="string">&quot;GEMINI_API_KEY&quot;</span>)</span><br><span class="line">        <span class="variable language_">self</span>.base_url = (</span><br><span class="line">            base_url</span><br><span class="line">            <span class="keyword">or</span> os.getenv(<span class="string">&quot;GEMINI_BASE_URL&quot;</span>)</span><br><span class="line">            <span class="keyword">or</span> <span class="string">&quot;https://generativelanguage.googleapis.com/v1beta/openai/&quot;</span></span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 尽早失败，避免真正请求时才暴露密钥缺失问题。</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> <span class="variable language_">self</span>.api_key:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">&quot;请设置 GEMINI_API_KEY&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">self</span>.model = (</span><br><span class="line">            model</span><br><span class="line">            <span class="keyword">or</span> os.getenv(<span class="string">&quot;GEMINI_MODEL&quot;</span>)</span><br><span class="line">            <span class="keyword">or</span> <span class="string">&quot;gemini-2.0-flash&quot;</span></span><br><span class="line">        )</span><br><span class="line">        <span class="variable language_">self</span>.temperature = kwargs.get(<span class="string">&quot;temperature&quot;</span>, <span class="number">0.7</span>)</span><br><span class="line">        <span class="variable language_">self</span>.max_tokens = kwargs.get(<span class="string">&quot;max_tokens&quot;</span>)</span><br><span class="line">        <span class="variable language_">self</span>.timeout = kwargs.get(<span class="string">&quot;timeout&quot;</span>, <span class="number">60</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Gemini 通过 OpenAI 兼容网关接入，所以 Agent 层无需改动。</span></span><br><span class="line">        <span class="variable language_">self</span>._client = OpenAI(</span><br><span class="line">            api_key=<span class="variable language_">self</span>.api_key,</span><br><span class="line">            base_url=<span class="variable language_">self</span>.base_url,</span><br><span class="line">            timeout=<span class="variable language_">self</span>.timeout,</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>配置与使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GEMINI_API_KEY=your-key</span><br><span class="line">GEMINI_MODEL=gemini-2.0-flash</span><br><span class="line">GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv</span><br><span class="line"><span class="keyword">from</span> gemini_llm <span class="keyword">import</span> GeminiLLM</span><br><span class="line"></span><br><span class="line">load_dotenv()</span><br><span class="line"></span><br><span class="line">llm = GeminiLLM(provider=<span class="string">&quot;gemini&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(llm.invoke([&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: <span class="string">&quot;解释 ReAct&quot;</span>&#125;]))</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-自动检测的优先级"><a href="#3-2-自动检测的优先级" class="headerlink" title="3.2 自动检测的优先级"></a>3.2 自动检测的优先级</h3><p>如果同时设置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">OPENAI_API_KEY=xxx</span><br><span class="line">LLM_BASE_URL=http://localhost:11434/v1</span><br></pre></td></tr></table></figure>
+
+<p>推荐的结果是 Ollama，因为本地地址已经明确表达了调用目标。优先级应为：</p>
+<ol>
+<li>显式 provider。</li>
+<li>base_url 的本地服务特征。</li>
+<li>云端密钥。</li>
+<li>没有足够信息时抛出异常。</li>
+</ol>
+<p>如果先检查 OPENAI_API_KEY，就会因为密钥存在而忽略本地地址，导致请求发错位置。自动检测必须提供 debug 日志，例如“命中 LLM_BASE_URL&#x3D;11434，因此选择 ollama”。</p>
+<h3 id="3-3-vLLM、SGLang-和-Ollama-对比"><a href="#3-3-vLLM、SGLang-和-Ollama-对比" class="headerlink" title="3.3 vLLM、SGLang 和 Ollama 对比"></a>3.3 vLLM、SGLang 和 Ollama 对比</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>vLLM</th>
+<th>SGLang</th>
+<th>Ollama</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>定位</td>
+<td>高吞吐推理服务</td>
+<td>面向结构化生成和复杂工作流的高性能运行时</td>
+<td>本地模型管理与快速运行工具</td>
+</tr>
+<tr>
+<td>易用性</td>
+<td>中等，需要 GPU 环境</td>
+<td>中等偏高，适合有推理工程经验的用户</td>
+<td>高，安装后即可运行模型</td>
+</tr>
+<tr>
+<td>资源占用</td>
+<td>通常需要较大显存</td>
+<td>依模型和运行时配置而定</td>
+<td>适合个人电脑，但大模型仍需要较高资源</td>
+</tr>
+<tr>
+<td>推理速度</td>
+<td>高吞吐、连续批处理成熟</td>
+<td>对结构化输出、长上下文和复杂程序有优势</td>
+<td>方便优先，吞吐不是主要目标</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>团队 API、在线服务</td>
+<td>高级推理服务、复杂生成</td>
+<td>本地开发、原型验证</td>
+</tr>
+<tr>
+<td>运维成本</td>
+<td>较高</td>
+<td>较高</td>
+<td>较低</td>
+</tr>
+</tbody></table>
+<p>三者的“精度”主要取决于模型权重、量化方式和运行参数，而不是服务框架本身。运行时更应该比较吞吐、延迟、显存占用和部署难度。</p>
+<h2 id="四、习题三：Message、Agent-基类与单例配置"><a href="#四、习题三：Message、Agent-基类与单例配置" class="headerlink" title="四、习题三：Message、Agent 基类与单例配置"></a>四、习题三：Message、Agent 基类与单例配置</h2><div class="note info"><p>题目：分析 Pydantic Message 的优势；解释 run 与 execute 的设计模式；说明 Config 单例的作用和风险。</p>
+</div>
+
+<h3 id="4-1-Pydantic-的优势"><a href="#4-1-Pydantic-的优势" class="headerlink" title="4.1 Pydantic 的优势"></a>4.1 Pydantic 的优势</h3><ul>
+<li>字段类型和必填项在入口处验证。</li>
+<li>统一序列化，方便写入日志或数据库。</li>
+<li>可以为 metadata、工具参数和结构化输出增加约束。</li>
+<li>错误更早暴露，避免非法消息传到模型层。</li>
+<li>方便和 FastAPI、队列、持久化系统连接。</li>
+</ul>
+<p>需要注意的是，Pydantic 只验证数据结构，不保证业务语义正确。例如 role 合法，不代表这条消息一定属于当前用户。</p>
+<h3 id="4-2-run-与-execute-是什么模式"><a href="#4-2-run-与-execute-是什么模式" class="headerlink" title="4.2 run 与 execute 是什么模式"></a>4.2 run 与 execute 是什么模式</h3><p>这是模板方法模式。run 是稳定的公开算法骨架，execute 是留给子类实现的变化步骤。它还体现了面向对象中的“好莱坞原则”：高层流程调用低层实现，子类不应该随意改变公共生命周期。</p>
+<p>优点是统一入口、减少重复、方便插入日志、计时、鉴权和异常处理。</p>
+<h3 id="4-3-Config-单例的作用和风险"><a href="#4-3-Config-单例的作用和风险" class="headerlink" title="4.3 Config 单例的作用和风险"></a>4.3 Config 单例的作用和风险</h3><p>单例表示一个进程中只维护一个配置对象。好处是默认模型、超时和调试开关保持一致，避免不同 Agent 读取不同配置。</p>
+<p>风险包括：</p>
+<ul>
+<li>测试之间共享可变状态。</li>
+<li>多租户服务无法使用不同租户配置。</li>
+<li>运行时修改配置会影响所有 Agent。</li>
+<li>并发程序需要考虑线程安全。</li>
+</ul>
+<p>因此生产系统可以保留“默认配置单例”，但允许 Agent 构造时显式注入独立 Config。</p>
+<h2 id="五、习题四：四种-Agent-的改进与-Tree-of-Thought"><a href="#五、习题四：四种-Agent-的改进与-Tree-of-Thought" class="headerlink" title="五、习题四：四种 Agent 的改进与 Tree-of-Thought"></a>五、习题四：四种 Agent 的改进与 Tree-of-Thought</h2><div class="note info"><p>题目：比较第四章和第七章的 ReAct；为 ReflectionAgent 增加质量评分；设计 Tree-of-Thought Agent。</p>
+</div>
+
+<h3 id="5-1-ReAct-的三个具体改进"><a href="#5-1-ReAct-的三个具体改进" class="headerlink" title="5.1 ReAct 的三个具体改进"></a>5.1 ReAct 的三个具体改进</h3><ol>
+<li><strong>统一模型入口</strong>：第四章可能直接调用 SDK，第七章通过 HelloAgentsLLM 隔离供应商。</li>
+<li><strong>统一工具注册</strong>：工具从 Agent 逻辑中移出，使用 ToolRegistry 管理名称、描述和执行。</li>
+<li><strong>统一历史与终止条件</strong>：Agent 基类保存消息，ReAct 只关注解析 Action、调用工具和控制最大步数。</li>
+</ol>
+<p>这些改进让新增工具不需要改 ReAct 主循环，也能让测试使用假的 LLM 和假的工具。</p>
+<h3 id="5-2-为-ReflectionAgent-增加质量评分"><a href="#5-2-为-ReflectionAgent-增加质量评分" class="headerlink" title="5.2 为 ReflectionAgent 增加质量评分"></a>5.2 为 ReflectionAgent 增加质量评分</h3><p>质量评分应该由模型输出结构化结果，同时设置最大循环次数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel, Field</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ReviewResult</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    <span class="comment"># 用结构化字段替代“感觉不错”这类无法自动判断的文本。</span></span><br><span class="line">    score: <span class="built_in">float</span> = Field(ge=<span class="number">0</span>, le=<span class="number">10</span>)</span><br><span class="line">    passed: <span class="built_in">bool</span></span><br><span class="line">    problems: <span class="built_in">list</span>[<span class="built_in">str</span>] = Field(default_factory=<span class="built_in">list</span>)</span><br><span class="line">    suggestions: <span class="built_in">list</span>[<span class="built_in">str</span>] = Field(default_factory=<span class="built_in">list</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ScoredReflectionAgent</span>(<span class="title class_ inherited__">Agent</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;分数达到阈值就提前结束反思循环。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_execute</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        input_text: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        threshold: <span class="built_in">float</span> = <span class="number">8.0</span>,</span></span><br><span class="line"><span class="params">        max_rounds: <span class="built_in">int</span> = <span class="number">3</span>,</span></span><br><span class="line"><span class="params">        **kwargs,</span></span><br><span class="line"><span class="params">    </span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="comment"># 先得到一个可被审查的初稿，后续每轮只修改当前版本。</span></span><br><span class="line">        answer = <span class="variable language_">self</span>.llm.invoke(</span><br><span class="line">            [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: input_text&#125;],</span><br><span class="line">            **kwargs,</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        <span class="comment"># max_rounds 是成本和延迟上限，防止反思循环失控。</span></span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(max_rounds):</span><br><span class="line">            review_text = <span class="variable language_">self</span>.llm.invoke(</span><br><span class="line">                [</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;content&quot;</span>: (</span><br><span class="line">                            <span class="string">&quot;请输出 JSON：score、passed、problems、suggestions。\n&quot;</span></span><br><span class="line">                            <span class="string">f&quot;答案：<span class="subst">&#123;answer&#125;</span>&quot;</span></span><br><span class="line">                        ),</span><br><span class="line">                    &#125;</span><br><span class="line">                ],</span><br><span class="line">                **kwargs,</span><br><span class="line">            )</span><br><span class="line">            <span class="comment"># 解析失败应进入异常处理或人工审核，不能默认为通过。</span></span><br><span class="line">            review = ReviewResult.model_validate_json(review_text)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> review.passed <span class="keyword">and</span> review.score &gt;= threshold:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">            answer = <span class="variable language_">self</span>.llm.invoke(</span><br><span class="line">                [</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;content&quot;</span>: (</span><br><span class="line">                            <span class="string">f&quot;原问题：<span class="subst">&#123;input_text&#125;</span>\n&quot;</span></span><br><span class="line">                            <span class="string">f&quot;当前答案：<span class="subst">&#123;answer&#125;</span>\n&quot;</span></span><br><span class="line">                            <span class="string">f&quot;审查结果：<span class="subst">&#123;review.model_dump_json()&#125;</span>\n&quot;</span></span><br><span class="line">                            <span class="string">&quot;请根据问题和建议输出改进后的完整答案。&quot;</span></span><br><span class="line">                        ),</span><br><span class="line">                    &#125;</span><br><span class="line">                ],</span><br><span class="line">                **kwargs,</span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> answer</span><br></pre></td></tr></table></figure>
+
+<p>评分机制的重点是把“是否满意”转成可测试的状态，而不是把循环终止交给模糊的自然语言。</p>
+<h3 id="5-3-Tree-of-Thought-Agent"><a href="#5-3-Tree-of-Thought-Agent" class="headerlink" title="5.3 Tree-of-Thought Agent"></a>5.3 Tree-of-Thought Agent</h3><p>Tree-of-Thought（思维树）不是只生成一条思路，而是在每一步生成多个候选路径，再评分和剪枝。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@dataclass</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ThoughtNode</span>:</span><br><span class="line">    <span class="comment"># path 保存从根节点到当前节点的完整思路，便于最终回放。</span></span><br><span class="line">    text: <span class="built_in">str</span></span><br><span class="line">    score: <span class="built_in">float</span> = <span class="number">0.0</span></span><br><span class="line">    path: <span class="type">List</span>[<span class="built_in">str</span>] | <span class="literal">None</span> = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TreeOfThoughtAgent</span>(<span class="title class_ inherited__">Agent</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;每一层生成多个思路，保留评分最高的路径。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_execute</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        input_text: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        width: <span class="built_in">int</span> = <span class="number">3</span>,</span></span><br><span class="line"><span class="params">        depth: <span class="built_in">int</span> = <span class="number">3</span>,</span></span><br><span class="line"><span class="params">        **kwargs,</span></span><br><span class="line"><span class="params">    </span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="comment"># frontier 只保留当前层候选，避免一次性保存整棵树造成内存膨胀。</span></span><br><span class="line">        frontier = [</span><br><span class="line">            ThoughtNode(text=<span class="string">&quot;开始分析&quot;</span>, path=[])</span><br><span class="line">        ]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(depth):</span><br><span class="line">            <span class="comment"># 每一轮先扩展，再统一评分和剪枝。</span></span><br><span class="line">            candidates: <span class="built_in">list</span>[ThoughtNode] = []</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> node <span class="keyword">in</span> frontier:</span><br><span class="line">                prompt = (</span><br><span class="line">                    <span class="string">f&quot;问题：<span class="subst">&#123;input_text&#125;</span>\n&quot;</span></span><br><span class="line">                    <span class="string">f&quot;已有路径：<span class="subst">&#123;node.path&#125;</span>\n&quot;</span></span><br><span class="line">                    <span class="string">f&quot;当前节点：<span class="subst">&#123;node.text&#125;</span>\n&quot;</span></span><br><span class="line">                    <span class="string">f&quot;请生成 <span class="subst">&#123;width&#125;</span> 个下一步思路，每行一个。&quot;</span></span><br><span class="line">                )</span><br><span class="line">                <span class="comment"># 一个节点生成多个候选，width 决定搜索分支数量。</span></span><br><span class="line">                text = <span class="variable language_">self</span>.llm.invoke(</span><br><span class="line">                    [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: prompt&#125;],</span><br><span class="line">                    **kwargs,</span><br><span class="line">                )</span><br><span class="line">                <span class="keyword">for</span> item <span class="keyword">in</span> text.splitlines():</span><br><span class="line">                    <span class="keyword">if</span> item.strip():</span><br><span class="line">                        candidates.append(</span><br><span class="line">                            ThoughtNode(</span><br><span class="line">                                text=item.strip(),</span><br><span class="line">                                path=(node.path <span class="keyword">or</span> []) + [item.strip()],</span><br><span class="line">                            )</span><br><span class="line">                        )</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 让模型给候选路径打分；真实项目可替换为规则或小模型。</span></span><br><span class="line">            <span class="comment"># 评分模型只负责排序，不直接修改候选路径内容。</span></span><br><span class="line">            <span class="keyword">for</span> candidate <span class="keyword">in</span> candidates:</span><br><span class="line">                score_text = <span class="variable language_">self</span>.llm.invoke(</span><br><span class="line">                    [</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;content&quot;</span>: (</span><br><span class="line">                                <span class="string">f&quot;问题：<span class="subst">&#123;input_text&#125;</span>\n&quot;</span></span><br><span class="line">                                <span class="string">f&quot;路径：<span class="subst">&#123;candidate.path&#125;</span>\n&quot;</span></span><br><span class="line">                                <span class="string">&quot;请只返回 0 到 10 的数字。&quot;</span></span><br><span class="line">                            ),</span><br><span class="line">                        &#125;</span><br><span class="line">                    ],</span><br><span class="line">                    **kwargs,</span><br><span class="line">                )</span><br><span class="line">                candidate.score = <span class="built_in">float</span>(score_text.strip())</span><br><span class="line"></span><br><span class="line">            <span class="comment"># Beam Search 风格剪枝，只保留最高分的 width 条路径。</span></span><br><span class="line">            frontier = <span class="built_in">sorted</span>(</span><br><span class="line">                candidates,</span><br><span class="line">                key=<span class="keyword">lambda</span> item: item.score,</span><br><span class="line">                reverse=<span class="literal">True</span>,</span><br><span class="line">            )[:width]</span><br><span class="line"></span><br><span class="line">        best = <span class="built_in">max</span>(frontier, key=<span class="keyword">lambda</span> item: item.score)</span><br><span class="line">        final_prompt = (</span><br><span class="line">            <span class="string">f&quot;问题：<span class="subst">&#123;input_text&#125;</span>\n&quot;</span></span><br><span class="line">            <span class="string">f&quot;最佳思考路径：<span class="subst">&#123;best.path&#125;</span>\n&quot;</span></span><br><span class="line">            <span class="string">&quot;请给出最终答案。&quot;</span></span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.llm.invoke(</span><br><span class="line">            [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: final_prompt&#125;],</span><br><span class="line">            **kwargs,</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>Tree-of-Thought 的代价是模型调用次数约为宽度乘深度，还需要防止评分模型偏好“看起来完整”的路径。因此生产实现应增加预算、重复路径检测和人工接管。</p>
+<h2 id="六、习题五：统一工具接口、工具链和异步执行"><a href="#六、习题五：统一工具接口、工具链和异步执行" class="headerlink" title="六、习题五：统一工具接口、工具链和异步执行"></a>六、习题五：统一工具接口、工具链和异步执行</h2><div class="note info"><p>题目：解释 BaseTool 的统一接口；设计至少三个工具组成的应用场景；分析异步执行的收益。</p>
+</div>
+
+<h3 id="6-1-为什么要统一接口"><a href="#6-1-为什么要统一接口" class="headerlink" title="6.1 为什么要统一接口"></a>6.1 为什么要统一接口</h3><p>统一接口让 Agent 可以用同一种方式发现和调用工具。工具返回多个值时，使用结构化字典或 Pydantic 模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">SearchResult</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    <span class="comment"># 固定搜索结果字段，避免不同搜索源返回不同键名。</span></span><br><span class="line">    title: <span class="built_in">str</span></span><br><span class="line">    summary: <span class="built_in">str</span></span><br><span class="line">    url: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SearchTool</span>(<span class="title class_ inherited__">BaseTool</span>):</span><br><span class="line">    name = <span class="string">&quot;search&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">execute</span>(<span class="params">self, input_data: <span class="built_in">str</span></span>) -&gt; SearchResult:</span><br><span class="line">        <span class="comment"># 真实实现应在这里调用搜索服务并完成字段映射。</span></span><br><span class="line">        <span class="keyword">return</span> SearchResult(</span><br><span class="line">            title=<span class="string">&quot;示例标题&quot;</span>,</span><br><span class="line">            summary=<span class="string">&quot;示例摘要&quot;</span>,</span><br><span class="line">            url=<span class="string">&quot;https://example.com&quot;</span>,</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>调用方可以稳定地读取 title、summary 和 url，工具内部以后换搜索服务也不会影响 Agent。</p>
+<h3 id="6-2-三工具研究链"><a href="#6-2-三工具研究链" class="headerlink" title="6.2 三工具研究链"></a>6.2 三工具研究链</h3><p>场景：做一份技术选型报告，需要：</p>
+<ol>
+<li>SearchTool 搜集候选方案。</li>
+<li>CalculatorTool 计算成本或性能指标。</li>
+<li>SummaryTool 生成结构化结论。</li>
+</ol>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+    A[&quot;🔵 研究问题&quot;] --&gt; B[&quot;🟣 SearchTool&lt;br&gt;检索资料&quot;]
+    B --&gt; C[&quot;🍑 CalculatorTool&lt;br&gt;计算指标&quot;]
+    C --&gt; D[&quot;🟡 SummaryTool&lt;br&gt;整理结论&quot;]
+    D --&gt; E[&quot;🟢 评审与输出&quot;]
+</code>
+</pre>
+
+<p>三个工具之间有数据依赖，因此不能把它们全部并行；只有同一阶段的多个搜索源可以并行。</p>
+<h3 id="6-3-异步执行什么时候有效"><a href="#6-3-异步执行什么时候有效" class="headerlink" title="6.3 异步执行什么时候有效"></a>6.3 异步执行什么时候有效</h3><p>当任务主要等待网络 I&#x2F;O，并且任务之间互不依赖时，并行可以明显降低总耗时。若三个请求耗时 2 秒、3 秒、4 秒，串行约 9 秒，并行接近最长请求的 4 秒。</p>
+<p>以下情况不适合并行：</p>
+<ul>
+<li>后一个工具需要前一个工具的输出。</li>
+<li>工具共享不可并发访问的资源。</li>
+<li>CPU 计算占满线程，线程池无法突破 GIL。</li>
+<li>并发调用超过供应商限流。</li>
+</ul>
+<p>因此异步执行器必须配合并发上限、超时、取消和失败聚合。</p>
+<h2 id="七、习题六：流式输出、多轮对话和插件系统"><a href="#七、习题六：流式输出、多轮对话和插件系统" class="headerlink" title="七、习题六：流式输出、多轮对话和插件系统"></a>七、习题六：流式输出、多轮对话和插件系统</h2><div class="note info"><p>题目：为 HelloAgents 增加流式输出、多轮对话分支与回溯，并设计无需修改核心代码的插件系统。</p>
+</div>
+
+<h3 id="7-1-流式输出设计"><a href="#7-1-流式输出设计" class="headerlink" title="7.1 流式输出设计"></a>7.1 流式输出设计</h3><p>需要修改三层：</p>
+<ol>
+<li>LLM 层增加 stream_invoke，返回字符串迭代器。</li>
+<li>Agent 层增加 stream_run，边消费边 yield。</li>
+<li>UI 层逐块刷新，完整响应结束后再写入历史。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Agent</span>(<span class="title class_ inherited__">ABC</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">stream_run</span>(<span class="params">self, input_text: <span class="built_in">str</span>, **kwargs</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;默认流式接口，子类可以覆盖。&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 流式阶段只向调用方 yield 分片，不要为每个 token 写一条历史消息。</span></span><br><span class="line">        messages = [</span><br><span class="line">            &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;system&quot;</span>, <span class="string">&quot;content&quot;</span>: <span class="variable language_">self</span>.system_prompt&#125;,</span><br><span class="line">            &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: input_text&#125;,</span><br><span class="line">        ]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 用列表累积分片，结束后再拼成完整 assistant 消息。</span></span><br><span class="line">        full_response = []</span><br><span class="line">        <span class="keyword">for</span> chunk <span class="keyword">in</span> <span class="variable language_">self</span>.llm.stream_invoke(messages, **kwargs):</span><br><span class="line">            full_response.append(chunk)</span><br><span class="line">            <span class="keyword">yield</span> chunk</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 只有完整响应结束后才写入一条 assistant 消息。</span></span><br><span class="line">        <span class="comment"># 只有完整响应形成后才写历史，避免断线留下半截上下文。</span></span><br><span class="line">        <span class="variable language_">self</span>.add_message(</span><br><span class="line">            Message(</span><br><span class="line">                role=<span class="string">&quot;assistant&quot;</span>,</span><br><span class="line">                content=<span class="string">&quot;&quot;</span>.join(full_response),</span><br><span class="line">            )</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>流式输出要处理断线、重试和半截响应。UI 不应该把每个 token 都当成一条历史消息，否则历史会膨胀。</p>
+<h3 id="7-2-多轮对话、分支与回溯"><a href="#7-2-多轮对话、分支与回溯" class="headerlink" title="7.2 多轮对话、分支与回溯"></a>7.2 多轮对话、分支与回溯</h3><p>建议新增 Conversation、Turn 和 ConversationStore：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass, field</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Dict</span>, <span class="type">List</span>, <span class="type">Optional</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@dataclass</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Turn</span>:</span><br><span class="line">    <span class="comment"># parent_id 把线性对话连接成可分支、可回溯的树。</span></span><br><span class="line">    <span class="built_in">id</span>: <span class="built_in">str</span></span><br><span class="line">    parent_id: <span class="type">Optional</span>[<span class="built_in">str</span>]</span><br><span class="line">    messages: <span class="type">List</span>[Message] = field(default_factory=<span class="built_in">list</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ConversationStore</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;保存对话树，而不是只有一条线性列表。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.turns: <span class="type">Dict</span>[<span class="built_in">str</span>, Turn] = &#123;&#125;</span><br><span class="line">        <span class="variable language_">self</span>.active_id: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">append</span>(<span class="params">self, turn: Turn</span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="comment"># 新增一轮后将它设为当前活动分支。</span></span><br><span class="line">        <span class="variable language_">self</span>.turns[turn.<span class="built_in">id</span>] = turn</span><br><span class="line">        <span class="variable language_">self</span>.active_id = turn.<span class="built_in">id</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">branch</span>(<span class="params">self, source_id: <span class="built_in">str</span>, new_id: <span class="built_in">str</span></span>) -&gt; Turn:</span><br><span class="line">        <span class="comment"># 分支复制历史，不删除原分支，便于比较不同回答。</span></span><br><span class="line">        source = <span class="variable language_">self</span>.turns[source_id]</span><br><span class="line">        new_turn = Turn(</span><br><span class="line">            <span class="built_in">id</span>=new_id,</span><br><span class="line">            parent_id=source.<span class="built_in">id</span>,</span><br><span class="line">            messages=<span class="built_in">list</span>(source.messages),</span><br><span class="line">        )</span><br><span class="line">        <span class="variable language_">self</span>.append(new_turn)</span><br><span class="line">        <span class="keyword">return</span> new_turn</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">rollback</span>(<span class="params">self, turn_id: <span class="built_in">str</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="comment"># 回溯只切换指针，不删除旧数据，审计记录仍然保留。</span></span><br><span class="line">        <span class="keyword">if</span> turn_id <span class="keyword">not</span> <span class="keyword">in</span> <span class="variable language_">self</span>.turns:</span><br><span class="line">            <span class="keyword">raise</span> KeyError(turn_id)</span><br><span class="line">        <span class="variable language_">self</span>.active_id = turn_id</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">history</span>(<span class="params">self</span>) -&gt; <span class="type">List</span>[Message]:</span><br><span class="line">        <span class="comment"># 取出当前分支给 Agent 使用；复杂实现可沿 parent_id 逐层合并。</span></span><br><span class="line">        current = <span class="variable language_">self</span>.turns.get(<span class="variable language_">self</span>.active_id)</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">list</span>(current.messages) <span class="keyword">if</span> current <span class="keyword">else</span> []</span><br></pre></td></tr></table></figure>
+
+<p>分支的本质是把对话历史从列表升级成树。回溯时不删除旧数据，而是切换 active_id，便于审计和比较不同回答。</p>
+<h3 id="7-3-插件系统架构"><a href="#7-3-插件系统架构" class="headerlink" title="7.3 插件系统架构"></a>7.3 插件系统架构</h3><p>插件系统需要稳定的注册接口、版本信息和生命周期钩子：</p>
+<pre>
+<code class="mermaid">
+
+flowchart TB
+    A[&quot;🔵 PluginManager&lt;br&gt;发现插件&quot;] --&gt; B[&quot;🟣 PluginManifest&lt;br&gt;名称与版本&quot;]
+    B --&gt; C[&quot;🍑 register_agents&lt;br&gt;注册 Agent&quot;]
+    B --&gt; D[&quot;🍑 register_tools&lt;br&gt;注册 Tool&quot;]
+    B --&gt; E[&quot;🍑 register_hooks&lt;br&gt;注册钩子&quot;]
+    C --&gt; F[&quot;🟡 HelloAgents Runtime&quot;]
+    D --&gt; F
+    E --&gt; F
+    F --&gt; G[&quot;🟢 业务应用&quot;]
+</code>
+</pre>
+
+<p>关键接口示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> Protocol</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Plugin</span>(<span class="title class_ inherited__">Protocol</span>):</span><br><span class="line">    name: <span class="built_in">str</span></span><br><span class="line">    version: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">register</span>(<span class="params">self, runtime</span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="comment"># 插件只能通过运行时公开接口注册能力，避免修改核心模块。</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;把 Agent、Tool 或 Hook 注册到运行时。&quot;&quot;&quot;</span></span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">PluginManager</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, runtime</span>):</span><br><span class="line">        <span class="variable language_">self</span>.runtime = runtime</span><br><span class="line">        <span class="variable language_">self</span>.plugins: <span class="built_in">dict</span>[<span class="built_in">str</span>, Plugin] = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">load</span>(<span class="params">self, plugin: Plugin</span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="comment"># 加载前检查名称，防止两个插件覆盖同一个注册项。</span></span><br><span class="line">        <span class="keyword">if</span> plugin.name <span class="keyword">in</span> <span class="variable language_">self</span>.plugins:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">f&quot;插件重复：<span class="subst">&#123;plugin.name&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 注册成功后再写入管理器，注册失败不会留下半加载状态。</span></span><br><span class="line">        plugin.register(<span class="variable language_">self</span>.runtime)</span><br><span class="line">        <span class="variable language_">self</span>.plugins[plugin.name] = plugin</span><br></pre></td></tr></table></figure>
+
+<p>第三方插件可以通过 Python entry points 自动发现，也可以先用显式配置列表加载。必须校验插件版本、权限和依赖，不能让插件默认获得文件系统和网络的全部权限。</p>
+<h2 id="八、我的学习结论"><a href="#八、我的学习结论" class="headerlink" title="八、我的学习结论"></a>八、我的学习结论</h2><p>第七章最重要的收获不是记住某个类名，而是理解扩展方向：</p>
+<ul>
+<li>新模型通过适配器扩展。</li>
+<li>新 Agent 通过继承基类扩展。</li>
+<li>新能力通过工具注册表扩展。</li>
+<li>新工作流通过工具链扩展。</li>
+<li>新产品能力通过插件和生命周期钩子扩展。</li>
+</ul>
+<p>当一个框架可以持续加入能力，同时不要求修改核心循环时，它才真正具备可维护性。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li>Datawhale《Hello-Agents》第七章：构建你的 Agent 框架</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jjyaoao/helloagents">HelloAgents GitHub</a></li>
+<li><a target="_blank" rel="noopener" href="https://packaging.python.org/en/latest/specifications/entry-points/">Python Entry Points 文档</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/MyBlog/tags/%E5%B7%A5%E7%A8%8B%E5%8C%96/" rel="tag"># 工程化</a>
+              <a href="/MyBlog/tags/Hello-Agents/" rel="tag"># Hello-Agents</a>
+              <a href="/MyBlog/tags/%E6%A1%86%E6%9E%B6%E8%AE%BE%E8%AE%A1/" rel="tag"># 框架设计</a>
+              <a href="/MyBlog/tags/%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/" rel="tag"># 课后习题</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/13/hello-agents-chapter7-tools/" rel="prev" title="Hello-Agents 第七章（三）：工具系统、搜索整合与异步执行">
+                  <i class="fa fa-angle-left"></i> Hello-Agents 第七章（三）：工具系统、搜索整合与异步执行
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>

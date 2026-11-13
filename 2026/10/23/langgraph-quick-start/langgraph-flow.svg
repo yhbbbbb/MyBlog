@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 610" role="img" aria-labelledby="title desc">
+  <title id="title">LangGraph Agent 状态图执行流程</title>
+  <desc id="desc">用户消息进入模型节点，模型根据状态决定结束或调用工具，工具结果回到模型节点，最后生成回答。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1 1 Q5 4 10 6 Q5 8 1 11" fill="none" stroke="#4d5555" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <filter id="pencil"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="1" seed="9"/><feDisplacementMap in="SourceGraphic" scale="1.1"/></filter>
+    <style>
+      .title{font:700 28px 'Segoe Print','Microsoft YaHei',sans-serif;fill:#273333;text-anchor:middle}
+      .label{font:600 20px 'Segoe Print','Microsoft YaHei',sans-serif;fill:#303b3b;text-anchor:middle}
+      .small{font:16px 'Segoe Print','Microsoft YaHei',sans-serif;fill:#536060;text-anchor:middle}
+      .box{stroke:#435051;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;filter:url(#pencil)}
+      .arrow{fill:none;stroke:#4d5555;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .dashed{fill:none;stroke:#8a6c50;stroke-width:2.4;stroke-dasharray:8 7;stroke-linecap:round;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="610" rx="18" fill="#fffdf8"/>
+  <text x="600" y="48" class="title">LangGraph Agent：State 驱动的节点循环</text>
+  <rect x="55" y="90" width="1090" height="455" rx="24" fill="#f6f2e9" stroke="#cbbda7" stroke-width="2" stroke-dasharray="10 8"/>
+  <text x="92" y="125" class="small" text-anchor="start">StateGraph（共享状态）</text>
+  <rect x="95" y="235" width="170" height="86" rx="18" fill="#d9e9e7" class="box"/>
+  <text x="180" y="272" class="label">用户消息</text><text x="180" y="299" class="small">messages</text>
+  <rect x="335" y="210" width="210" height="136" rx="20" fill="#dbe7f3" class="box"/>
+  <text x="440" y="258" class="label">模型节点</text><text x="440" y="287" class="small">读取 State</text><text x="440" y="312" class="small">决定下一步</text>
+  <polygon points="665,210 775,278 665,346 555,278" fill="#f2dfb9" class="box"/>
+  <text x="665" y="273" class="label">需要工具？</text><text x="665" y="302" class="small">条件边</text>
+  <rect x="855" y="210" width="205" height="136" rx="20" fill="#e5dcef" class="box"/>
+  <text x="957" y="258" class="label">工具节点</text><text x="957" y="287" class="small">API / 数据库</text><text x="957" y="312" class="small">校验与执行</text>
+  <rect x="855" y="405" width="205" height="82" rx="18" fill="#dcebd9" class="box"/>
+  <text x="957" y="440" class="label">最终回答</text><text x="957" y="466" class="small">END</text>
+  <path d="M265 278 C290 278 305 278 335 278" class="arrow"/>
+  <path d="M545 278 C585 278 605 278 555 278" class="arrow" opacity="0"/>
+  <path d="M545 278 C585 278 610 278 555 278" class="arrow" opacity="0"/>
+  <path d="M545 278 C590 278 615 278 555 278" class="arrow" opacity="0"/>
+  <path d="M545 278 C585 278 600 278 555 278" class="arrow" opacity="0"/>
+  <path d="M545 278 C585 278 620 278 555 278" class="arrow" opacity="0"/>
+  <path d="M545 278 L555 278" class="arrow"/>
+  <path d="M775 278 L855 278" class="arrow"/>
+  <text x="815" y="255" class="small">是</text>
+  <path d="M665 346 C665 446 760 446 855 446" class="arrow"/>
+  <text x="700" y="430" class="small">否</text>
+  <path d="M957 346 L957 405" class="arrow"/>
+  <path d="M855 446 C710 560 430 560 440 346" class="dashed"/>
+  <text x="650" y="535" class="small">工具结果合并回 State，再次调用模型</text>
+  <rect x="105" y="385" width="190" height="90" rx="16" fill="#fff8df" class="box"/>
+  <text x="200" y="420" class="label">Checkpoint</text><text x="200" y="449" class="small">thread_id / 恢复</text>
+  <path d="M295 430 C420 390 520 360 610 330" class="dashed"/>
+  <text x="320" y="383" class="small">持久化状态</text>
+</svg>
