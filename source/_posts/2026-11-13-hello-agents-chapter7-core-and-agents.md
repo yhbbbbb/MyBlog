@@ -36,20 +36,27 @@ from typing import Any, Dict, Optional, Literal
 from pydantic import BaseModel, Field
 
 
+# 限定角色集合，避免把任意字符串直接传给模型 API。
 Role = Literal["system", "user", "assistant", "tool"]
 
 
 class Message(BaseModel):
     """Agent 内部使用的标准消息对象。"""
 
+    # 空内容通常意味着上游拼接或工具返回出了问题，因此直接拒绝。
     content: str = Field(min_length=1)
+    # role 决定模型如何解释这条消息，是消息协议的核心字段。
     role: Role
+    # name 可用于标识具体 Agent 或工具，便于多 Agent 日志追踪。
     name: Optional[str] = None
+    # metadata 不参与模型正文，但可保存 trace_id、耗时和工具版本。
     metadata: Dict[str, Any] = Field(default_factory=dict)
+    # 创建时间用于审计和调试，不依赖模型返回内容。
     created_at: datetime = Field(default_factory=datetime.now)
 
     def to_openai(self) -> dict:
         """转换成 OpenAI 兼容的字典格式。"""
+        # 只转换模型 API 需要的字段，内部 metadata 不直接泄露给模型。
         data = {
             "role": self.role,
             "content": self.content,
@@ -75,11 +82,14 @@ from pydantic import BaseModel, Field
 class Config(BaseModel):
     """HelloAgents 的运行配置。"""
 
+    # 默认模型从环境变量读取，便于在不同环境切换而不改代码。
     model: str = Field(
         default_factory=lambda: os.getenv("LLM_MODEL_ID", "gpt-4o-mini")
     )
+    # temperature 控制随机性；工具调用场景通常应设置得更低。
     temperature: float = 0.7
     max_tokens: Optional[int] = None
+    # max_steps 是所有循环型 Agent 的保险丝，防止无限调用模型。
     max_steps: int = 5
     tool_timeout: float = 30.0
     debug: bool = False
@@ -94,6 +104,7 @@ _config: Config | None = None
 
 def get_config() -> Config:
     """返回进程内共享的配置对象。"""
+    # 通过全局引用保证同一进程内复用同一个默认配置对象。
     global _config
     if _config is None:
         _config = Config()
@@ -130,6 +141,7 @@ class Agent(ABC):
         system_prompt: Optional[str] = None,
         config: Optional[Config] = None,
     ):
+        # 这些字段是所有子类都会使用的公共状态。
         self.name = name
         self.llm = llm
         self.system_prompt = system_prompt or "你是一个有帮助的 AI 助手。"
@@ -138,17 +150,21 @@ class Agent(ABC):
 
     def run(self, input_text: str, **kwargs) -> str:
         """统一公开接口，子类不需要重复实现历史管理。"""
+        # 在进入模型调用前校验输入，避免浪费一次请求。
         if not input_text.strip():
             raise ValueError("输入内容不能为空")
 
+        # 先记录用户输入，使 _execute 可以直接读取完整历史。
         self.add_message(Message(role="user", content=input_text))
 
         try:
+            # 子类只实现推理过程，公共生命周期仍由基类控制。
             result = self._execute(input_text, **kwargs)
         except Exception:
             # 真实项目中这里还应记录 trace_id 和完整堆栈。
             raise
 
+        # 只有成功得到最终结果后，才写入 assistant 历史。
         self.add_message(Message(role="assistant", content=result))
         return result
 
@@ -257,24 +273,29 @@ class MyReActAgent(ReActAgent):
         self.prompt_template = custom_prompt or MY_REACT_PROMPT
 
     def _execute(self, input_text: str, **kwargs) -> str:
+        # 每次 run 都从新的一棵推理树开始，避免串入上一轮任务。
         self.current_history = []
 
+        # max_steps 同时限制成本、延迟和模型输出格式错误造成的循环。
         for step in range(1, self.max_steps + 1):
             prompt = self.prompt_template.format(
                 tools=self.tool_registry.get_tools_description(),
                 question=input_text,
                 history="\n".join(self.current_history),
             )
+            # 每一轮都把历史观察结果重新放入提示词，形成 ReAct 上下文。
             response = self.llm.invoke(
                 [{"role": "user", "content": prompt}],
                 **kwargs,
             )
 
             thought, action = self._parse_output(response)
+            # Finish 是唯一允许结束循环的动作，其余动作必须经过工具注册表。
             if action.startswith("Finish"):
                 return self._parse_action_input(action)
 
             tool_name, tool_input = self._parse_action(action)
+            # Agent 不直接调用函数，由 Registry 负责查找、执行和统一异常。
             observation = self.tool_registry.execute_tool(
                 tool_name,
                 tool_input,
@@ -287,6 +308,7 @@ class MyReActAgent(ReActAgent):
                 ]
             )
 
+        # 超限时返回明确失败信息，调用方可以据此转人工或重试。
         return "抱歉，未能在最大步数内完成任务。"
 
     @staticmethod
@@ -302,6 +324,7 @@ class MyReActAgent(ReActAgent):
             text,
             flags=re.S,
         )
+        # 解析失败时返回空字符串，让上层可以记录格式错误并决定是否重试。
         thought = thought_match.group(1).strip() if thought_match else ""
         action = action_match.group(1).strip() if action_match else ""
         return thought, action
@@ -333,11 +356,13 @@ class ReflectionAgent(Agent):
     """通过反思循环改进答案质量。"""
 
     def _execute(self, input_text: str, max_rounds: int = 3, **kwargs) -> str:
+        # 第一轮先产生候选答案，后续循环只围绕这个答案进行审查和修订。
         answer = self.llm.invoke(
             [{"role": "user", "content": input_text}],
             **kwargs,
         )
 
+        # max_rounds 防止模型在“继续优化”与“仍需修改”之间无限循环。
         for round_index in range(1, max_rounds + 1):
             review_prompt = (
                 "请审查下面的答案，输出问题、改进建议和是否通过。\n\n"
@@ -348,6 +373,7 @@ class ReflectionAgent(Agent):
                 **kwargs,
             )
 
+            # 教学示例用字符串判断；生产实现应改成结构化 JSON 字段。
             if "通过" in review or "PASS" in review.upper():
                 break
 
@@ -381,6 +407,7 @@ class PlanAndSolveAgent(Agent):
             "每一步都要有明确输入、输出和完成标准。\n"
             f"任务：{input_text}"
         )
+        # 先单独生成计划，便于把规划结果记录下来或让人工审核。
         plan_text = self.llm.invoke(
             [{"role": "user", "content": plan_prompt}],
             **kwargs,
@@ -391,6 +418,7 @@ class PlanAndSolveAgent(Agent):
             f"计划：{plan_text}\n"
             "请按计划执行，并在最终结果中列出完成情况。"
         )
+        # 执行阶段带上原任务和计划，避免模型只看到局部步骤。
         return self.llm.invoke(
             [{"role": "user", "content": solve_prompt}],
             **kwargs,
@@ -425,12 +453,14 @@ class FunctionCallAgent(Agent):
             {"role": "user", "content": input_text},
         ]
 
+        # 结构化调用让模型返回工具名和参数，避免从自然语言中猜测。
         decision = self.llm.invoke_with_tools(
             messages,
             tools=self.tool_registry.schemas(),
             **kwargs,
         )
 
+        # 模型可以直接结束，也可以请求工具；两条路径都要显式处理。
         if decision.get("type") == "final":
             return decision["content"]
 
@@ -438,6 +468,7 @@ class FunctionCallAgent(Agent):
             name=decision["name"],
             arguments=decision.get("arguments", {}),
         )
+        # Registry 仍然是权限和参数校验的最后一道边界。
         result = self.tool_registry.execute_structured(
             call.name,
             call.arguments,

@@ -135,6 +135,7 @@ class GeminiLLM(HelloAgentsLLM):
         provider: Optional[str] = "auto",
         **kwargs,
     ):
+        # 只处理 gemini，其他 Provider 仍走父类的统一配置逻辑。
         if provider != "gemini":
             # 其他供应商继续使用父类实现。
             super().__init__(
@@ -147,6 +148,7 @@ class GeminiLLM(HelloAgentsLLM):
             return
 
         self.provider = "gemini"
+        # 构造参数优先于环境变量，方便单元测试注入不同配置。
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         self.base_url = (
             base_url
@@ -154,6 +156,7 @@ class GeminiLLM(HelloAgentsLLM):
             or "https://generativelanguage.googleapis.com/v1beta/openai/"
         )
 
+        # 尽早失败，避免真正请求时才暴露密钥缺失问题。
         if not self.api_key:
             raise ValueError("请设置 GEMINI_API_KEY")
 
@@ -166,6 +169,7 @@ class GeminiLLM(HelloAgentsLLM):
         self.max_tokens = kwargs.get("max_tokens")
         self.timeout = kwargs.get("timeout", 60)
 
+        # Gemini 通过 OpenAI 兼容网关接入，所以 Agent 层无需改动。
         self._client = OpenAI(
             api_key=self.api_key,
             base_url=self.base_url,
@@ -280,6 +284,7 @@ from pydantic import BaseModel, Field
 
 
 class ReviewResult(BaseModel):
+    # 用结构化字段替代“感觉不错”这类无法自动判断的文本。
     score: float = Field(ge=0, le=10)
     passed: bool
     problems: list[str] = Field(default_factory=list)
@@ -296,11 +301,13 @@ class ScoredReflectionAgent(Agent):
         max_rounds: int = 3,
         **kwargs,
     ) -> str:
+        # 先得到一个可被审查的初稿，后续每轮只修改当前版本。
         answer = self.llm.invoke(
             [{"role": "user", "content": input_text}],
             **kwargs,
         )
 
+        # max_rounds 是成本和延迟上限，防止反思循环失控。
         for _ in range(max_rounds):
             review_text = self.llm.invoke(
                 [
@@ -314,6 +321,7 @@ class ScoredReflectionAgent(Agent):
                 ],
                 **kwargs,
             )
+            # 解析失败应进入异常处理或人工审核，不能默认为通过。
             review = ReviewResult.model_validate_json(review_text)
 
             if review.passed and review.score >= threshold:
@@ -350,6 +358,7 @@ from typing import List
 
 @dataclass
 class ThoughtNode:
+    # path 保存从根节点到当前节点的完整思路，便于最终回放。
     text: str
     score: float = 0.0
     path: List[str] | None = None
@@ -365,11 +374,13 @@ class TreeOfThoughtAgent(Agent):
         depth: int = 3,
         **kwargs,
     ) -> str:
+        # frontier 只保留当前层候选，避免一次性保存整棵树造成内存膨胀。
         frontier = [
             ThoughtNode(text="开始分析", path=[])
         ]
 
         for _ in range(depth):
+            # 每一轮先扩展，再统一评分和剪枝。
             candidates: list[ThoughtNode] = []
 
             for node in frontier:
@@ -379,6 +390,7 @@ class TreeOfThoughtAgent(Agent):
                     f"当前节点：{node.text}\n"
                     f"请生成 {width} 个下一步思路，每行一个。"
                 )
+                # 一个节点生成多个候选，width 决定搜索分支数量。
                 text = self.llm.invoke(
                     [{"role": "user", "content": prompt}],
                     **kwargs,
@@ -393,6 +405,7 @@ class TreeOfThoughtAgent(Agent):
                         )
 
             # 让模型给候选路径打分；真实项目可替换为规则或小模型。
+            # 评分模型只负责排序，不直接修改候选路径内容。
             for candidate in candidates:
                 score_text = self.llm.invoke(
                     [
@@ -409,6 +422,7 @@ class TreeOfThoughtAgent(Agent):
                 )
                 candidate.score = float(score_text.strip())
 
+            # Beam Search 风格剪枝，只保留最高分的 width 条路径。
             frontier = sorted(
                 candidates,
                 key=lambda item: item.score,
@@ -441,6 +455,7 @@ Tree-of-Thought 的代价是模型调用次数约为宽度乘深度，还需要�
 
 ```python
 class SearchResult(BaseModel):
+    # 固定搜索结果字段，避免不同搜索源返回不同键名。
     title: str
     summary: str
     url: str
@@ -450,6 +465,7 @@ class SearchTool(BaseTool):
     name = "search"
 
     def execute(self, input_data: str) -> SearchResult:
+        # 真实实现应在这里调用搜索服务并完成字段映射。
         return SearchResult(
             title="示例标题",
             summary="示例摘要",
@@ -508,17 +524,20 @@ flowchart LR
 class Agent(ABC):
     def stream_run(self, input_text: str, **kwargs):
         """默认流式接口，子类可以覆盖。"""
+        # 流式阶段只向调用方 yield 分片，不要为每个 token 写一条历史消息。
         messages = [
             {"role": "system", "content": self.system_prompt},
             {"role": "user", "content": input_text},
         ]
 
+        # 用列表累积分片，结束后再拼成完整 assistant 消息。
         full_response = []
         for chunk in self.llm.stream_invoke(messages, **kwargs):
             full_response.append(chunk)
             yield chunk
 
         # 只有完整响应结束后才写入一条 assistant 消息。
+        # 只有完整响应形成后才写历史，避免断线留下半截上下文。
         self.add_message(
             Message(
                 role="assistant",
@@ -540,6 +559,7 @@ from typing import Dict, List, Optional
 
 @dataclass
 class Turn:
+    # parent_id 把线性对话连接成可分支、可回溯的树。
     id: str
     parent_id: Optional[str]
     messages: List[Message] = field(default_factory=list)
@@ -553,10 +573,12 @@ class ConversationStore:
         self.active_id: Optional[str] = None
 
     def append(self, turn: Turn) -> None:
+        # 新增一轮后将它设为当前活动分支。
         self.turns[turn.id] = turn
         self.active_id = turn.id
 
     def branch(self, source_id: str, new_id: str) -> Turn:
+        # 分支复制历史，不删除原分支，便于比较不同回答。
         source = self.turns[source_id]
         new_turn = Turn(
             id=new_id,
@@ -567,11 +589,13 @@ class ConversationStore:
         return new_turn
 
     def rollback(self, turn_id: str) -> None:
+        # 回溯只切换指针，不删除旧数据，审计记录仍然保留。
         if turn_id not in self.turns:
             raise KeyError(turn_id)
         self.active_id = turn_id
 
     def history(self) -> List[Message]:
+        # 取出当前分支给 Agent 使用；复杂实现可沿 parent_id 逐层合并。
         current = self.turns.get(self.active_id)
         return list(current.messages) if current else []
 ```
@@ -605,6 +629,7 @@ class Plugin(Protocol):
     version: str
 
     def register(self, runtime) -> None:
+        # 插件只能通过运行时公开接口注册能力，避免修改核心模块。
         """把 Agent、Tool 或 Hook 注册到运行时。"""
         ...
 
@@ -615,9 +640,11 @@ class PluginManager:
         self.plugins: dict[str, Plugin] = {}
 
     def load(self, plugin: Plugin) -> None:
+        # 加载前检查名称，防止两个插件覆盖同一个注册项。
         if plugin.name in self.plugins:
             raise ValueError(f"插件重复：{plugin.name}")
 
+        # 注册成功后再写入管理器，注册失败不会留下半加载状态。
         plugin.register(self.runtime)
         self.plugins[plugin.name] = plugin
 ```

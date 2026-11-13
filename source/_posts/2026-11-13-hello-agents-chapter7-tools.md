@@ -47,6 +47,7 @@ from typing import Any, Callable, Dict
 class BaseTool(ABC):
     """工具的最小公共接口。"""
 
+    # name 用于模型选择工具，description 会被拼进系统提示词。
     name: str
     description: str
 
@@ -57,6 +58,7 @@ class BaseTool(ABC):
 
     def run(self, input_data: Any) -> Any:
         """统一入口，后续可以在这里增加日志和耗时统计。"""
+        # 不让调用方直接依赖 execute，便于未来统一增加鉴权、计时和重试。
         return self.execute(input_data)
 
 
@@ -84,6 +86,7 @@ class ToolRegistry:
         self._tools: Dict[str, BaseTool] = {}
 
     def register_tool(self, tool: BaseTool) -> None:
+        # 同名工具会造成模型选择歧义，所以注册时直接失败。
         if tool.name in self._tools:
             raise ValueError(f"工具已存在：{tool.name}")
         self._tools[tool.name] = tool
@@ -108,12 +111,14 @@ class ToolRegistry:
     def get_tools_description(self) -> str:
         if not self._tools:
             return "暂无可用工具"
+        # 描述是给模型看的自然语言；真正执行时仍以工具对象为准。
         return "\n".join(
             f"- {tool.name}: {tool.description}"
             for tool in self._tools.values()
         )
 
     def execute_tool(self, name: str, input_data: Any) -> Any:
+        # 所有工具调用都经过这一层，便于统一做权限、超时和审计。
         tool = self.get_tool(name)
         if tool is None:
             raise KeyError(f"工具不存在：{name}")
@@ -149,9 +154,11 @@ from hello_agents import ToolRegistry
 
 def my_calculate(expression: str) -> str:
     """安全计算基本四则运算和 sqrt。"""
+    # 先拒绝空输入，避免把格式错误传给 AST 解析器。
     if not expression.strip():
         return "计算表达式不能为空"
 
+    # 只登记允许的运算符；未登记的 AST 节点会在求值时被拒绝。
     operators = {
         ast.Add: operator.add,
         ast.Sub: operator.sub,
@@ -165,6 +172,7 @@ def my_calculate(expression: str) -> str:
     }
 
     try:
+        # mode="eval" 只允许表达式，不允许执行任意多行 Python 代码。
         node = ast.parse(expression, mode="eval")
         result = _eval_node(node.body, operators, functions)
         return str(result)
@@ -174,6 +182,7 @@ def my_calculate(expression: str) -> str:
 
 def _eval_node(node, operators, functions):
     """递归执行允许的 AST 节点。"""
+    # 递归求值只接受数字、白名单运算符和白名单函数。
     if isinstance(node, ast.Constant):
         if isinstance(node.value, (int, float)):
             return node.value
@@ -242,6 +251,7 @@ class MyAdvancedSearchTool:
         self._setup_search_sources()
 
     def _setup_search_sources(self):
+        # 只启用已配置密钥且已安装依赖的搜索源。
         if os.getenv("TAVILY_API_KEY"):
             try:
                 from tavily import TavilyClient
@@ -262,6 +272,7 @@ class MyAdvancedSearchTool:
                 print("SerpApi 库未安装")
 
     def search(self, query: str) -> str:
+        # 查询为空时不发起任何外部请求，减少无效调用和成本。
         if not query.strip():
             return "搜索查询不能为空"
 
@@ -271,6 +282,7 @@ class MyAdvancedSearchTool:
                 "或 SERPAPI_API_KEY。"
             )
 
+        # 按配置顺序依次尝试，前一个来源失败时自动降级到下一个。
         for source in self.search_sources:
             try:
                 if source == "tavily":
@@ -369,6 +381,7 @@ class ToolChain:
         input_template: str,
         output_key: Optional[str] = None,
     ):
+        # output_key 让后续步骤可以通过模板引用当前步骤结果。
         self.steps.append(
             {
                 "tool_name": tool_name,
@@ -384,15 +397,18 @@ class ToolChain:
         initial_input: str,
         context: Optional[Dict[str, Any]] = None,
     ) -> str:
+        # 复制上下文，避免工具链修改调用方传入的原始字典。
         context = dict(context or {})
         context["input"] = initial_input
 
+        # 工具链按声明顺序执行；有依赖关系的步骤不能并行。
         for index, step in enumerate(self.steps, start=1):
             try:
                 tool_input = step["input_template"].format(**context)
             except KeyError as exc:
                 return f"第 {index} 步模板变量不存在：{exc}"
 
+            # 每一步都走 Registry，保持和单独调用工具相同的安全边界。
             result = registry.execute_tool(
                 step["tool_name"],
                 tool_input,
@@ -476,11 +492,13 @@ class AsyncToolExecutor:
         tool_name: str,
         input_data: str,
     ) -> str:
+        # 获取当前事件循环，把同步阻塞工具交给线程池执行。
         loop = asyncio.get_running_loop()
 
         def call_tool():
             return self.registry.execute_tool(tool_name, input_data)
 
+        # await 只等待结果，不会阻塞其他异步任务继续发起请求。
         return await loop.run_in_executor(
             self.executor,
             call_tool,
@@ -490,6 +508,7 @@ class AsyncToolExecutor:
         self,
         tasks: List[Dict[str, str]],
     ) -> List[str]:
+        # 先创建所有协程，再用 gather 并行等待它们完成。
         coroutines = [
             self.execute_tool_async(
                 task["tool_name"],
@@ -518,6 +537,7 @@ async def main():
         for index, result in enumerate(results, start=1):
             print(f"任务 {index}：{result}")
     finally:
+        # 无论任务成功还是失败，都要释放线程池资源。
         executor.close()
 
 

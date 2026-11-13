@@ -144,13 +144,15 @@ LLM_MODEL_ID=gpt-4o-mini
 from dotenv import load_dotenv
 from hello_agents import SimpleAgent, HelloAgentsLLM
 
-# 从当前目录的 .env 读取 API 密钥等配置。
+# 从当前目录的 .env 读取 API 密钥等配置；没有这一行时，环境变量不会自动加载。
 load_dotenv()
 
 # provider="auto" 时，框架会根据环境变量自动判断服务商。
+# 生产环境建议记录最终选中的 Provider，方便排查请求实际发往哪里。
 llm = HelloAgentsLLM(provider="auto")
 
 # Agent 只关心“如何对话”，不需要知道底层服务商是谁。
+# 这种依赖倒置让后续切换模型时无需修改 Agent 代码。
 agent = SimpleAgent(
     name="AI助手",
     llm=llm,
@@ -198,10 +200,12 @@ class MyLLM(HelloAgentsLLM):
         **kwargs,
     ):
         # 只拦截自定义的 modelscope，其余 Provider 交给父类。
+        # 新增供应商不会破坏框架原本支持的 OpenAI 等实现。
         if provider == "modelscope":
             print("正在使用自定义的 ModelScope Provider")
 
             self.provider = "modelscope"
+            # 优先使用构造函数参数，其次读取环境变量，便于测试时注入配置。
             self.api_key = api_key or os.getenv("MODELSCOPE_API_KEY")
             self.base_url = (
                 base_url
@@ -215,6 +219,7 @@ class MyLLM(HelloAgentsLLM):
                 )
 
             # 允许调用方传入模型，否则使用环境变量或默认模型。
+            # 初始化阶段只保存配置，不主动发起网络请求。
             self.model = (
                 model
                 or os.getenv("LLM_MODEL_ID")
@@ -225,6 +230,7 @@ class MyLLM(HelloAgentsLLM):
             self.timeout = kwargs.get("timeout", 60)
 
             # ModelScope 兼容 OpenAI SDK，因此只需替换 base_url。
+            # Agent 层看到的仍然是统一的 HelloAgentsLLM 接口。
             self._client = OpenAI(
                 api_key=self.api_key,
                 base_url=self.base_url,
@@ -289,7 +295,7 @@ vLLM 面向高吞吐推理，适合 GPU 服务器和并发请求。它通过 Pag
 ```bash
 pip install vllm
 
-# 启动 OpenAI 兼容服务
+# 启动 OpenAI 兼容服务；--port 要与客户端的 base_url 保持一致。
 python -m vllm.entrypoints.openai.api_server ^
     --model Qwen/Qwen2.5-7B-Instruct ^
     --host 0.0.0.0 ^
@@ -320,6 +326,8 @@ llm = HelloAgentsLLM(
 Ollama 更适合个人电脑快速运行本地模型。安装客户端后：
 
 ```bash
+# 首次运行会自动下载模型，之后会直接启动服务。
+# Ollama 负责模型管理，应用代码只连接它暴露的兼容 API。
 ollama run llama3
 ```
 
@@ -372,16 +380,19 @@ def detect_provider(
     openai_key: str | None,
 ) -> str:
     """按照显式配置 > 地址特征 > 密钥的顺序选择 Provider。"""
+    # 显式配置代表用户已经做出决定，自动检测不能覆盖它。
     if explicit_provider and explicit_provider != "auto":
         return explicit_provider
 
     if base_url:
+        # 地址比单纯的密钥更能说明请求实际应该发往哪里。
         lowered = base_url.lower()
         if "11434" in lowered or "ollama" in lowered:
             return "ollama"
         if "8000" in lowered or "vllm" in lowered:
             return "vllm"
 
+    # 只有没有本地地址线索时，才退回到云端密钥判断。
     if openai_key:
         return "openai"
 
