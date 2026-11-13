@@ -494,7 +494,7 @@ AgentScope 关注的是把任何协作方式放进稳定的运行时：消息结
 - AutoGen 会让产品经理、工程师和审查员围绕代码对话，审查员可以根据上下文提出新的修改要求。
 - LangGraph 会把“需求分析→代码生成→测试→修复→审查→结束”定义成节点和边，测试失败时回到修复节点，超过次数则进入人工节点。
 
-#### 1.2 如何理解“涌现式协作”和“显式控制”
+#### 1.2 如何理解“涌现式协作”和“显式控制”？
 
 **涌现式协作**是先定义角色、目标和沟通规则，再让模型在对话中产生具体分工。例如研究员提出问题，作者根据研究员的意见写作，下一轮如何展开由双方当前输出决定。它适合目标开放、路径未知的任务，但结果不一定稳定，测试和复现难度较高。
 
@@ -855,7 +855,6 @@ flowchart TD
 - [AutoGen 官方文档](https://microsoft.github.io/autogen/)
 - [AgentScope 官方文档](https://doc.agentscope.io/)
 - [CAMEL 官方文档](https://docs.camel-ai.org/)
-- [CAMEL Workforce 文档](https://docs.camel-ai.org/key_modules/workforce)
 - [LangGraph 官方文档](https://langchain-ai.github.io/langgraph/)
 
 本文是个人学习笔记。框架 API 和版本会持续变化，实际开发时应以当前官方文档为准，并为模型调用、工具执行、状态持久化、权限和成本控制补充工程测试。
