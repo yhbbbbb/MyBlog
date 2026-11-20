@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1500" viewBox="0 0 1100 1500">
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#1e3a5f"/></marker>
+    <marker id="g" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#047857"/></marker>
+  </defs>
+  <rect width="1100" height="1500" fill="#fff"/>
+  <text x="550" y="48" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#1e40af">Transformer：从输入到下一个词元</text>
+  <rect x="90" y="88" width="920" height="650" rx="18" fill="#dbeafe" stroke="#1e3a5f" stroke-width="3"/>
+  <text x="550" y="128" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="700" fill="#1e40af">Encoder 编码器：理解输入句子</text>
+  <rect x="90" y="800" width="920" height="580" rx="18" fill="#ede9fe" stroke="#6d28d9" stroke-width="3"/>
+  <text x="550" y="840" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="700" fill="#6d28d9">Decoder 解码器：逐步生成目标句子</text>
+  <g font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" text-anchor="middle">
+    <ellipse cx="550" cy="185" rx="205" ry="34" fill="#fed7aa" stroke="#c2410c" stroke-width="3"/><text x="550" y="192" fill="#374151">源句词元（batch, seq_len）</text>
+    <rect x="310" y="245" width="480" height="76" rx="10" fill="#93c5fd" stroke="#1e3a5f" stroke-width="3"/><text x="550" y="278" fill="#374151">Embedding + 位置编码</text><text x="550" y="302" font-size="15" fill="#374151">(batch, seq_len, d_model)</text>
+    <rect x="250" y="365" width="600" height="82" rx="10" fill="#93c5fd" stroke="#1e3a5f" stroke-width="3"/><text x="550" y="399" fill="#374151">多头自注意力</text><text x="550" y="424" font-size="15" fill="#374151">Q、K、V 都来自输入序列</text>
+    <rect x="320" y="485" width="460" height="60" rx="10" fill="#fef3c7" stroke="#b45309" stroke-width="3"/><text x="550" y="522" fill="#374151">Add &amp; Norm：残差 + 归一化</text>
+    <rect x="250" y="585" width="600" height="82" rx="10" fill="#93c5fd" stroke="#1e3a5f" stroke-width="3"/><text x="550" y="619" fill="#374151">Position-wise FFN</text><text x="550" y="644" font-size="15" fill="#374151">Linear → ReLU → Linear</text>
+    <ellipse cx="550" cy="704" rx="220" ry="28" fill="#a7f3d0" stroke="#047857" stroke-width="3"/><text x="550" y="710" font-size="16" fill="#374151">编码器记忆（输出作为交叉注意力的 K/V）</text>
+    <ellipse cx="550" cy="890" rx="240" ry="34" fill="#fed7aa" stroke="#c2410c" stroke-width="3"/><text x="550" y="897" fill="#374151">已生成目标词元（右移）</text>
+    <rect x="270" y="950" width="560" height="82" rx="10" fill="#c4b5fd" stroke="#6d28d9" stroke-width="3"/><text x="550" y="984" fill="#374151">Masked Multi-Head Attention</text><text x="550" y="1009" font-size="15" fill="#374151">只能看到当前位置及左侧前缀</text>
+    <rect x="270" y="1075" width="560" height="82" rx="10" fill="#c4b5fd" stroke="#6d28d9" stroke-width="3"/><text x="550" y="1109" fill="#374151">Cross-Attention 交叉注意力</text><text x="550" y="1134" font-size="15" fill="#374151">Q 来自 Decoder，K/V 来自 Encoder</text>
+    <rect x="270" y="1200" width="560" height="82" rx="10" fill="#c4b5fd" stroke="#6d28d9" stroke-width="3"/><text x="550" y="1234" fill="#374151">FFN + Add &amp; Norm</text><text x="550" y="1259" font-size="15" fill="#374151">输出每个位置的上下文表示</text>
+    <ellipse cx="550" cy="1330" rx="220" ry="28" fill="#a7f3d0" stroke="#047857" stroke-width="3"/><text x="550" y="1324" fill="#374151">Linear + Softmax</text><text x="550" y="1346" font-size="15" fill="#374151">下一个词元概率分布</text>
+  </g>
+  <g fill="none" stroke="#1e3a5f" stroke-width="3" marker-end="url(#a)">
+    <path d="M550 219V245"/><path d="M550 321V365"/><path d="M550 447V485"/><path d="M550 545V585"/><path d="M550 667V676"/>
+    <path d="M550 924V950"/><path d="M550 1032V1075"/><path d="M550 1157V1200"/><path d="M550 1282V1302"/>
+  </g>
+  <path d="M330 704H170V1115H270" fill="none" stroke="#047857" stroke-width="4" marker-end="url(#g)"/>
+  <rect x="108" y="885" width="155" height="66" fill="#fff"/><text x="185" y="912" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#047857">Encoder 记忆</text><text x="185" y="934" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#047857">提供 K / V</text>
+  <path d="M770 1330H950V890H790" fill="none" stroke="#047857" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#g)"/>
+  <text x="965" y="1110" transform="rotate(-90 965 1110)" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#047857">生成 token 后追加到目标前缀</text>
+</svg>

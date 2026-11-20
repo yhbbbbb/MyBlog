@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/MyBlog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://avatars.githubusercontent.com/u/153179554?s=128">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://avatars.githubusercontent.com/u/153179554?s=64">
+  <link rel="mask-icon" href="/MyBlog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/MyBlog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"yhbbbbb.github.io","root":"/MyBlog/","images":"/MyBlog/images","scheme":"Gemini","darkmode":true,"version":"8.29.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github","dark":"github-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null,"show_result":true},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/MyBlog/js/config.js" defer></script>
+
+    <meta name="description" content="从数据规模、速度和价值出发，梳理大数据存储与计算从 HDFS、MapReduce 到 Spark、Flink 和云对象存储的演进逻辑。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大数据技术体系（上）：从数据存算到分布式计算演进">
+<meta property="og:url" content="https://yhbbbbb.github.io/MyBlog/2026/11/04/big-data-technology-system-part-1/index.html">
+<meta property="og:site_name" content="yhbbbbb">
+<meta property="og:description" content="从数据规模、速度和价值出发，梳理大数据存储与计算从 HDFS、MapReduce 到 Spark、Flink 和云对象存储的演进逻辑。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yhbbbbb.github.io/MyBlog/2026/11/04/big-data-technology-system-part-1/big-data-overview.svg">
+<meta property="og:image" content="https://yhbbbbb.github.io/MyBlog/2026/11/04/big-data-technology-system-part-1/storage-compute-evolution.svg">
+<meta property="article:published_time" content="2026-11-04T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-05T02:00:00.000Z">
+<meta property="article:author" content="yhbbbbb">
+<meta property="article:tag" content="Flink">
+<meta property="article:tag" content="HDFS">
+<meta property="article:tag" content="Hadoop">
+<meta property="article:tag" content="Spark">
+<meta property="article:tag" content="大数据">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yhbbbbb.github.io/MyBlog/2026/11/04/big-data-technology-system-part-1/big-data-overview.svg">
+
+
+<link rel="canonical" href="https://yhbbbbb.github.io/MyBlog/2026/11/04/big-data-technology-system-part-1/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://yhbbbbb.github.io/MyBlog/2026/11/04/big-data-technology-system-part-1/","path":"2026/11/04/big-data-technology-system-part-1/","title":"大数据技术体系（上）：从数据存算到分布式计算演进"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>大数据技术体系（上）：从数据存算到分布式计算演进 | yhbbbbb</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/MyBlog/js/utils.js" defer></script><script src="/MyBlog/js/motion.js" defer></script><script src="/MyBlog/js/sidebar.js" defer></script><script src="/MyBlog/js/next-boot.js" defer></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/MyBlog/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","display_overflow":"scroll","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-mml-chtml.js","integrity":"sha256-ihPtDDm7pTmSF9ViEsItlvsrBTsNkz0MOXMchzOwCQw="}}</script>
+<script src="/MyBlog/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/MyBlog/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-search popup-trigger" aria-label="搜索" role="button">
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/MyBlog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">yhbbbbb</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">坚持学习&持续成长</p>
+  </div>
+
+  <div class="site-nav-toggle" aria-label="切换导航栏" role="button">
+      <i class="fa fa-ellipsis fa-fw fa-lg"></i>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/MyBlog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/MyBlog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-分类"><a href="/MyBlog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-标签"><a href="/MyBlog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-关于"><a href="/MyBlog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%88%E5%9B%9E%E7%AD%94%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF"><span class="nav-number">1.</span> <span class="nav-text">先回答：为什么需要大数据技术</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB%E7%9A%84%E5%9B%9B%E4%B8%AA%E5%9F%BA%E6%9C%AC%E5%8A%A8%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text">大数据技术体系的四个基本动作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E4%B8%80%EF%BC%9A%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E6%80%BB%E8%A7%88"><span class="nav-number">3.</span> <span class="nav-text">图一：大数据平台总览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5%EF%BC%9A%E4%BB%8E%E5%8D%95%E6%9C%BA%E6%96%87%E4%BB%B6%E5%88%B0-HDFS"><span class="nav-number">4.</span> <span class="nav-text">第一阶段：从单机文件到 HDFS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E6%9C%BA%E5%AD%98%E5%82%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">4.1.</span> <span class="nav-text">单机存储的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HDFS-%E8%A7%A3%E5%86%B3%E4%BA%86%E4%BB%80%E4%B9%88"><span class="nav-number">4.2.</span> <span class="nav-text">HDFS 解决了什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HDFS-%E7%9A%84%E5%B1%80%E9%99%90"><span class="nav-number">4.3.</span> <span class="nav-text">HDFS 的局限</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5%EF%BC%9A%E4%BA%91%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E6%88%90%E4%B8%BA%E4%B8%BB%E6%B5%81%E5%BA%95%E5%BA%A7"><span class="nav-number">5.</span> <span class="nav-text">第二阶段：云对象存储成为主流底座</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E5%88%97%E5%BC%8F%E6%A0%BC%E5%BC%8F"><span class="nav-number">5.1.</span> <span class="nav-text">为什么要使用列式格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E9%98%B6%E6%AE%B5%EF%BC%9AMapReduce-%E6%8A%8A%E8%AE%A1%E7%AE%97%E6%8B%86%E7%BB%99%E9%9B%86%E7%BE%A4"><span class="nav-number">6.</span> <span class="nav-text">第三阶段：MapReduce 把计算拆给集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MapReduce-%E7%9A%84%E4%BC%98%E7%82%B9"><span class="nav-number">6.1.</span> <span class="nav-text">MapReduce 的优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MapReduce-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%90%E6%B8%90%E6%98%BE%E5%BE%97%E7%AC%A8%E9%87%8D"><span class="nav-number">6.2.</span> <span class="nav-text">MapReduce 为什么逐渐显得笨重</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E9%98%B6%E6%AE%B5%EF%BC%9ASpark-%E7%94%A8%E5%86%85%E5%AD%98%E5%92%8C-DAG-%E6%8F%90%E9%AB%98%E6%89%B9%E5%A4%84%E7%90%86%E6%95%88%E7%8E%87"><span class="nav-number">7.</span> <span class="nav-text">第四阶段：Spark 用内存和 DAG 提高批处理效率</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Spark-%E4%B9%9F%E4%B8%8D%E6%98%AF%E4%B8%87%E8%83%BD%E7%9A%84"><span class="nav-number">7.1.</span> <span class="nav-text">Spark 也不是万能的</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%AE%9E%E6%97%B6%E8%AE%A1%E7%AE%97%E4%B8%8E-Flink"><span class="nav-number">8.</span> <span class="nav-text">第五阶段：实时计算与 Flink</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E4%BA%8C%EF%BC%9A%E5%AD%98%E5%82%A8%E4%B8%8E%E8%AE%A1%E7%AE%97%E6%8A%80%E6%9C%AF%E6%BC%94%E8%BF%9B"><span class="nav-number">9.</span> <span class="nav-text">图二：存储与计算技术演进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%8E%E6%A0%B7%E9%80%89%E6%8B%A9%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8E"><span class="nav-number">10.</span> <span class="nav-text">怎样选择计算引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E7%AF%87%E5%B0%8F%E7%BB%93"><span class="nav-number">11.</span> <span class="nav-text">上篇小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">12.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yhbbbbb"
+      src="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+  <p class="site-author-name" itemprop="name">yhbbbbb</p>
+  <div class="site-description" itemprop="description">记录自己对技术的学习和项目实践，作为持续更新的技术作品集。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/MyBlog/archives/">
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/MyBlog/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/MyBlog/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yhbbbbb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yhbbbbb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:23hbyao@gmail.com" title="Google Email → mailto:23hbyao@gmail.com" rel="noopener me" target="_blank"><i class="fab fa-google fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yhbbbbb.github.io/MyBlog/2026/11/04/big-data-technology-system-part-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/153179554?s=400&u=a84a8f8f5cc8c112034e4d253d56f2bb13ec80c0&v=4">
+      <meta itemprop="name" content="yhbbbbb">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yhbbbbb">
+      <meta itemprop="description" content="记录自己对技术的学习和项目实践，作为持续更新的技术作品集。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="大数据技术体系（上）：从数据存算到分布式计算演进 | yhbbbbb">
+      <meta itemprop="description" content="从数据规模、速度和价值出发，梳理大数据存储与计算从 HDFS、MapReduce 到 Spark、Flink 和云对象存储的演进逻辑。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          大数据技术体系（上）：从数据存算到分布式计算演进
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-11-04 10:00:00" itemprop="dateCreated datePublished" datetime="2026-11-04T10:00:00+08:00">2026-11-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-11-05 10:00:00" itemprop="dateModified" datetime="2026-11-05T10:00:00+08:00">2026-11-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/MyBlog/categories/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/" itemprop="url" rel="index"><span itemprop="name">技术科普</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">从数据规模、速度和价值出发，梳理大数据存储与计算从 HDFS、MapReduce 到 Spark、Flink 和云对象存储的演进逻辑。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>大数据不是“把数据放到很多台机器上”这么简单，而是要在数据持续增长、访问速度要求提高、业务问题变复杂之后，重新设计数据的存、算、管、用。</p>
+</blockquote>
+<h2 id="先回答：为什么需要大数据技术"><a href="#先回答：为什么需要大数据技术" class="headerlink" title="先回答：为什么需要大数据技术"></a>先回答：为什么需要大数据技术</h2><p>传统单机数据库在数据量较小、事务一致性要求高时非常可靠。但业务增长后会同时遇到几类问题：</p>
+<ul>
+<li><strong>数据量变大</strong>：单机磁盘、内存和网络成为瓶颈；</li>
+<li><strong>数据来源变多</strong>：业务库、日志、消息队列、文件和第三方 API 格式不同；</li>
+<li><strong>数据产生更快</strong>：实时风控、监控和推荐不能每天批处理一次；</li>
+<li><strong>分析任务变复杂</strong>：全表扫描、关联、聚合和机器学习需要更多计算资源；</li>
+<li><strong>数据使用者变多</strong>：开发、分析师、算法工程师和管理者需要不同的数据视图；</li>
+<li><strong>可靠性要求提高</strong>：节点故障、重复写入、迟到数据和权限问题不能靠人工处理。</li>
+</ul>
+<p>因此，大数据平台主要解决的是“在成本可控的前提下，可靠地存储、并行地计算、统一地治理并持续地提供数据”。</p>
+<h2 id="大数据技术体系的四个基本动作"><a href="#大数据技术体系的四个基本动作" class="headerlink" title="大数据技术体系的四个基本动作"></a>大数据技术体系的四个基本动作</h2><p>可以把平台拆成四个动作：</p>
+<table>
+<thead>
+<tr>
+<th>动作</th>
+<th>要回答的问题</th>
+<th>典型技术</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>存</td>
+<td>数据放在哪里，如何扩展和恢复？</td>
+<td>HDFS、对象存储、HBase、Kafka</td>
+</tr>
+<tr>
+<td>算</td>
+<td>如何在大量数据上高效执行计算？</td>
+<td>MapReduce、Spark、Flink、Trino</td>
+</tr>
+<tr>
+<td>管</td>
+<td>数据是否可信、可查、可控、可追溯？</td>
+<td>元数据、血缘、质量、权限、治理</td>
+</tr>
+<tr>
+<td>用</td>
+<td>如何让业务真正消费数据？</td>
+<td>数仓、湖仓、报表、推荐、风控、API</td>
+</tr>
+</tbody></table>
+<p>四个动作不是孤立的。存储决定计算的数据访问方式，计算结果需要治理才能复用，治理后的数据还要通过服务、指标和模型产生业务价值。</p>
+<h2 id="图一：大数据平台总览"><a href="#图一：大数据平台总览" class="headerlink" title="图一：大数据平台总览"></a>图一：大数据平台总览</h2><img src="/MyBlog/2026/11/04/big-data-technology-system-part-1/big-data-overview.svg" class="" title="大数据技术体系总览架构图">
+
+<p>这张图将技术按“数据进入平台后的处理顺序”分层：底部是数据源和存储，中间是批流计算与治理，上层是数仓、数据湖和数据服务，最上面才是报表、模型和业务应用。</p>
+<h2 id="第一阶段：从单机文件到-HDFS"><a href="#第一阶段：从单机文件到-HDFS" class="headerlink" title="第一阶段：从单机文件到 HDFS"></a>第一阶段：从单机文件到 HDFS</h2><h3 id="单机存储的问题"><a href="#单机存储的问题" class="headerlink" title="单机存储的问题"></a>单机存储的问题</h3><p>最早的数据处理可以是“文件放在一台服务器上，脚本定时读取”。这种方式简单，但容量受限于单机磁盘，机器损坏可能导致数据不可用，计算也只能使用一台机器的 CPU 和内存。</p>
+<p>当日志和业务数据超过单机能力时，一个自然想法是把文件切成多个块，分散到多台机器上，再让多台机器并行处理。这就是分布式文件系统的基本方向。</p>
+<h3 id="HDFS-解决了什么"><a href="#HDFS-解决了什么" class="headerlink" title="HDFS 解决了什么"></a>HDFS 解决了什么</h3><p>HDFS 将大文件切成 Block，分布到多个 DataNode；NameNode 保存目录和块位置等元数据；通过副本机制，即使某台机器故障，也能从其他节点读取数据。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">客户端写入大文件</span><br><span class="line">        │</span><br><span class="line">        ▼</span><br><span class="line">NameNode：记录文件 -&gt; Block 的映射</span><br><span class="line">        │</span><br><span class="line">        ├── Block 1 -&gt; DataNode A / DataNode B</span><br><span class="line">        ├── Block 2 -&gt; DataNode B / DataNode C</span><br><span class="line">        └── Block 3 -&gt; DataNode A / DataNode C</span><br></pre></td></tr></table></figure>
+
+<p>HDFS 的关键价值不是“文件变多了”，而是提供了横向扩展、数据副本和就近计算的基础。它适合大文件顺序读写，不适合大量小文件、频繁随机更新和低延迟事务查询。</p>
+<h3 id="HDFS-的局限"><a href="#HDFS-的局限" class="headerlink" title="HDFS 的局限"></a>HDFS 的局限</h3><p>随着云计算普及，企业不一定愿意维护一套长期运行的存储集群。HDFS 需要管理节点、磁盘、副本、扩容和故障；计算集群和存储集群绑定时，任务高峰还可能导致资源浪费。大量小文件也会给 NameNode 元数据带来压力。</p>
+<p>因此，HDFS 是重要的分布式存储基础，但不是所有场景的最终答案。</p>
+<h2 id="第二阶段：云对象存储成为主流底座"><a href="#第二阶段：云对象存储成为主流底座" class="headerlink" title="第二阶段：云对象存储成为主流底座"></a>第二阶段：云对象存储成为主流底座</h2><p>云对象存储把数据保存为 Object，用 Bucket、Key 和元数据定位对象。它通常具备容量弹性、跨区域冗余、生命周期管理和按使用量计费等特征。</p>
+<table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>HDFS</th>
+<th>云对象存储</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>运维</td>
+<td>自己维护集群和磁盘</td>
+<td>云服务商维护底层硬件</td>
+</tr>
+<tr>
+<td>扩容</td>
+<td>规划节点并迁移数据</td>
+<td>容量按需扩展</td>
+</tr>
+<tr>
+<td>计算存储关系</td>
+<td>常见是同一集群</td>
+<td>存储与计算解耦</td>
+</tr>
+<tr>
+<td>访问模式</td>
+<td>文件系统接口、顺序读写</td>
+<td>HTTP&#x2F;API、对象读写</td>
+</tr>
+<tr>
+<td>成本</td>
+<td>集群长期占用资源</td>
+<td>存储、请求和流量分别计费</td>
+</tr>
+<tr>
+<td>注意点</td>
+<td>小文件和节点运维</td>
+<td>请求延迟、出口流量和权限配置</td>
+</tr>
+</tbody></table>
+<p>对象存储并不等于数据库。它擅长保存原始文件、Parquet、ORC、图片、日志和模型文件，但不直接提供复杂事务查询。上层通常会配合 Hive Metastore、Iceberg、Delta Lake 或 Hudi 管理表结构、分区、版本和事务能力。</p>
+<h3 id="为什么要使用列式格式"><a href="#为什么要使用列式格式" class="headerlink" title="为什么要使用列式格式"></a>为什么要使用列式格式</h3><p>CSV 适合交换和查看，却不适合大规模分析。Parquet、ORC 等列式格式只读取查询需要的列，并支持压缩和列级统计：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询只需要两列时，列式文件可以跳过其他列</span></span><br><span class="line"><span class="keyword">SELECT</span> user_id, total_amount</span><br><span class="line"><span class="keyword">FROM</span> lake.sales</span><br><span class="line"><span class="keyword">WHERE</span> dt <span class="operator">=</span> <span class="string">&#x27;2026-11-04&#x27;</span></span><br><span class="line">  <span class="keyword">AND</span> total_amount <span class="operator">&gt;</span> <span class="number">1000</span>;</span><br></pre></td></tr></table></figure>
+
+<p>实际性能还取决于分区设计、文件大小、数据倾斜、统计信息和查询引擎。分区不是越多越好：按高基数字段分区可能产生大量目录和小文件。</p>
+<h2 id="第三阶段：MapReduce-把计算拆给集群"><a href="#第三阶段：MapReduce-把计算拆给集群" class="headerlink" title="第三阶段：MapReduce 把计算拆给集群"></a>第三阶段：MapReduce 把计算拆给集群</h2><p>存储数据之后，还需要在多台机器上计算。MapReduce 将任务抽象成两个主要阶段：Map 读取输入并产生键值对，Reduce 对相同 Key 的数据聚合。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 伪代码：词频统计的 Map / Reduce 思路</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mapper</span>(<span class="params">line</span>):</span><br><span class="line">    <span class="keyword">for</span> word <span class="keyword">in</span> line.split():</span><br><span class="line">        <span class="keyword">yield</span> word.lower(), <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">reducer</span>(<span class="params">word, counts</span>):</span><br><span class="line">    <span class="keyword">yield</span> word, <span class="built_in">sum</span>(counts)</span><br></pre></td></tr></table></figure>
+
+<p>框架负责切分输入、调度任务、传输中间结果、处理失败重试和合并输出。开发者只需要关注业务转换逻辑，这极大降低了编写分布式程序的门槛。</p>
+<h3 id="MapReduce-的优点"><a href="#MapReduce-的优点" class="headerlink" title="MapReduce 的优点"></a>MapReduce 的优点</h3><ul>
+<li>任务模型简单，容错机制成熟；</li>
+<li>适合超大规模离线批处理；</li>
+<li>计算结果可以落回分布式文件系统；</li>
+<li>节点失败时能够重新执行失败任务。</li>
+</ul>
+<h3 id="MapReduce-为什么逐渐显得笨重"><a href="#MapReduce-为什么逐渐显得笨重" class="headerlink" title="MapReduce 为什么逐渐显得笨重"></a>MapReduce 为什么逐渐显得笨重</h3><p>Map 和 Reduce 之间经常需要把中间结果写入磁盘。一个任务如果包含多轮关联、聚合或迭代，就要反复读写 HDFS。对机器学习、交互式分析和复杂 DAG 来说，磁盘 I&#x2F;O 和任务启动开销会变得明显。</p>
+<h2 id="第四阶段：Spark-用内存和-DAG-提高批处理效率"><a href="#第四阶段：Spark-用内存和-DAG-提高批处理效率" class="headerlink" title="第四阶段：Spark 用内存和 DAG 提高批处理效率"></a>第四阶段：Spark 用内存和 DAG 提高批处理效率</h2><p>Spark 将计算组织成 DAG（有向无环图），可以把多个转换组合后再执行，并尽量把中间数据保留在内存中。相比一轮一轮落盘的 MapReduce，它更适合多步骤 ETL、交互式 SQL、机器学习和图计算。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> SparkSession</span><br><span class="line"><span class="keyword">from</span> pyspark.sql.functions <span class="keyword">import</span> col, <span class="built_in">sum</span> <span class="keyword">as</span> sum_</span><br><span class="line"></span><br><span class="line">spark = SparkSession.builder.appName(<span class="string">&quot;daily-sales&quot;</span>).getOrCreate()</span><br><span class="line"></span><br><span class="line">sales = spark.read.parquet(<span class="string">&quot;s3://demo-lake/sales/&quot;</span>)</span><br><span class="line">result = (</span><br><span class="line">    sales.<span class="built_in">filter</span>(col(<span class="string">&quot;dt&quot;</span>) == <span class="string">&quot;2026-11-04&quot;</span>)</span><br><span class="line">    .groupBy(<span class="string">&quot;shop_id&quot;</span>)</span><br><span class="line">    .agg(sum_(<span class="string">&quot;amount&quot;</span>).alias(<span class="string">&quot;daily_amount&quot;</span>))</span><br><span class="line">)</span><br><span class="line">result.write.mode(<span class="string">&quot;overwrite&quot;</span>).parquet(<span class="string">&quot;s3://demo-lake/summary/dt=2026-11-04/&quot;</span>)</span><br><span class="line">spark.stop()</span><br></pre></td></tr></table></figure>
+
+<p>Spark 的核心抽象经历了 RDD、DataFrame 和 Dataset 等演进。实际项目通常优先使用 DataFrame&#x2F;Spark SQL，让优化器参与谓词下推、列裁剪和执行计划优化。</p>
+<h3 id="Spark-也不是万能的"><a href="#Spark-也不是万能的" class="headerlink" title="Spark 也不是万能的"></a>Spark 也不是万能的</h3><p>Spark 主要面向批处理和微批处理。它的内存管理、Shuffle、数据倾斜和长任务失败仍需要工程经验；数据量太大或分区不合理时，缓存可能导致 OOM，<code>groupByKey</code> 也可能把大量数据集中到少数节点。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 处理倾斜时，先聚合再汇总通常比直接 groupByKey 更节省网络传输</span></span><br><span class="line">daily = events.groupBy(<span class="string">&quot;shop_id&quot;</span>).<span class="built_in">sum</span>(<span class="string">&quot;amount&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>真正的优化不是盲目加机器，而是检查执行计划、分区数量、Shuffle 数据量、热点 Key 和小文件数量。</p>
+<h2 id="第五阶段：实时计算与-Flink"><a href="#第五阶段：实时计算与-Flink" class="headerlink" title="第五阶段：实时计算与 Flink"></a>第五阶段：实时计算与 Flink</h2><p>当业务需要秒级甚至毫秒级响应时，“每天或每小时跑一次 Spark”不够用了。实时风控、实时指标、设备监控和推荐特征都需要持续处理事件流。</p>
+<p>Flink 以事件流为基础，支持状态计算、事件时间、Watermark、窗口、Exactly-once 等能力。它解决的核心问题是：数据还在不断到达时，如何正确计算一段时间内的结果，并处理乱序和迟到事件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">DataStream</span>&lt;Event&gt; <span class="variable">events</span> <span class="operator">=</span> env.fromSource(source, watermarkStrategy, <span class="string">&quot;events&quot;</span>);</span><br><span class="line"></span><br><span class="line">events.keyBy(Event::userId)</span><br><span class="line">      .window(TumblingEventTimeWindows.of(Time.minutes(<span class="number">5</span>)))</span><br><span class="line">      .aggregate(<span class="keyword">new</span> <span class="title class_">CountEvents</span>())</span><br><span class="line">      .sinkTo(resultSink);</span><br></pre></td></tr></table></figure>
+
+<p>这里的窗口不是简单按机器收到数据的时间切分，而是可以依据事件携带的业务时间计算。Watermark 表示系统对“更早事件大概率已经到达”的判断，迟到数据则需要配置允许延迟和侧输出策略。</p>
+<h2 id="图二：存储与计算技术演进"><a href="#图二：存储与计算技术演进" class="headerlink" title="图二：存储与计算技术演进"></a>图二：存储与计算技术演进</h2><img src="/MyBlog/2026/11/04/big-data-technology-system-part-1/storage-compute-evolution.svg" class="" title="存储与计算技术演进图">
+
+<p>演进并不是新技术完全替代旧技术，而是不同场景形成组合：对象存储可以作为数据湖底座，Spark 负责批处理，Flink 负责实时流，数据库负责事务和服务查询。</p>
+<h2 id="怎样选择计算引擎"><a href="#怎样选择计算引擎" class="headerlink" title="怎样选择计算引擎"></a>怎样选择计算引擎</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>更适合的起点</th>
+<th>关注点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>海量离线批处理</td>
+<td>Spark SQL &#x2F; MapReduce</td>
+<td>吞吐、成本、任务稳定性</td>
+</tr>
+<tr>
+<td>交互式分析</td>
+<td>Trino &#x2F; Presto &#x2F; Spark SQL</td>
+<td>延迟、并发、缓存</td>
+</tr>
+<tr>
+<td>实时事件处理</td>
+<td>Flink</td>
+<td>状态、时间语义、Exactly-once</td>
+</tr>
+<tr>
+<td>事务读写</td>
+<td>MySQL、PostgreSQL 等</td>
+<td>ACID、一致性、索引</td>
+</tr>
+<tr>
+<td>大规模键值查询</td>
+<td>HBase、Cassandra 等</td>
+<td>分区键、热点、延迟</td>
+</tr>
+</tbody></table>
+<p>技术选型要先问业务的延迟、数据量、更新方式和一致性要求，再看团队维护能力。用流处理引擎解决一个每天跑一次的简单报表，可能只增加了运维复杂度。</p>
+<div class="note info"><p><strong>ACID 防忘</strong></p>
+<p>ACID 是数据库事务正确执行的四个基本要素缩写，指原子性（Atomicity）、一致性（Consistency）、隔离性（Isolation）、持久性（Durability）。</p>
+</div>
+
+<h2 id="上篇小结"><a href="#上篇小结" class="headerlink" title="上篇小结"></a>上篇小结</h2><p>大数据技术的第一条主线是“存储和计算解耦、批处理和流处理并存”：HDFS 解决了分布式文件存储，云对象存储降低了基础设施运维成本；MapReduce 建立了可靠的批计算模型，Spark 提高了多步骤计算效率，Flink 则把重点推进到有状态的实时流处理。</p>
+<p>但数据存下来、算出来还不够。下一篇将继续讨论数据库、数据仓库、数据湖、湖仓、数据中台，以及如何通过治理和数据服务把计算结果变成业务可以使用的资产。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://hadoop.apache.org/docs/">Apache Hadoop 官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://spark.apache.org/docs/latest/">Apache Spark 官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-stable/">Apache Flink 官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://iceberg.apache.org/docs/latest/">Apache Iceberg 官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://parquet.apache.org/docs/">Apache Parquet 官方文档</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/MyBlog/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag"># 大数据</a>
+              <a href="/MyBlog/tags/Hadoop/" rel="tag"># Hadoop</a>
+              <a href="/MyBlog/tags/Spark/" rel="tag"># Spark</a>
+              <a href="/MyBlog/tags/Flink/" rel="tag"># Flink</a>
+              <a href="/MyBlog/tags/HDFS/" rel="tag"># HDFS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/10/27/sop-and-software-development/" rel="prev" title="我对 SOP 的理解：从职场流程到可维护代码">
+                  <i class="fa fa-angle-left"></i> 我对 SOP 的理解：从职场流程到可维护代码
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/MyBlog/2026/11/04/big-data-technology-system-part-2/" rel="next" title="大数据技术体系（下）：从数据库、数仓到数据中台">
+                  大数据技术体系（下）：从数据库、数仓到数据中台 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">yhbbbbb</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="/MyBlog/css/theme-toggle.css">
+<script src="/MyBlog/js/theme-toggle.js" defer></script>
+
+</body>
+</html>
