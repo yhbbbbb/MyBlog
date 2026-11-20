@@ -1,7 +1,7 @@
 ﻿---
 title: Hello-Agents 第七章（三）：工具系统、搜索整合与异步执行
 date: 2026-11-13 12:00:00
-updated: 2026-11-13 12:00:00
+updated: 2026-11-20 10:00:00
 categories:
   - 技术科普
 tags:
@@ -127,6 +127,8 @@ class ToolRegistry:
 
 统一接口的意义在于：Agent 只需要知道工具名、描述和调用方法，不必关心工具是本地函数、远程 API 还是异步服务。
 
+工具接口最好同时约定四件事：输入 schema、输出 schema、失败类型和副作用等级。只返回一段字符串虽然简单，但调用方无法区分“没有搜索结果”和“搜索服务超时”；生产实现可以让工具返回 `status`、`data`、`error` 和 `trace_id`，让 Agent 根据状态决定重试、换工具还是直接回答。
+
 如果一个工具返回多个值，可以返回结构化字典：
 
 ```python
@@ -228,6 +230,8 @@ def create_calculator_registry() -> ToolRegistry:
 
 - 白名单校验比黑名单过滤更可靠。
 - 异常应该返回可理解的错误，而不是把完整堆栈直接交给用户。
+
+计算器的白名单还应限制数字大小、表达式长度和函数参数数量。即使没有任意代码执行，极大数运算、深层嵌套表达式或除零错误也可能拖垮 Agent 循环。
 
 ## 四、多源搜索工具
 
@@ -357,6 +361,8 @@ def create_advanced_search_registry() -> ToolRegistry:
 - 没有任何密钥时给出配置提示。
 - 所有错误都记录来源，便于排障。
 
+搜索结果返回给模型前还应该做裁剪和去重：限制每个结果的字符数，保留标题、摘要和 URL，删除与当前问题无关的导航文本。这样可以减少 Token 消耗，也降低恶意网页把指令伪装进搜索结果的风险。
+
 ## 五、工具链：把三个工具串起来
 
 实际业务中，一个任务经常需要“搜索→抽取→计算”或“读取→转换→写入”。ToolChain 负责保存每一步的输入模板和输出键。
@@ -466,6 +472,32 @@ def create_research_chain() -> ToolChain:
 2. 每一步要保存输入、输出和耗时。
 3. 中间结果要可重放，失败时才能从失败步骤继续。
 
+工具链不是简单的函数串联。每一步都应该明确“输入来自哪里、输出交给谁、失败是否可以重试、是否已经产生副作用”。例如搜索失败通常可以换源重试，写数据库失败则要先确认是否已经部分提交，不能无条件重复执行。
+
+{% mermaid %}
+flowchart LR
+    A["🔵 初始输入"] --> B["🟣 步骤 1<br>解析模板"]
+    B --> C{"模板有效？"}
+    C -->|"否"| X["🍓 结束并记录错误"]
+    C -->|"是"| D["🍑 调用工具"]
+    D --> E{"执行成功？"}
+    E -->|"否，可重试"| D
+    E -->|"否，不可重试"| X
+    E -->|"是"| F["🟡 保存 output_key"]
+    F --> G{"还有步骤？"}
+    G -->|"是"| B
+    G -->|"否"| H["🟢 返回最终结果"]
+    style A fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style B fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style C fill:#FFF9C4,stroke:#F9A825,color:#333
+    style D fill:#FFDAB9,stroke:#FFB74D,color:#333
+    style E fill:#FFF9C4,stroke:#F9A825,color:#333
+    style F fill:#FFDAB9,stroke:#FFB74D,color:#333
+    style G fill:#FFF9C4,stroke:#F9A825,color:#333
+    style H fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style X fill:#FFB3C6,stroke:#F48FB1,color:#333
+{% endmermaid %}
+
 ## 六、异步工具执行器
 
 独立的搜索和计算任务之间没有数据依赖时，可以并行执行。线程池适合等待网络 I/O 的工具；如果是纯 CPU 计算，应该考虑进程池或专门的计算服务。
@@ -552,7 +584,27 @@ if __name__ == "__main__":
 - 串行执行约 9 秒。
 - 并行执行约等于最长请求耗时，再加上调度开销，约 4 秒。
 
-但如果第二个工具必须使用第一个工具的输出，就不能并行。并行前要先画出依赖图：
+但如果第二个工具必须使用第一个工具的输出，就不能并行。并行前要先画出依赖图。`asyncio.gather()` 默认等待所有任务；如果一个任务失败，其他任务可能已经完成并产生费用。因此生产执行器应为每个任务附加超时和任务 ID，收集成功、失败、取消三类结果，并在必要时取消仍未开始的任务。
+
+下面的时序图展示多个独立 I/O 任务如何并行，以及执行器如何聚合部分成功结果：
+
+{% mermaid %}
+sequenceDiagram
+    actor User as 👤 用户
+    participant E as 🟣 异步执行器
+    participant A as 🍑 搜索 A
+    participant B as 🍑 搜索 B
+    participant M as 🟡 合并器
+    User->>E: 提交独立任务
+    E->>A: 在线程池执行
+    E->>B: 在线程池执行
+    A-->>E: 成功或错误
+    B-->>E: 成功或错误
+    E->>M: 聚合带状态的结果
+    M-->>User: 返回结果与失败说明
+{% endmermaid %}
+
+并行前要先画出依赖图：
 
 {% mermaid %}
 flowchart LR

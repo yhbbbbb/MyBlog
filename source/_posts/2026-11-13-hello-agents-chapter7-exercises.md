@@ -1,7 +1,7 @@
 ﻿---
 title: Hello-Agents 第七章（四）：全章总结与课后习题详解
 date: 2026-11-13 13:00:00
-updated: 2026-11-13 13:00:00
+updated: 2026-11-20 10:00:00
 categories:
   - 技术科普
 tags:
@@ -226,6 +226,21 @@ LLM_BASE_URL=http://localhost:11434/v1
 
 三者的“精度”主要取决于模型权重、量化方式和运行参数，而不是服务框架本身。运行时更应该比较吞吐、延迟、显存占用和部署难度。
 
+实际评测不要只比较一次回答。应准备固定问题集，记录首 token 延迟、总耗时、生成速度、显存峰值、并发下的错误率和输出质量；同一个模型、同一套采样参数、同一上下文长度下比较，结论才有意义。
+
+{% mermaid %}
+flowchart LR
+    A["🔵 固定问题集"] --> B["🟣 统一模型与参数"]
+    B --> C["🍑 分别启动 vLLM / SGLang / Ollama"]
+    C --> D["🟡 采集延迟、吞吐、显存"]
+    D --> E["🟢 对比质量与运维成本"]
+    style A fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style B fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style C fill:#FFDAB9,stroke:#FFB74D,color:#333
+    style D fill:#FFF9C4,stroke:#F9A825,color:#333
+    style E fill:#B5EAD7,stroke:#80CBC4,color:#333
+{% endmermaid %}
+
 ## 四、习题三：Message、Agent 基类与单例配置
 
 {% note info %}
@@ -347,6 +362,8 @@ class ScoredReflectionAgent(Agent):
 
 评分机制的重点是把“是否满意”转成可测试的状态，而不是把循环终止交给模糊的自然语言。
 
+阈值也不能凭感觉设置。可以先用人工标注的一小批答案校准分数，再观察“分数达到阈值”与人工认为合格之间的误差；如果高分答案仍经常缺少关键事实，就要增加结构化检查项，而不是继续降低阈值。
+
 ### 5.3 Tree-of-Thought Agent
 
 Tree-of-Thought（思维树）不是只生成一条思路，而是在每一步生成多个候选路径，再评分和剪枝。
@@ -443,6 +460,8 @@ class TreeOfThoughtAgent(Agent):
 
 Tree-of-Thought 的代价是模型调用次数约为宽度乘深度，还需要防止评分模型偏好“看起来完整”的路径。因此生产实现应增加预算、重复路径检测和人工接管。
 
+思维树的宽度和深度应根据任务预算动态调整：简单问题使用小宽度、小深度；高风险任务可以保留更多候选，但必须设置总 Token、总耗时和最大分支数。评分器最好与生成器使用不同提示词或更小模型，避免同一种偏差反复放大。
+
 ## 六、习题五：统一工具接口、工具链和异步执行
 
 {% note info %}
@@ -506,6 +525,8 @@ flowchart LR
 
 因此异步执行器必须配合并发上限、超时、取消和失败聚合。
 
+并行结果不能只返回一个字符串列表，否则调用方无法知道第几个任务失败。更稳妥的结果对象至少包含 `task_id`、`status`、`value`、`error` 和 `elapsed_ms`，最终回答可以使用成功结果，同时把失败任务交给重试队列。
+
 ## 七、习题六：流式输出、多轮对话和插件系统
 
 {% note info %}
@@ -547,6 +568,26 @@ class Agent(ABC):
 ```
 
 流式输出要处理断线、重试和半截响应。UI 不应该把每个 token 都当成一条历史消息，否则历史会膨胀。
+
+流式响应的状态可以分为 `started`、`streaming`、`completed`、`cancelled` 和 `failed`。只有 `completed` 才把完整回答写入正式历史；用户主动停止时可以把半截内容保存到草稿区，但不能把它当作下一轮对话的可靠上下文。
+
+{% mermaid %}
+flowchart TD
+    A["🔵 开始请求"] --> B["🟣 建立流式连接"]
+    B --> C{"收到分片？"}
+    C -->|"是"| D["🍑 UI 追加显示<br>内存累积"]
+    D --> C
+    C -->|"完成"| E["🟢 写入完整历史"]
+    C -->|"断线/失败"| F["🍓 标记失败并保留草稿"]
+    C -->|"用户取消"| G["🟡 标记取消，不写正式历史"]
+    style A fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style B fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style C fill:#FFF9C4,stroke:#F9A825,color:#333
+    style D fill:#FFDAB9,stroke:#FFB74D,color:#333
+    style E fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style F fill:#FFB3C6,stroke:#F48FB1,color:#333
+    style G fill:#FFF9C4,stroke:#F9A825,color:#333
+{% endmermaid %}
 
 ### 7.2 多轮对话、分支与回溯
 
@@ -602,6 +643,22 @@ class ConversationStore:
 
 分支的本质是把对话历史从列表升级成树。回溯时不删除旧数据，而是切换 active_id，便于审计和比较不同回答。
 
+需要区分“切换当前分支”和“复制完整历史”。如果每次分支都复制全部消息，长对话会占用大量内存；生产实现可以只保存当前节点和 `parent_id`，读取时从叶子节点向上回放，必要时用快照减少回放成本。
+
+{% mermaid %}
+flowchart LR
+    A["🔵 主分支 T1"] --> B["🟣 T2：用户追问"]
+    B --> C["🟢 T3：当前回答"]
+    B --> D["🍑 分支 T2-b"]
+    D --> E["🟡 重新生成回答"]
+    E -. 回溯 .-> B
+    style A fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style B fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style C fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style D fill:#FFDAB9,stroke:#FFB74D,color:#333
+    style E fill:#FFF9C4,stroke:#F9A825,color:#333
+{% endmermaid %}
+
 ### 7.3 插件系统架构
 
 插件系统需要稳定的注册接口、版本信息和生命周期钩子：
@@ -650,6 +707,8 @@ class PluginManager:
 ```
 
 第三方插件可以通过 Python entry points 自动发现，也可以先用显式配置列表加载。必须校验插件版本、权限和依赖，不能让插件默认获得文件系统和网络的全部权限。
+
+插件加载应当是可回滚的事务：先读取 manifest，再校验版本和权限，调用注册函数，所有注册成功后才把插件标记为 loaded；中途失败时撤销已经注册的 Agent、Tool 和 Hook。这样一个坏插件不会让运行时处于“部分加载”的不确定状态。
 
 ## 八、我的学习结论
 

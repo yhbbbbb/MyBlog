@@ -1,7 +1,7 @@
 ﻿---
 title: Hello-Agents 第七章（二）：核心接口与四种 Agent 范式
 date: 2026-11-13 11:00:00
-updated: 2026-11-13 11:00:00
+updated: 2026-11-20 10:00:00
 categories:
   - 技术科普
 tags:
@@ -185,6 +185,28 @@ class Agent(ABC):
 
 这个设计带来三个好处：外部调用统一、内部实现可替换、日志和鉴权等公共逻辑可以集中维护。
 
+一次 `run()` 调用的边界应该保持稳定：输入校验失败时不调用模型，模型执行失败时不写入伪造的 assistant 消息，只有完整结果返回后才把回答加入历史。这个约束很重要，因为历史记录既是下一轮提示词的输入，也是后续调试和计费分析的依据。
+
+{% mermaid %}
+flowchart TD
+    A["🔵 run(input_text)"] --> B{"输入为空？"}
+    B -->|"是"| C["🍓 立即抛出异常"]
+    B -->|"否"| D["🟣 写入 user Message"]
+    D --> E["🟠 调用子类 _execute"]
+    E --> F{"执行成功？"}
+    F -->|"否"| G["🍓 记录异常并结束"]
+    F -->|"是"| H["🟡 写入 assistant Message"]
+    H --> I["🟢 返回最终结果"]
+    style A fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style B fill:#FFF9C4,stroke:#F9A825,color:#333
+    style C fill:#FFB3C6,stroke:#F48FB1,color:#333
+    style D fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style E fill:#FFDAB9,stroke:#FFB74D,color:#333
+    style G fill:#FFB3C6,stroke:#F48FB1,color:#333
+    style H fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style I fill:#B5EAD7,stroke:#80CBC4,color:#333
+{% endmermaid %}
+
 ## 五、SimpleAgent：最小闭环
 
 SimpleAgent 只负责把历史消息交给模型，不主动规划，也不调用工具。
@@ -212,6 +234,8 @@ class SimpleAgent(Agent):
 ```
 
 SimpleAgent 是后续实现的基准。只有先跑通它，才有必要继续增加循环、反思和工具调用。
+
+SimpleAgent 还有一个工程价值：它可以作为模型客户端健康检查。如果 SimpleAgent 都不能稳定返回结果，就不应该继续排查 ReAct 的解析规则或工具权限；如果 SimpleAgent 正常而复杂 Agent 失败，问题范围就已经缩小到提示词、循环或工具层。
 
 ## 六、ReActAgent：推理与行动循环
 
@@ -347,6 +371,8 @@ class MyReActAgent(ReActAgent):
 
 工程重点不是让模型输出一段漂亮的思考，而是让 Action 可解析、工具执行可控、循环次数有上限。
 
+ReAct 的每一步都应该留下可观测记录：当前步数、原始模型输出、解析出的工具名和参数、工具耗时、工具结果摘要以及下一步状态。日志中可以隐藏敏感输入，但不能完全省略这些字段，否则出现“模型一直重复调用同一个工具”时无法解释原因。
+
 ## 七、ReflectionAgent：执行、反思和优化
 
 ReflectionAgent 先生成结果，再让模型担任审查者。如果审查不通过，就把反馈送回模型进行修订。
@@ -393,6 +419,8 @@ class ReflectionAgent(Agent):
 
 真实项目中最好让反思结果输出结构化 JSON，例如 passed、score、missing_points，而不是只搜索字符串“通过”。
 
+反思并不保证答案一定变好。模型可能重复改写同一句话，也可能把原本正确的内容改错。因此需要保存每一轮版本，比较评分是否真正提升；连续两轮分数不变时，可以提前结束并转人工审核。
+
 ## 八、Plan-and-SolveAgent：先计划再执行
 
 Plan-and-Solve 适合多步骤任务。它把规划和执行分开，便于观察中间状态，也便于失败后从某一步重试。
@@ -426,6 +454,8 @@ class PlanAndSolveAgent(Agent):
 ```
 
 如果计划需要真实工具，应该把每个步骤保存为结构化任务对象，而不是把整段计划再次拼进提示词。
+
+一个可执行的计划至少要包含步骤编号、输入、预期输出、依赖步骤和完成条件。这样失败时可以从失败步骤重试，而不是让模型重新生成整份计划；对于有副作用的步骤，还应增加“是否允许执行”的确认状态。
 
 ## 九、FunctionCallAgent：结构化工具调用
 
@@ -487,6 +517,31 @@ class FunctionCallAgent(Agent):
 | Reflection | 生成→审查→修改 | 写作、代码、方案优化 | 成本高、容易自我重复 |
 | Plan-and-Solve | 规划→逐步执行 | 复杂多步骤任务 | 计划错误会级联 |
 | Function calling | 结构化决策→工具 | 生产级工具调用 | 依赖模型的函数调用能力 |
+
+选择范式时先看任务是否需要外部行动，再看流程是否需要可审计的中间状态。只需要回答问题时，SimpleAgent 足够；需要搜索或计算时使用 ReAct 或 Function calling；需要提升文本质量时使用 Reflection；需要明确拆解复杂任务时使用 Plan-and-Solve。多个范式可以组合，但每增加一层循环，都要同步增加预算、日志和终止条件。
+
+{% mermaid %}
+flowchart LR
+    A["🔵 输入任务"] --> B{"需要外部工具？"}
+    B -->|"否"| C{"需要反复改进？"}
+    C -->|"否"| D["🟢 SimpleAgent"]
+    C -->|"是"| E["🟡 ReflectionAgent"]
+    B -->|"是"| F{"步骤和参数是否结构化？"}
+    F -->|"是"| G["🟣 FunctionCallAgent"]
+    F -->|"否"| H["🍑 ReActAgent"]
+    A --> I{"任务步骤很多？"}
+    I -->|"是"| J["🟠 Plan-and-SolveAgent"]
+    style A fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style B fill:#FFF9C4,stroke:#F9A825,color:#333
+    style C fill:#FFF9C4,stroke:#F9A825,color:#333
+    style D fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style E fill:#FFDAB9,stroke:#FFB74D,color:#333
+    style F fill:#FFF9C4,stroke:#F9A825,color:#333
+    style G fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style H fill:#FFDAB9,stroke:#FFB74D,color:#333
+    style I fill:#FFF9C4,stroke:#F9A825,color:#333
+    style J fill:#E8D5F5,stroke:#CE93D8,color:#333
+{% endmermaid %}
 
 ## 十一、实践检查
 

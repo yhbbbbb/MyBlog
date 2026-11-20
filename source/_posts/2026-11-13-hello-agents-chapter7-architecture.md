@@ -1,7 +1,7 @@
 ﻿---
 title: Hello-Agents 第七章（一）：从零设计智能体框架
 date: 2026-11-13 10:00:00
-updated: 2026-11-13 10:00:00
+updated: 2026-11-20 10:00:00
 categories:
   - 技术科普
 tags:
@@ -114,6 +114,25 @@ flowchart TB
     style R fill:#B5EAD7,stroke:#80CBC4,color:#333
 {% endmermaid %}
 
+一次模型请求实际上会经过“配置解析→客户端创建→消息转换→远程调用→结果转换”五个阶段。把这五个阶段分开，切换供应商时只需要替换客户端配置，Agent 的业务代码仍然保持不变。
+
+{% mermaid %}
+flowchart LR
+    A["🔵 显式 provider<br>用户配置"] --> D["🟣 Provider 检测"]
+    B["🍑 LLM_BASE_URL<br>本地地址线索"] --> D
+    C["🟡 API Key<br>云端服务线索"] --> D
+    D --> E["🟠 创建兼容客户端"]
+    E --> F["🟢 发送标准消息"]
+    F --> G["✅ 返回文本或流式结果"]
+    style A fill:#C7CEEA,stroke:#9FA8DA,color:#333
+    style B fill:#FFDAB9,stroke:#FFB74D,color:#333
+    style C fill:#FFF9C4,stroke:#F9A825,color:#333
+    style D fill:#E8D5F5,stroke:#CE93D8,color:#333
+    style E fill:#FFDAB9,stroke:#FFB74D,color:#333
+    style F fill:#B5EAD7,stroke:#80CBC4,color:#333
+    style G fill:#B5EAD7,stroke:#80CBC4,color:#333
+{% endmermaid %}
+
 ## 四、先运行一个最小 Agent
 
 安装第七章对应版本：
@@ -170,6 +189,8 @@ python quick_start.py
 ```
 
 如果出现密钥缺失、模型不存在或连接失败，优先检查 `.env` 是否被正确加载，再检查 `provider` 和 `base_url` 是否匹配。
+
+建议按固定顺序排查：先确认 Python 版本和包版本，再用最小 `SimpleAgent` 请求验证网络，最后才接入工具或复杂 Agent。这样可以把“环境问题”“模型配置问题”和“业务逻辑问题”分开，避免一开始就从几十行 Agent 循环中找错误。
 
 ## 五、扩展 HelloAgentsLLM 支持新的模型供应商
 
@@ -354,6 +375,8 @@ llm = HelloAgentsLLM(
 
 选择顺序应该是：先用云端 API 验证业务，再用 Ollama 完成本地学习，最后根据并发、隐私和成本决定是否使用 vLLM。
 
+本地模型并不等于零成本：模型下载占用磁盘，推理占用显存或内存，服务还需要监控和升级。实际选择时要同时看首 token 延迟、每秒生成 token 数、并发数、上下文长度和数据是否允许离开内网。
+
 ## 七、自动检测 Provider 的工程思路
 
 自动检测通常有三个优先级：
@@ -370,6 +393,8 @@ LLM_BASE_URL=http://localhost:11434/v1
 ```
 
 如果框架把 `LLM_BASE_URL` 的判断放在密钥判断前，最终应选择本地 Ollama；如果先检查 `OPENAI_API_KEY`，就会错误地把请求发往 OpenAI。自动检测的核心不是“猜得准”，而是优先级稳定、可解释，并允许用户显式覆盖。
+
+自动检测还要防止“半配置”状态。例如检测到 Ollama 地址，却没有填写模型名时，应使用明确的默认模型或直接报错；检测到云端密钥但地址为空时，也应在日志中说明采用了默认云端地址。宁可早点失败，也不要静默把请求发送到错误的服务。
 
 建议把检测逻辑写成纯函数并测试：
 
